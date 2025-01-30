@@ -1,0 +1,13 @@
+{
+  "hosting": {
+    "site": "rest-api-drive-officex",
+    "public": "docs",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

@@ -1,0 +1,853 @@
+openapi: 3.0.0
+info:
+  title: OfficeX Drive REST API
+  version: "1.0.0"
+  description: API for managing files, folders, teams, and access in an Internet Computer canister
+
+servers:
+  - url: https://{canister_id}.raw.ic0.app
+    description: IC Mainnet
+    variables:
+      canister_id:
+        description: The canister ID on the Internet Computer
+        default: "aaaaa-aa"
+
+tags:
+  - name: Auth
+    description: Authentication and API key management
+  - name: Filesystem
+    description: File and folder operations
+  - name: Organization
+    description: Team, contact, and drive management
+  - name: Webhooks
+    description: Webhook configuration and management
+
+paths:
+  # Auth Section
+  /api-keys/{key}:
+    get:
+      tags:
+        - Auth
+      summary: Get API key information
+      description: Retrieves detailed information about a specific API key including its status and permissions.
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique identifier of the API key
+      responses:
+        "200":
+          description: API key information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIKey"
+
+  /api-keys/{userid}/list:
+    get:
+      tags:
+        - Auth
+      summary: List all API keys for a user
+      description: Retrieves a list of all API keys associated with the specified user.
+      parameters:
+        - name: userid
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Principal ID of the user
+      responses:
+        "200":
+          description: List of API keys
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/APIKey"
+
+  /api-keys/upsert:
+    post:
+      tags:
+        - Auth
+      summary: Create or update API key
+      description: Creates a new API key or updates an existing key's metadata.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/APIKey"
+      responses:
+        "200":
+          description: Updated API key information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/APIKey"
+
+  /api-keys/delete:
+    post:
+      tags:
+        - Auth
+      summary: Delete API key
+      description: Permanently deletes an API key.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                key_id:
+                  type: string
+                  description: Unique identifier of the API key to delete
+      responses:
+        "200":
+          description: Deletion confirmation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the key was successfully deleted
+
+  # Filesystem Section
+  /query_directory:
+    post:
+      tags:
+        - Filesystem
+      summary: Query files and folders by path or ID
+      description: Flexible query endpoint that can return both files and folders based on path or ID, with pagination support.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QueryDirectoryRequest"
+      responses:
+        "200":
+          description: List of files and folders
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  folders:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/FolderMetadata"
+                  files:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/FileMetadata"
+                  total:
+                    type: integer
+                  has_more:
+                    type: boolean
+
+  /upsert_directory:
+    post:
+      tags:
+        - Filesystem
+      summary: Create or update a file or folder
+      description: Universal endpoint for creating or updating both files and folders.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: "#/components/schemas/FileMetadata"
+                - $ref: "#/components/schemas/FolderMetadata"
+      responses:
+        "200":
+          description: Updated metadata of the file or folder
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/FileMetadata"
+                  - $ref: "#/components/schemas/FolderMetadata"
+
+  /delete_directory:
+    post:
+      tags:
+        - Filesystem
+      summary: Mark a file or folder as deleted
+      description: Marks the specified file or folder as deleted.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DirectoryRequest"
+      responses:
+        "200":
+          description: Deletion confirmation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  /sync_directory:
+    post:
+      tags:
+        - Filesystem
+      summary: Sync local changes to cloud
+      description: Synchronizes local changes with the cloud storage.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - paths
+              properties:
+                paths:
+                  oneOf:
+                    - type: string
+                    - type: array
+                      items:
+                        type: string
+      responses:
+        "200":
+          description: Synced metadata
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/FileMetadata"
+                  - $ref: "#/components/schemas/FolderMetadata"
+
+  # Organization Section
+  /drive/info:
+    get:
+      tags:
+        - Organization
+      summary: Get drive information
+      description: Retrieves the drive's metadata including username, owner, and notes.
+      responses:
+        "200":
+          description: Current drive information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DriveInfo"
+    post:
+      tags:
+        - Organization
+      summary: Update drive information
+      description: Updates the drive's metadata including username, owner, and notes.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DriveInfo"
+      responses:
+        "200":
+          description: Current drive information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DriveInfo"
+
+  /rolodex/canisters/list:
+    get:
+      tags:
+        - Organization
+      summary: List all 3rd party drive canisters
+      description: Returns a list of all drive canisters associated with the account.
+      responses:
+        "200":
+          description: List of drive canisters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DriveInfo"
+
+  /rolodex/canisters/{id}:
+    get:
+      tags:
+        - Organization
+      summary: Get 3rd party drive canister details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Drive canister details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DriveInfo"
+
+  /rolodex/canisters:
+    post:
+      tags:
+        - Organization
+      summary: Add 3rd party drive canister
+      description: Adds a new 3rd party drive canister.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DriveInfo"
+      responses:
+        "200":
+          description: Created drive canister details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DriveInfo"
+
+  /rolodex/contacts/{id}:
+    get:
+      tags:
+        - Organization
+      summary: Get contact information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Principal ID of the contact
+      responses:
+        "200":
+          description: Contact information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+
+  /rolodex/contacts/list:
+    get:
+      tags:
+        - Organization
+      summary: List all contacts
+      description: Returns a list of all contacts.
+      responses:
+        "200":
+          description: List of contacts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Contact"
+
+  /rolodex/contacts/upsert:
+    post:
+      tags:
+        - Organization
+      summary: Create or update contact
+      description: Creates a new contact or updates an existing one.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Contact"
+      responses:
+        "200":
+          description: Updated contact information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+
+  /rolodex/teams/{id}:
+    get:
+      tags:
+        - Organization
+      summary: Get team information
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Team identifier
+      responses:
+        "200":
+          description: Team information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+
+  /rolodex/teams/list:
+    get:
+      tags:
+        - Organization
+      summary: List all teams
+      description: Returns a list of all teams.
+      responses:
+        "200":
+          description: List of teams
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Team"
+
+  /rolodex/teams/upsert:
+    post:
+      tags:
+        - Organization
+      summary: Create or update team
+      description: Creates a new team or updates an existing team.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Team"
+      responses:
+        "200":
+          description: Updated team information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Team"
+
+  /rolodex/teams/{teamId}/invites/list:
+    get:
+      tags:
+        - Organization
+      summary: List team members
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Team identifier
+      responses:
+        "200":
+          description: List of team members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TeamInvite"
+
+  /rolodex/teams/{teamId}/invites/upsert:
+    post:
+      tags:
+        - Organization
+      summary: Add or update team member
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Team identifier
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamInvite"
+      responses:
+        "200":
+          description: Updated member information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamInvite"
+
+  /rolodex/teams/{teamId}/invites/delete:
+    post:
+      tags:
+        - Organization
+      summary: Remove member from team
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Team identifier
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  description: Principal ID of member to remove
+      responses:
+        "200":
+          description: Deletion confirmation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  # Webhooks Section
+  /webhooks/list:
+    get:
+      tags:
+        - Webhooks
+      summary: List all webhooks
+      description: Returns a list of all configured webhooks
+      responses:
+        "200":
+          description: List of webhook configurations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WebhookConfiguration"
+
+  /webhooks/{webhook_id}:
+    get:
+      tags:
+        - Webhooks
+      summary: Get webhook details
+      parameters:
+        - name: webhook_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Webhook configuration details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookConfiguration"
+
+  /webhooks/{webhook_id}/delete:
+    post:
+      tags:
+        - Webhooks
+      summary: Delete webhook
+      parameters:
+        - name: webhook_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deletion confirmation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+
+  /webhooks:
+    post:
+      tags:
+        - Webhooks
+      summary: Create or update webhook
+      description: Configure a new webhook or update an existing one
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WebhookConfiguration"
+      responses:
+        "200":
+          description: Webhook configuration details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookConfiguration"
+
+components:
+  schemas:
+    StorageLocation:
+      type: string
+      enum: [BrowserCache, HardDrive, Web3Storj]
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Operation failed"
+
+    DriveInfo:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "alice123"
+        owner_id:
+          type: string
+          example: "2vxsx-fae"
+        canister_id:
+          type: string
+          example: "2vxsx-fae"
+        gas_remaining:
+          type: number
+          example: 2543656
+        public_note:
+          type: string
+          example: "Alice's Drive"
+        private_note:
+          type: string
+          example: "Personal storage for work files"
+
+    DirectoryRequest:
+      type: object
+      properties:
+        path:
+          type: string
+          example: "Web3Storj::documents/work/"
+        id:
+          type: string
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+    QueryDirectoryRequest:
+      allOf:
+        - $ref: "#/components/schemas/DirectoryRequest"
+        - type: object
+          properties:
+            include_folders:
+              type: boolean
+              default: true
+            include_files:
+              type: boolean
+              default: true
+            limit:
+              type: integer
+              default: 50
+            after:
+              type: integer
+              default: 0
+
+    FileMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+        original_file_name:
+          type: string
+        folder_uuid:
+          type: string
+        file_version:
+          type: integer
+        extension:
+          type: string
+        full_file_path:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        owner:
+          type: string
+        created_date:
+          type: integer
+          format: int64
+        storage_location:
+          $ref: "#/components/schemas/StorageLocation"
+        file_size:
+          type: integer
+          format: int64
+        last_changed_unix_ms:
+          type: integer
+          format: int64
+        deleted:
+          type: boolean
+        expires_at:
+          type: integer
+          format: int64
+
+    FolderMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+        original_folder_name:
+          type: string
+        parent_folder_uuid:
+          type: string
+        subfolder_uuids:
+          type: array
+          items:
+            type: string
+        file_uuids:
+          type: array
+          items:
+            type: string
+        full_folder_path:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        owner:
+          type: string
+        created_date:
+          type: integer
+          format: int64
+        storage_location:
+          $ref: "#/components/schemas/StorageLocation"
+        last_changed_unix_ms:
+          type: integer
+          format: int64
+        deleted:
+          type: boolean
+        expires_at:
+          type: integer
+          format: int64
+
+    Contact:
+      type: object
+      properties:
+        id:
+          type: string
+        nickname:
+          type: string
+        evm_public_address:
+          type: string
+        icp_principal:
+          type: string
+        api_keys:
+          type: array
+          items:
+            type: string
+        teams:
+          type: array
+          items:
+            type: string
+        shared_drives:
+          type: array
+          items:
+            type: string
+
+    TeamInvite:
+      type: object
+      properties:
+        user_id:
+          type: string
+        invited_by:
+          type: string
+        invited_at:
+          type: integer
+          format: int64
+        role:
+          type: string
+          enum: [Member, Admin, Owner]
+        active_from:
+          type: integer
+          format: int64
+        expires_at:
+          type: integer
+          format: int64
+
+    Team:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        owner:
+          type: string
+        admins:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/TeamInvite"
+        members:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/TeamInvite"
+        created_at:
+          type: integer
+          format: int64
+        last_modified_at:
+          type: integer
+          format: int64
+        canister_id:
+          type: string
+
+    APIKey:
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        user_id:
+          type: string
+        name:
+          type: string
+        created_at:
+          type: integer
+          format: int64
+        expires_at:
+          type: integer
+          format: int64
+        is_revoked:
+          type: boolean
+
+    WebhookConfiguration:
+      type: object
+      required:
+        - url
+        - events
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+            enum:
+              - file.viewed
+              - file.created
+              - file.updated
+              - file.deleted
+              - file.shared
+              - folder.viewed
+              - folder.created
+              - folder.updated
+              - folder.deleted
+              - folder.shared
+              - team.invite.created
+              - team.invite.updated
+              - drive.gas_low
+        secret:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
+          default: true
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: api-key
+      description: API key for programmatic access
+
+security:
+  - ApiKeyAuth: []
