@@ -139,11 +139,11 @@ paths:
                   folders:
                     type: array
                     items:
-                      $ref: "#/components/schemas/FolderMetadata"
+                      $ref: "#/components/schemas/Folder"
                   files:
                     type: array
                     items:
-                      $ref: "#/components/schemas/FileMetadata"
+                      $ref: "#/components/schemas/File"
                   total_files:
                     type: integer
                   total_folders:
@@ -176,8 +176,8 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/FileMetadata"
-                  - $ref: "#/components/schemas/FolderMetadata"
+                  - $ref: "#/components/schemas/File"
+                  - $ref: "#/components/schemas/Folder"
 
   /directory/folder/get:
     post:
@@ -205,7 +205,7 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/FolderMetadata"
+                  - $ref: "#/components/schemas/Folder"
 
   /directory/folder/upsert:
     post:
@@ -227,7 +227,7 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/FolderMetadata"
+                  - $ref: "#/components/schemas/Folder"
 
   /directory/folder/delete:
     post:
@@ -276,7 +276,7 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/FileMetadata"
+                  - $ref: "#/components/schemas/File"
 
   /directory/file/upsert:
     post:
@@ -298,7 +298,7 @@ paths:
             application/json:
               schema:
                 oneOf:
-                  - $ref: "#/components/schemas/FileMetadata"
+                  - $ref: "#/components/schemas/File"
 
   /directory/file/delete:
     post:
@@ -410,8 +410,8 @@ paths:
           application/json:
             schema:
               oneOf:
-                - $ref: "#/components/schemas/CreateCansiterRequest"
-                - $ref: "#/components/schemas/UpdateCansiterRequest"
+                - $ref: "#/components/schemas/CreateCanisterRequest"
+                - $ref: "#/components/schemas/UpdateCanisterRequest"
       responses:
         "200":
           content:
@@ -715,7 +715,7 @@ paths:
                   items:
                     type: array
                     items:
-                      $ref: "#/components/schemas/WebhookConfiguration"
+                      $ref: "#/components/schemas/Webhook"
                   total:
                     type: integer
                   cursor_up:
@@ -740,7 +740,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WebhookConfiguration"
+                $ref: "#/components/schemas/Webhook"
 
   /webhooks/delete:
     post:
@@ -780,24 +780,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WebhookConfiguration"
+                $ref: "#/components/schemas/Webhook"
 
 components:
   schemas:
-    StorageLocation:
-      type: string
-      enum: [BrowserCache, HardDrive, Web3Storj]
-
-    Error:
-      type: object
-      properties:
-        status:
-          type: string
-          example: "400 - Bad Request"
-        message:
-          type: string
-          example: "Operation failed"
-
     DriveInfo:
       type: object
       properties:
@@ -820,27 +806,219 @@ components:
           type: string
           example: "Personal storage for work files"
 
-    CreateCansiterRequest:
+    File:
       type: object
-      required: [canister_id]
-      properties:
-        canister_id:
-          type: string
-        public_note:
-          type: string
-        private_note:
-          type: string
-
-    UpdateCansiterRequest:
-      type: object
-      required: [id]
       properties:
         id:
           type: string
-        public_note:
+        file_name:
           type: string
-        private_note:
+        folder_uuid:
           type: string
+        file_version:
+          type: integer
+        extension:
+          type: string
+        full_file_path:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        owner:
+          type: string
+        created_date:
+          type: integer
+          format: int64
+        storage_location:
+          $ref: "#/components/schemas/StorageLocation"
+        file_size:
+          type: integer
+          format: int64
+        last_changed_unix_ms:
+          type: integer
+          format: int64
+        deleted:
+          type: boolean
+        expires_at:
+          type: integer
+          format: int64
+
+    Folder:
+      type: object
+      properties:
+        id:
+          type: string
+        folder_name:
+          type: string
+        parent_folder_id:
+          type: string
+        subfolder_uuids:
+          type: array
+          items:
+            type: string
+        file_uuids:
+          type: array
+          items:
+            type: string
+        full_folder_path:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        owner:
+          type: string
+        created_date:
+          type: integer
+          format: int64
+        storage_location:
+          $ref: "#/components/schemas/StorageLocation"
+        last_changed_unix_ms:
+          type: integer
+          format: int64
+        deleted:
+          type: boolean
+        expires_at:
+          type: integer
+          format: int64
+
+    Contact:
+      type: object
+      properties:
+        id:
+          type: string
+        nickname:
+          type: string
+        evm_public_address:
+          type: string
+        icp_principal:
+          type: string
+        api_keys:
+          type: array
+          items:
+            type: string
+        teams:
+          type: array
+          items:
+            type: string
+        shared_drives:
+          type: array
+          items:
+            type: string
+
+    Team:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        owner:
+          type: string
+        admins:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/TeamInvite"
+        members:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/TeamInvite"
+        created_at:
+          type: integer
+          format: int64
+        last_modified_at:
+          type: integer
+          format: int64
+        canister_id:
+          type: string
+
+    TeamInvite:
+      type: object
+      properties:
+        id:
+          type: string
+        team_id:
+          type: string
+        user_id:
+          type: string
+        invited_by:
+          type: string
+        invited_at:
+          type: integer
+          format: int64
+        role:
+          type: string
+          enum: [Member, Admin, Owner]
+        active_from:
+          type: integer
+          format: int64
+        expires_at:
+          type: integer
+          format: int64
+        status:
+          type: string
+          enum: [Pending, Accepted, Expired]
+          default: "Pending"
+
+    APIKey:
+      type: object
+      properties:
+        id:
+          type: string
+        key:
+          type: string
+        user_id:
+          type: string
+        name:
+          type: string
+        created_at:
+          type: integer
+          format: int64
+        expires_at:
+          type: integer
+          format: int64
+          description: Unix seconds when the key expires. Defaults -1 for never expires, 0 for hardcoded expiration
+        is_revoked:
+          type: boolean
+
+    Webhook:
+      type: object
+      required:
+        - url
+        - events
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+            enum:
+              - file.viewed
+              - file.created
+              - file.updated
+              - file.deleted
+              - file.shared
+              - folder.viewed
+              - folder.created
+              - folder.updated
+              - folder.deleted
+              - folder.shared
+              - team.invite.created
+              - team.invite.updated
+              - drive.gas_low
+              - drive.sync_completed
+        proof:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
+          default: true
 
     ListRequest:
       type: object
@@ -899,44 +1077,6 @@ components:
               type: string
               default: 0
 
-    FileMetadata:
-      type: object
-      properties:
-        id:
-          type: string
-        file_name:
-          type: string
-        folder_uuid:
-          type: string
-        file_version:
-          type: integer
-        extension:
-          type: string
-        full_file_path:
-          type: string
-        tags:
-          type: array
-          items:
-            type: string
-        owner:
-          type: string
-        created_date:
-          type: integer
-          format: int64
-        storage_location:
-          $ref: "#/components/schemas/StorageLocation"
-        file_size:
-          type: integer
-          format: int64
-        last_changed_unix_ms:
-          type: integer
-          format: int64
-        deleted:
-          type: boolean
-        expires_at:
-          type: integer
-          format: int64
-
     CreateFileRequest:
       type: object
       required:
@@ -976,45 +1116,6 @@ components:
           type: boolean
           description: "Whether file appears deleted"
 
-    FolderMetadata:
-      type: object
-      properties:
-        id:
-          type: string
-        folder_name:
-          type: string
-        parent_folder_id:
-          type: string
-        subfolder_uuids:
-          type: array
-          items:
-            type: string
-        file_uuids:
-          type: array
-          items:
-            type: string
-        full_folder_path:
-          type: string
-        tags:
-          type: array
-          items:
-            type: string
-        owner:
-          type: string
-        created_date:
-          type: integer
-          format: int64
-        storage_location:
-          $ref: "#/components/schemas/StorageLocation"
-        last_changed_unix_ms:
-          type: integer
-          format: int64
-        deleted:
-          type: boolean
-        expires_at:
-          type: integer
-          format: int64
-
     CreateFolderRequest:
       type: object
       required:
@@ -1053,210 +1154,6 @@ components:
         deleted:
           type: boolean
           description: "Whether folder appears deleted"
-
-    Contact:
-      type: object
-      properties:
-        id:
-          type: string
-        nickname:
-          type: string
-        evm_public_address:
-          type: string
-        icp_principal:
-          type: string
-        api_keys:
-          type: array
-          items:
-            type: string
-        teams:
-          type: array
-          items:
-            type: string
-        shared_drives:
-          type: array
-          items:
-            type: string
-
-    TeamInvite:
-      type: object
-      properties:
-        id:
-          type: string
-        team_id:
-          type: string
-        user_id:
-          type: string
-        invited_by:
-          type: string
-        invited_at:
-          type: integer
-          format: int64
-        role:
-          type: string
-          enum: [Member, Admin, Owner]
-        active_from:
-          type: integer
-          format: int64
-        expires_at:
-          type: integer
-          format: int64
-        status:
-          type: string
-          enum: [Pending, Accepted, Expired]
-          default: "Pending"
-
-    CreateTeamInviteRequest:
-      type: object
-      required: [user_id, role]
-      properties:
-        user_id:
-          type: string
-        role:
-          type: string
-          enum: [Member, Admin, Owner]
-        expires_at:
-          type: integer
-          format: int64
-        custom_message:
-          type: string
-
-    UpdateTeamInviteRequest:
-      type: object
-      required: [id]
-      properties:
-        id:
-          type: string
-        role:
-          type: string
-          enum: [Member, Admin, Owner]
-        expires_at:
-          type: integer
-          format: int64
-        status:
-          type: string
-          enum: [Pending, Accepted, Expired]
-
-    Team:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        owner:
-          type: string
-        admins:
-          type: object
-          additionalProperties:
-            $ref: "#/components/schemas/TeamInvite"
-        members:
-          type: object
-          additionalProperties:
-            $ref: "#/components/schemas/TeamInvite"
-        created_at:
-          type: integer
-          format: int64
-        last_modified_at:
-          type: integer
-          format: int64
-        canister_id:
-          type: string
-
-    APIKey:
-      type: object
-      properties:
-        id:
-          type: string
-        key:
-          type: string
-        user_id:
-          type: string
-        name:
-          type: string
-        created_at:
-          type: integer
-          format: int64
-        expires_at:
-          type: integer
-          format: int64
-          description: Unix seconds when the key expires. Defaults -1 for never expires, 0 for hardcoded expiration
-        is_revoked:
-          type: boolean
-
-    CreateAPIKeyRequest:
-      type: object
-      required:
-        - name
-        - user_id
-      properties:
-        name:
-          type: string
-          description: "Name of the API key"
-        user_id:
-          type: string
-          description: "User ID who owns this key"
-        expires_at:
-          type: integer
-          format: int64
-          description: "Optional expiration timestamp"
-
-    UpdateAPIKeyRequest:
-      type: object
-      required:
-        - id
-      properties:
-        id:
-          type: string
-          description: "ID of the API key to update"
-        name:
-          type: string
-          description: "New name for the API key"
-        expires_at:
-          type: integer
-          format: int64
-          description: "New expiration timestamp"
-        is_revoked:
-          type: boolean
-          description: "Whether to revoke the key"
-
-    WebhookConfiguration:
-      type: object
-      required:
-        - url
-        - events
-      properties:
-        id:
-          type: string
-        url:
-          type: string
-          format: uri
-        events:
-          type: array
-          items:
-            type: string
-            enum:
-              - file.viewed
-              - file.created
-              - file.updated
-              - file.deleted
-              - file.shared
-              - folder.viewed
-              - folder.created
-              - folder.updated
-              - folder.deleted
-              - folder.shared
-              - team.invite.created
-              - team.invite.updated
-              - drive.gas_low
-              - drive.sync_completed
-        proof:
-          type: string
-        description:
-          type: string
-        active:
-          type: boolean
-          default: true
 
     CreateContactRequest:
       type: object
@@ -1312,6 +1209,59 @@ components:
           items:
             type: string
 
+    CreateTeamInviteRequest:
+      type: object
+      required: [user_id, role]
+      properties:
+        user_id:
+          type: string
+        role:
+          type: string
+          enum: [Member, Admin, Owner]
+        expires_at:
+          type: integer
+          format: int64
+        custom_message:
+          type: string
+
+    UpdateTeamInviteRequest:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+        role:
+          type: string
+          enum: [Member, Admin, Owner]
+        expires_at:
+          type: integer
+          format: int64
+        status:
+          type: string
+          enum: [Pending, Accepted, Expired]
+
+    CreateCanisterRequest:
+      type: object
+      required: [canister_id]
+      properties:
+        canister_id:
+          type: string
+        public_note:
+          type: string
+        private_note:
+          type: string
+
+    UpdateCanisterRequest:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+        public_note:
+          type: string
+        private_note:
+          type: string
+
     CreateWebhookRequest:
       type: object
       required: [url, events]
@@ -1347,6 +1297,56 @@ components:
           type: string
         active:
           type: boolean
+
+    CreateAPIKeyRequest:
+      type: object
+      required:
+        - name
+        - user_id
+      properties:
+        name:
+          type: string
+          description: "Name of the API key"
+        user_id:
+          type: string
+          description: "User ID who owns this key"
+        expires_at:
+          type: integer
+          format: int64
+          description: "Optional expiration timestamp"
+
+    UpdateAPIKeyRequest:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          description: "ID of the API key to update"
+        name:
+          type: string
+          description: "New name for the API key"
+        expires_at:
+          type: integer
+          format: int64
+          description: "New expiration timestamp"
+        is_revoked:
+          type: boolean
+          description: "Whether to revoke the key"
+
+    StorageLocation:
+      type: string
+      enum: [BrowserCache, HardDrive, Web3Storj]
+
+    Error:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "400 - Bad Request"
+        message:
+          type: string
+          example: "Operation failed"
 
   securitySchemes:
     ApiKeyAuth:
