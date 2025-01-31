@@ -355,20 +355,32 @@ paths:
                 $ref: "#/components/schemas/DriveInfo"
 
   /rolodex/canisters/list:
-    get:
-      tags:
-        - Rolodex
+    post:
+      tags: [Rolodex]
       summary: List all 3rd party drive canisters
-      description: Returns a list of all drive canisters associated with the account.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListRequest"
       responses:
         "200":
           description: List of drive canisters
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/DriveInfo"
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/DriveInfo"
+                  total:
+                    type: integer
+                  cursor_up:
+                    type: string
+                  cursor_down:
+                    type: string
 
   /rolodex/canisters/get/{id}:
     get:
@@ -391,18 +403,17 @@ paths:
 
   /rolodex/canisters/upsert:
     post:
-      tags:
-        - Rolodex
+      tags: [Rolodex]
       summary: Add 3rd party drive canister
-      description: Adds a new 3rd party drive canister.
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DriveInfo"
+              oneOf:
+                - $ref: "#/components/schemas/CreateCansiterRequest"
+                - $ref: "#/components/schemas/UpdateCansiterRequest"
       responses:
         "200":
-          description: Created drive canister details
           content:
             application/json:
               schema:
@@ -410,22 +421,25 @@ paths:
 
   /rolodex/canisters/delete:
     post:
-      tags:
-        - Rolodex
+      tags: [Rolodex]
       summary: Delete 3rd party drive canister
-      description: Deletes a new 3rd party drive canister.
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/DriveInfo"
+              type: object
+              properties:
+                id:
+                  type: string
       responses:
         "200":
-          description: Deleted drive canister details
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DriveInfo"
+                type: object
+                properties:
+                  success:
+                    type: boolean
 
   /rolodex/contacts/get/{id}:
     get:
@@ -448,35 +462,45 @@ paths:
                 $ref: "#/components/schemas/Contact"
 
   /rolodex/contacts/list:
-    get:
-      tags:
-        - Rolodex
-      summary: List all contacts
-      description: Returns a list of all contacts.
-      responses:
-        "200":
-          description: List of contacts
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Contact"
-
-  /rolodex/contacts/upsert:
     post:
-      tags:
-        - Rolodex
-      summary: Create or update contact
-      description: Creates a new contact or updates an existing one.
+      tags: [Rolodex]
+      summary: List all contacts
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Contact"
+              $ref: "#/components/schemas/ListRequest"
       responses:
         "200":
-          description: Updated contact information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Contact"
+                  total:
+                    type: integer
+                  cursor_up:
+                    type: string
+                  cursor_down:
+                    type: string
+
+  /rolodex/contacts/upsert:
+    post:
+      tags: [Rolodex]
+      summary: Create or update contact
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: "#/components/schemas/CreateContactRequest"
+                - $ref: "#/components/schemas/UpdateContactRequest"
+      responses:
+        "200":
           content:
             application/json:
               schema:
@@ -503,35 +527,45 @@ paths:
                 $ref: "#/components/schemas/Team"
 
   /rolodex/teams/list:
-    get:
-      tags:
-        - Rolodex
-      summary: List all teams
-      description: Returns a list of all teams.
-      responses:
-        "200":
-          description: List of teams
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Team"
-
-  /rolodex/teams/upsert:
     post:
-      tags:
-        - Rolodex
-      summary: Create or update team
-      description: Creates a new team or updates an existing team.
+      tags: [Rolodex]
+      summary: List all teams
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Team"
+              $ref: "#/components/schemas/ListRequest"
       responses:
         "200":
-          description: Updated team information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Team"
+                  total:
+                    type: integer
+                  cursor_up:
+                    type: string
+                  cursor_down:
+                    type: string
+
+  /rolodex/teams/upsert:
+    post:
+      tags: [Rolodex]
+      summary: Create or update team
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: "#/components/schemas/CreateTeamRequest"
+                - $ref: "#/components/schemas/UpdateTeamRequest"
+      responses:
+        "200":
           content:
             application/json:
               schema:
@@ -539,116 +573,18 @@ paths:
 
   /rolodex/teams/delete:
     post:
-      tags:
-        - Rolodex
+      tags: [Rolodex]
       summary: Delete team
-      description: Deletes a team
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Team"
-      responses:
-        "200":
-          description: Deleted team details
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Team"
-
-  /rolodex/teams/get/{teamId}/invites/list:
-    get:
-      tags:
-        - Rolodex
-      summary: List team invites
-      parameters:
-        - name: teamId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Team identifier
-      responses:
-        "200":
-          description: List of team invites
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/TeamInvite"
-
-  /rolodex/teams/get/{teamId}/invites/get/{teamId}:
-    get:
-      tags:
-        - Rolodex
-      summary: Get team invite
-      parameters:
-        - name: teamId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Team identifier
-      responses:
-        "200":
-          description: Get team invite
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/TeamInvite"
-
-  /rolodex/teams/get/{teamId}/invites/upsert:
-    post:
-      tags:
-        - Rolodex
-      summary: Add or update team invite
-      parameters:
-        - name: teamId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Team identifier
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/TeamInvite"
-      responses:
-        "200":
-          description: Updated member information
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/TeamInvite"
-
-  /rolodex/teams/{teamId}/invites/delete:
-    post:
-      tags:
-        - Rolodex
-      summary: Remove invite from team
-      parameters:
-        - name: teamId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: Team identifier
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                user_id:
+                id:
                   type: string
-                  description: ID of invite to remove
       responses:
         "200":
-          description: Deletion confirmation
           content:
             application/json:
               schema:
@@ -657,22 +593,135 @@ paths:
                   success:
                     type: boolean
 
-  # Webhooks Section
-  /webhooks/list:
-    get:
-      tags:
-        - Webhooks
-      summary: List all webhooks
-      description: Returns a list of all configured webhooks
+  /rolodex/teams/get/{teamId}/invites/list:
+    post:
+      tags: [Rolodex]
+      summary: List team invites with pagination
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListRequest"
       responses:
         "200":
-          description: List of webhook configurations
+          description: Paginated list of team invites
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/WebhookConfiguration"
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TeamInvite"
+                  total:
+                    type: integer
+                  cursor_up:
+                    type: string
+                  cursor_down:
+                    type: string
+
+  /rolodex/teams/get/{teamId}/invites/get/{inviteId}:
+    get:
+      tags: [Rolodex]
+      summary: Get team invite details
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: inviteId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamInvite"
+
+  /rolodex/teams/get/{teamId}/invites/upsert:
+    post:
+      tags: [Rolodex]
+      summary: Create or update team invite
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: "#/components/schemas/CreateTeamInviteRequest"
+                - $ref: "#/components/schemas/UpdateTeamInviteRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TeamInvite"
+
+  /rolodex/teams/get/{teamId}/invites/delete:
+    post:
+      tags: [Rolodex]
+      summary: Remove team invite
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                invite_id:
+                  type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean }
+
+  # Webhooks Section
+  /webhooks/list:
+    post:
+      tags: [Webhooks]
+      summary: List all webhooks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/WebhookConfiguration"
+                  total:
+                    type: integer
+                  cursor_up:
+                    type: string
+                  cursor_down:
+                    type: string
 
   /webhooks/get/{webhook_id}:
     get:
@@ -695,18 +744,18 @@ paths:
 
   /webhooks/delete:
     post:
-      tags:
-        - Webhooks
+      tags: [Webhooks]
       summary: Delete webhook
-      parameters:
-        - name: webhook_id
-          in: path
-          required: true
-          schema:
-            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
       responses:
         "200":
-          description: Deletion confirmation
           content:
             application/json:
               schema:
@@ -717,19 +766,17 @@ paths:
 
   /webhooks/upsert:
     post:
-      tags:
-        - Webhooks
+      tags: [Webhooks]
       summary: Create or update webhook
-      description: Configure a new webhook or update an existing one
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/WebhookConfiguration"
+              oneOf:
+                - $ref: "#/components/schemas/CreateWebhookRequest"
+                - $ref: "#/components/schemas/UpdateWebhookRequest"
       responses:
         "200":
-          description: Webhook configuration details
           content:
             application/json:
               schema:
@@ -744,6 +791,9 @@ components:
     Error:
       type: object
       properties:
+        status:
+          type: string
+          example: "400 - Bad Request"
         message:
           type: string
           example: "Operation failed"
@@ -769,6 +819,41 @@ components:
         private_note:
           type: string
           example: "Personal storage for work files"
+
+    CreateCansiterRequest:
+      type: object
+      required: [canister_id]
+      properties:
+        canister_id:
+          type: string
+        public_note:
+          type: string
+        private_note:
+          type: string
+
+    UpdateCansiterRequest:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+        public_note:
+          type: string
+        private_note:
+          type: string
+
+    ListRequest:
+      type: object
+      properties:
+        filters:
+          type: string
+        limit:
+          type: integer
+          default: 50
+        cursor_up:
+          type: string
+        cursor_down:
+          type: string
 
     FolderRequest:
       type: object
@@ -996,6 +1081,10 @@ components:
     TeamInvite:
       type: object
       properties:
+        id:
+          type: string
+        team_id:
+          type: string
         user_id:
           type: string
         invited_by:
@@ -1012,6 +1101,41 @@ components:
         expires_at:
           type: integer
           format: int64
+        status:
+          type: string
+          enum: [Pending, Accepted, Expired]
+          default: "Pending"
+
+    CreateTeamInviteRequest:
+      type: object
+      required: [user_id, role]
+      properties:
+        user_id:
+          type: string
+        role:
+          type: string
+          enum: [Member, Admin, Owner]
+        expires_at:
+          type: integer
+          format: int64
+        custom_message:
+          type: string
+
+    UpdateTeamInviteRequest:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+        role:
+          type: string
+          enum: [Member, Admin, Owner]
+        expires_at:
+          type: integer
+          format: int64
+        status:
+          type: string
+          enum: [Pending, Accepted, Expired]
 
     Team:
       type: object
@@ -1125,13 +1249,104 @@ components:
               - team.invite.created
               - team.invite.updated
               - drive.gas_low
-        secret:
+              - drive.sync_completed
+        proof:
           type: string
         description:
           type: string
         active:
           type: boolean
           default: true
+
+    CreateContactRequest:
+      type: object
+      required: [id, nickname]
+      properties:
+        id:
+          type: string
+        nickname:
+          type: string
+        evm_public_address:
+          type: string
+        icp_principal:
+          type: string
+
+    UpdateContactRequest:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+        nickname:
+          type: string
+        evm_public_address:
+          type: string
+        icp_principal:
+          type: string
+
+    CreateTeamRequest:
+      type: object
+      required: [name, owner]
+      properties:
+        name:
+          type: string
+        owner:
+          type: string
+        admins:
+          type: array
+          items:
+            type: string
+
+    UpdateTeamRequest:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        owner:
+          type: string
+        admins:
+          type: array
+          items:
+            type: string
+
+    CreateWebhookRequest:
+      type: object
+      required: [url, events]
+      properties:
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+        proof:
+          type: string
+        description:
+          type: string
+
+    UpdateWebhookRequest:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+        proof:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
 
   securitySchemes:
     ApiKeyAuth:
