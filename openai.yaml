@@ -66,7 +66,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/APIKey"
+                  $ref: "#/components/schemas/APIKeyHidden"
 
   /api-keys/upsert:
     post:
@@ -101,7 +101,7 @@ paths:
             schema:
               type: object
               properties:
-                key_id:
+                id:
                   type: string
                   description: Unique identifier of the API key to delete
       responses:
@@ -115,13 +115,16 @@ paths:
                   success:
                     type: boolean
                     description: Whether the key was successfully deleted
+                  id:
+                    type: string
+                    description: ID of the deleted key
 
   # Filesystem Section
   /directory/list:
     post:
       tags:
         - Directory
-      summary: Query files and folders by path or ID
+      summary: Query by path or id to list files and folders
       description: Flexible query endpoint that can return both files and folders based on path or ID, with pagination support.
       requestBody:
         content:
@@ -157,8 +160,8 @@ paths:
     post:
       tags:
         - Directory
-      summary: Sync local changes to cloud
-      description: Synchronizes local changes with the cloud storage.
+      summary: Sync with cloud
+      description: Synchronizes with cloud storage.
       requestBody:
         content:
           application/json:
@@ -233,7 +236,7 @@ paths:
     post:
       tags:
         - Directory
-      summary: Mark a folder as deleted
+      summary: Delete a folder permanently
       description: Marks the specified folder as deleted.
       requestBody:
         content:
@@ -248,7 +251,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
+                  id:
+                    type: string
+                  deleted:
                     type: boolean
 
   /directory/file/get:
@@ -304,7 +309,7 @@ paths:
     post:
       tags:
         - Directory
-      summary: Mark a file as deleted
+      summary: Delete a file permanently
       description: Marks the specified file as deleted.
       requestBody:
         content:
@@ -319,7 +324,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
+                  id:
+                    type: string
+                  deleted:
                     type: boolean
 
   # Organization Section
@@ -353,6 +360,93 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DriveInfo"
+
+  /rolodex/disks/get/{id}:
+    get:
+      tags: [Rolodex]
+      summary: Get disk details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Disk details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Disk"
+
+  /rolodex/disks/list:
+    post:
+      tags: [Rolodex]
+      summary: List all disks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ListRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Disk"
+                  total:
+                    type: integer
+                  cursor_up:
+                    type: string
+                  cursor_down:
+                    type: string
+
+  /rolodex/disks/upsert:
+    post:
+      tags: [Rolodex]
+      summary: Create or update a disk
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: "#/components/schemas/CreateDiskRequest"
+                - $ref: "#/components/schemas/UpdateDiskRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Disk"
+
+  /rolodex/disks/delete:
+    post:
+      tags: [Rolodex]
+      summary: Delete a disk
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  deleted:
+                    type: boolean
 
   /rolodex/canisters/list:
     post:
@@ -438,7 +532,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
+                  id:
+                    type: string
+                  deleted:
                     type: boolean
 
   /rolodex/contacts/get/{id}:
@@ -590,7 +686,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
+                  id:
+                    type: string
+                  deleted:
                     type: boolean
 
   /rolodex/teams/get/{teamId}/invites/list:
@@ -693,7 +791,10 @@ paths:
               schema:
                 type: object
                 properties:
-                  success: { type: boolean }
+                  id:
+                    type: string
+                  deleted:
+                    type: boolean
 
   # Webhooks Section
   /webhooks/list:
@@ -716,6 +817,8 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Webhook"
+                  page_size:
+                    type: integer
                   total:
                     type: integer
                   cursor_up:
@@ -761,7 +864,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  success:
+                  id:
+                    type: string
+                  deleted:
                     type: boolean
 
   /webhooks/upsert:
@@ -883,6 +988,26 @@ components:
           type: integer
           format: int64
 
+    Disk:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        private_note:
+          type: string
+        public_note:
+          type: string
+        auth_json:
+          type: string
+        type:
+          $ref: "#/components/schemas/DiskTypeEnum"
+        slug:
+          type: string
+        external_id:
+          type: string
+
     Contact:
       type: object
       properties:
@@ -982,6 +1107,49 @@ components:
         is_revoked:
           type: boolean
 
+    APIKeyHidden:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        name:
+          type: string
+        created_at:
+          type: integer
+          format: int64
+        expires_at:
+          type: integer
+          format: int64
+          description: Unix seconds when the key expires. Defaults -1 for never expires, 0 for hardcoded expiration
+        is_revoked:
+          type: boolean
+
+    WebhookEventEnum:
+      type: string
+      description: "Type of event the webhook is subscribed to"
+      enum:
+        - file.viewed
+        - file.created
+        - file.updated
+        - file.deleted
+        - file.shared
+        - folder.viewed
+        - folder.created
+        - folder.updated
+        - folder.deleted
+        - folder.shared
+        - folder.file.viewed
+        - folder.file.created
+        - folder.file.updated
+        - folder.file.deleted
+        - folder.file.shared
+        - team.invite.created
+        - team.invite.updated
+        - drive.gas_low
+        - drive.sync_completed
+
     Webhook:
       type: object
       required:
@@ -993,27 +1161,29 @@ components:
         url:
           type: string
           format: uri
-        events:
-          type: array
-          items:
-            type: string
-            enum:
-              - file.viewed
-              - file.created
-              - file.updated
-              - file.deleted
-              - file.shared
-              - folder.viewed
-              - folder.created
-              - folder.updated
-              - folder.deleted
-              - folder.shared
-              - team.invite.created
-              - team.invite.updated
-              - drive.gas_low
-              - drive.sync_completed
-        proof:
+        event:
+          $ref: "#/components/schemas/WebhookEventEnum"
+        alt_index:
+          oneOf:
+            # File events pattern
+            - type: string
+              description: "`FileID` for file.* events"
+            # Folder events pattern
+            - type: string
+              description: "`FolderID` for folder.* events"
+            # Folder.Files events pattern
+            - type: string
+              description: "`{FolderID}_files` for folder.files.* events"
+            # Team events pattern
+            - type: string
+              description: "`{TeamID}_{InviteID}` for team.* events"
+            # Drive events pattern
+            - type: string
+              description: "`''`empty string for drive.* events"
+
+        signature:
           type: string
+          description: Secret key to prove authentic origin of webhook calls
         description:
           type: string
         active:
@@ -1025,13 +1195,22 @@ components:
       properties:
         filters:
           type: string
-        limit:
+          description: "Substring search on fields depending on the endpoint"
+        page_size:
           type: integer
           default: 50
+          description: "Number of items to return"
+        direction:
+          type: string
+          enum: [asc, desc]
+          default: "asc"
+          description: "Sort direction"
         cursor_up:
           type: string
+          description: "Pagination cursor up, only set if you want to paginate up"
         cursor_down:
           type: string
+          description: "Pagination cursor down, only set if you want to paginate down"
 
     FolderRequest:
       type: object
@@ -1062,27 +1241,18 @@ components:
     ListDirectoryRequest:
       allOf:
         - $ref: "#/components/schemas/FolderRequest"
-        - type: object
-          properties:
-            filters:
-              type: string
-              default: ""
-            limit:
-              type: integer
-              default: 50
-            cursor_up:
-              type: string
-              default: 0
-            cursor_down:
-              type: string
-              default: 0
 
     CreateFileRequest:
       type: object
       required:
         - file_name
         - parent_folder_id
+        - __type
       properties:
+        __type:
+          type: string
+          enum: [create]
+          default: create
         file_name:
           type: string
         parent_folder_id:
@@ -1097,7 +1267,12 @@ components:
       type: object
       required:
         - id
+        - __type
       properties:
+        __type:
+          type: string
+          enum: [update]
+          default: update
         id:
           type: string
           description: "ID of the file to update"
@@ -1121,7 +1296,12 @@ components:
       required:
         - folder_name
         - parent_folder_id
+        - __type
       properties:
+        __type:
+          type: string
+          enum: [create]
+          default: create
         folder_name:
           type: string
         parent_folder_id:
@@ -1136,7 +1316,12 @@ components:
       type: object
       required:
         - id
+        - __type
       properties:
+        __type:
+          type: string
+          enum: [update]
+          default: update
         id:
           type: string
           description: "ID of the folder to update"
@@ -1155,10 +1340,58 @@ components:
           type: boolean
           description: "Whether folder appears deleted"
 
+    CreateDiskRequest:
+      type: object
+      required: [name, type, slug, __type]
+      properties:
+        __type:
+          type: string
+          enum: [create]
+          default: create
+        name:
+          type: string
+        type:
+          $ref: "#/components/schemas/DiskTypeEnum"
+        slug:
+          type: string
+        private_note:
+          type: string
+        public_note:
+          type: string
+        auth_json:
+          type: string
+
+    UpdateDiskRequest:
+      type: object
+      required: [id, __type]
+      properties:
+        __type:
+          type: string
+          enum: [update]
+          default: update
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          $ref: "#/components/schemas/DiskTypeEnum"
+        slug:
+          type: string
+        private_note:
+          type: string
+        public_note:
+          type: string
+        auth_json:
+          type: string
+
     CreateContactRequest:
       type: object
-      required: [id, nickname]
+      required: [id, nickname, __type]
       properties:
+        __type:
+          type: string
+          enum: [create]
+          default: create
         id:
           type: string
         nickname:
@@ -1170,8 +1403,12 @@ components:
 
     UpdateContactRequest:
       type: object
-      required: [id]
+      required: [id, __type]
       properties:
+        __type:
+          type: string
+          enum: [update]
+          default: update
         id:
           type: string
         nickname:
@@ -1183,8 +1420,12 @@ components:
 
     CreateTeamRequest:
       type: object
-      required: [name, owner]
+      required: [name, owner, __type]
       properties:
+        __type:
+          type: string
+          enum: [create]
+          default: create
         name:
           type: string
         owner:
@@ -1196,8 +1437,12 @@ components:
 
     UpdateTeamRequest:
       type: object
-      required: [id]
+      required: [id, __type]
       properties:
+        __type:
+          type: string
+          enum: [update]
+          default: update
         id:
           type: string
         name:
@@ -1211,8 +1456,12 @@ components:
 
     CreateTeamInviteRequest:
       type: object
-      required: [user_id, role]
+      required: [user_id, role, __type]
       properties:
+        __type:
+          type: string
+          enum: [create]
+          default: create
         user_id:
           type: string
         role:
@@ -1226,8 +1475,12 @@ components:
 
     UpdateTeamInviteRequest:
       type: object
-      required: [id]
+      required: [id, __type]
       properties:
+        __type:
+          type: string
+          enum: [update]
+          default: update
         id:
           type: string
         role:
@@ -1242,8 +1495,12 @@ components:
 
     CreateCanisterRequest:
       type: object
-      required: [canister_id]
+      required: [canister_id, __type]
       properties:
+        __type:
+          type: string
+          enum: [create]
+          default: create
         canister_id:
           type: string
         public_note:
@@ -1253,8 +1510,12 @@ components:
 
     UpdateCanisterRequest:
       type: object
-      required: [id]
+      required: [id, __type]
       properties:
+        __type:
+          type: string
+          enum: [update]
+          default: update
         id:
           type: string
         public_note:
@@ -1264,34 +1525,41 @@ components:
 
     CreateWebhookRequest:
       type: object
-      required: [url, events]
+      required: [url, events, __type]
       properties:
+        __type:
+          type: string
+          enum: [create]
+          default: create
+        alt_index:
+          type: string
+          description: "Alternate index for events pattern"
         url:
           type: string
           format: uri
-        events:
-          type: array
-          items:
-            type: string
-        proof:
+        event:
+          $ref: "#/components/schemas/WebhookEventEnum"
+        signature:
           type: string
         description:
           type: string
 
     UpdateWebhookRequest:
       type: object
-      required: [id]
+      required:
+        - id
+        - __type
       properties:
+        __type:
+          type: string
+          enum: [update]
+          default: update
         id:
           type: string
         url:
           type: string
           format: uri
-        events:
-          type: array
-          items:
-            type: string
-        proof:
+        signature:
           type: string
         description:
           type: string
@@ -1301,9 +1569,14 @@ components:
     CreateAPIKeyRequest:
       type: object
       required:
+        - __type
         - name
         - user_id
       properties:
+        __type:
+          type: string
+          enum: [create]
+          default: create
         name:
           type: string
           description: "Name of the API key"
@@ -1319,7 +1592,12 @@ components:
       type: object
       required:
         - id
+        - __type
       properties:
+        __type:
+          type: string
+          enum: [update]
+          default: update
         id:
           type: string
           description: "ID of the API key to update"
@@ -1337,6 +1615,10 @@ components:
     StorageLocation:
       type: string
       enum: [BrowserCache, HardDrive, Web3Storj]
+
+    DiskTypeEnum:
+      type: string
+      enum: [BrowserCache, LocalSSD, AwsS3, StorjWeb3, IcpCanister]
 
     Error:
       type: object
