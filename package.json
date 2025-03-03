@@ -4,7 +4,7 @@
   "description": "REST API documentation for OfficeX Drive",
   "main": "index.js",
   "scripts": {
-    "start": "docker run -p 8080:8080 -v $(pwd):/usr/share/nginx/html/docs -e SWAGGER_JSON=/usr/share/nginx/html/docs/openai.yaml swaggerapi/swagger-ui"
+    "start": "docker run -p 8080:8080 -v $(pwd):/usr/share/nginx/html/docs -e SWAGGER_JSON=/usr/share/nginx/html/docs/openapi.yaml swaggerapi/swagger-ui"
   },
   "author": "",
   "license": "ISC",
