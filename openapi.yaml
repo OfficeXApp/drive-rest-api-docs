@@ -5,8 +5,14 @@ info:
   version: 1.0.0
 
 tags:
+  - name: API Keys
+    description: Operations for managing API keys
+
   - name: Directory
     description: Operations for managing files and folders
+
+  - name: Directory Actions
+    description: Data types and models used throughout the API. See POST /directory/actions
 
   - name: Contacts
     description: Operations for managing contacts
@@ -35,9 +41,6 @@ tags:
   - name: Webhooks
     description: Operations for managing webhooks
 
-  - name: API Keys
-    description: Operations for managing API keys
-
   - name: Self Canister
     description: Operations for managing own drive canister
 
@@ -46,7 +49,7 @@ paths:
     post:
       tags:
         - Directory
-      summary: List Directory Contents
+      summary: List Directory
       description: List files and folders within a specified directory
       operationId: listDirectory
       parameters:
@@ -88,7 +91,7 @@ paths:
     post:
       tags:
         - Directory
-      summary: Execute Directory Actions
+      summary: Directory Actions
       description: Perform actions on files and folders such as get, create, update, delete, copy, move, and restore
       operationId: directoryAction
       parameters:
@@ -100,6 +103,172 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/DirectoryActionRequestBody"
+            examples:
+              getFile:
+                summary: Get File
+                value:
+                  actions:
+                    - action: "GET_FILE"
+                      target:
+                        resource_id: "FileID_abc123"
+                        resource_path: "/documents/project/file.txt"
+                      payload:
+                        share_track_hash: "track123"
+              getFolder:
+                summary: Get Folder
+                value:
+                  actions:
+                    - action: "GET_FOLDER"
+                      target:
+                        resource_id: "FolderID_xyz789"
+                        resource_path: "/documents/project/"
+                      payload:
+                        share_track_hash: "track456"
+              createFile:
+                summary: Create File
+                value:
+                  actions:
+                    - action: "CREATE_FILE"
+                      target:
+                        resource_id: "FolderID_xyz789"
+                        resource_path: "/documents/project/"
+                      payload:
+                        name: "example.txt"
+                        extension: "txt"
+                        tags: ["project", "documentation"]
+                        file_size: 1024
+                        raw_url: "https://example.com/file.txt"
+                        disk_id: "DiskID_abc123"
+                        expires_at: 1704067200000
+                        file_conflict_resolution: "KEEP_BOTH"
+                        has_sovereign_permissions: true
+                        external_id: "external-file-001"
+                        external_payload: '{"department": "engineering", "project": "alpha"}'
+              createFolder:
+                summary: Create Folder
+                value:
+                  actions:
+                    - action: "CREATE_FOLDER"
+                      target:
+                        resource_id: "FolderID_xyz789"
+                        resource_path: "/documents/"
+                      payload:
+                        name: "project-alpha"
+                        tags: ["project", "alpha"]
+                        disk_id: "DiskID_abc123"
+                        expires_at: 1704067200000
+                        file_conflict_resolution: "KEEP_BOTH"
+                        has_sovereign_permissions: true
+                        external_id: "external-folder-001"
+                        external_payload: '{"department": "engineering", "project": "alpha"}'
+              updateFile:
+                summary: Update File
+                value:
+                  actions:
+                    - action: "UPDATE_FILE"
+                      target:
+                        resource_id: "FileID_abc123"
+                        resource_path: "/documents/project/file.txt"
+                      payload:
+                        name: "updated-example.txt"
+                        tags: ["project", "updated"]
+                        raw_url: "https://example.com/updated-file.txt"
+                        expires_at: 1704067200000
+                        external_id: "external-file-001-updated"
+                        external_payload: '{"department": "engineering", "project": "alpha", "version": 2}'
+              updateFolder:
+                summary: Update Folder
+                value:
+                  actions:
+                    - action: "UPDATE_FOLDER"
+                      target:
+                        resource_id: "FolderID_xyz789"
+                        resource_path: "/documents/project/"
+                      payload:
+                        name: "project-beta"
+                        tags: ["project", "beta"]
+                        expires_at: 1704067200000
+                        external_id: "external-folder-001-updated"
+                        external_payload: '{"department": "engineering", "project": "beta"}'
+              deleteFile:
+                summary: Delete File
+                value:
+                  actions:
+                    - action: "DELETE_FILE"
+                      target:
+                        resource_id: "FileID_abc123"
+                        resource_path: "/documents/project/file.txt"
+                      payload:
+                        permanent: true
+              deleteFolder:
+                summary: Delete Folder
+                value:
+                  actions:
+                    - action: "DELETE_FOLDER"
+                      target:
+                        resource_id: "FolderID_xyz789"
+                        resource_path: "/documents/project/"
+                      payload:
+                        permanent: true
+              copyFile:
+                summary: Copy File
+                value:
+                  actions:
+                    - action: "COPY_FILE"
+                      target:
+                        resource_id: "FileID_abc123"
+                        resource_path: "/documents/project/file.txt"
+                      payload:
+                        destination_folder_id: "FolderID_new123"
+                        destination_folder_path: "/documents/archive/"
+                        file_conflict_resolution: "KEEP_BOTH"
+              copyFolder:
+                summary: Copy Folder
+                value:
+                  actions:
+                    - action: "COPY_FOLDER"
+                      target:
+                        resource_id: "FolderID_xyz789"
+                        resource_path: "/documents/project/"
+                      payload:
+                        destination_folder_id: "FolderID_new123"
+                        destination_folder_path: "/documents/archive/"
+                        file_conflict_resolution: "KEEP_BOTH"
+              moveFile:
+                summary: Move File
+                value:
+                  actions:
+                    - action: "MOVE_FILE"
+                      target:
+                        resource_id: "FileID_abc123"
+                        resource_path: "/documents/project/file.txt"
+                      payload:
+                        destination_folder_id: "FolderID_new123"
+                        destination_folder_path: "/documents/archive/"
+                        file_conflict_resolution: "KEEP_BOTH"
+              moveFolder:
+                summary: Move Folder
+                value:
+                  actions:
+                    - action: "MOVE_FOLDER"
+                      target:
+                        resource_id: "FolderID_xyz789"
+                        resource_path: "/documents/project/"
+                      payload:
+                        destination_folder_id: "FolderID_new123"
+                        destination_folder_path: "/documents/archive/"
+                        file_conflict_resolution: "KEEP_BOTH"
+              restoreTrash:
+                summary: Restore from Trash
+                value:
+                  actions:
+                    - action: "RESTORE_TRASH"
+                      target:
+                        resource_id: "FolderID_xyz789"
+                        resource_path: "/trash/project/"
+                      payload:
+                        file_conflict_resolution: "KEEP_BOTH"
+                        restore_to_folder_path: "/restored-files/project/"
       responses:
         "200":
           description: Actions successfully executed
@@ -119,12 +288,495 @@ paths:
                       - data
                 required:
                   - ok
+              examples:
+                getFileSuccess:
+                  summary: Get File Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-123"
+                          success: true
+                          request:
+                            action: "GET_FILE"
+                            target:
+                              resource_id: "FileID_abc123"
+                              resource_path: "/documents/project/file.txt"
+                            payload:
+                              share_track_hash: "track123"
+                          response:
+                            result:
+                              file:
+                                id: "FileID_abc123"
+                                name: "file.txt"
+                                folder_uuid: "FolderID_xyz789"
+                                file_version: 1
+                                extension: "txt"
+                                full_file_path: "/documents/project/file.txt"
+                                tags: ["project", "documentation"]
+                                created_by: "UserID_123"
+                                created_date_ms: 1672531200000
+                                disk_id: "DiskID_abc123"
+                                disk_type: "AwsBucket"
+                                file_size: 1024
+                                raw_url: "https://example.com/file.txt"
+                                last_updated_date_ms: 1672531200000
+                                last_updated_by: "UserID_123"
+                                deleted: false
+                                canister_id: "abc123xyz456"
+                                expires_at: 1704067200000
+                                has_sovereign_permissions: true
+                              permissions:
+                                - permission_id: "DirectoryPermissionID_123"
+                                  grant_type: "VIEW"
+                                - permission_id: "DirectoryPermissionID_456"
+                                  grant_type: "EDIT"
+                              requester_id: "UserID_123"
+                            error: null
+                createFileSuccess:
+                  summary: Create File Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-123"
+                          success: true
+                          request:
+                            action: "CREATE_FILE"
+                            target:
+                              resource_id: "FolderID_xyz789"
+                              resource_path: "/documents/project/"
+                            payload:
+                              name: "example.txt"
+                              extension: "txt"
+                              tags: ["project", "documentation"]
+                              file_size: 1024
+                              raw_url: "https://example.com/file.txt"
+                              disk_id: "DiskID_abc123"
+                              expires_at: 1704067200000
+                          response:
+                            result:
+                              file:
+                                id: "FileID_abc123"
+                                name: "example.txt"
+                                folder_uuid: "FolderID_xyz789"
+                                file_version: 1
+                                extension: "txt"
+                                full_file_path: "/documents/project/example.txt"
+                                tags: ["project", "documentation"]
+                                created_by: "UserID_123"
+                                created_date_ms: 1672531200000
+                                disk_id: "DiskID_abc123"
+                                disk_type: "AwsBucket"
+                                file_size: 1024
+                                raw_url: "https://example.com/file.txt"
+                                last_updated_date_ms: 1672531200000
+                                last_updated_by: "UserID_123"
+                                deleted: false
+                                canister_id: "abc123xyz456"
+                                expires_at: 1704067200000
+                                has_sovereign_permissions: true
+                              upload:
+                                url: "https://upload.example.com/presigned-url"
+                                fields:
+                                  key: "documents/project/example.txt"
+                                  policy: "base64-encoded-policy"
+                                  x-amz-signature: "signature-value"
+                              notes: "File created successfully"
+                            error: null
+                getFolderSuccess:
+                  summary: Get Folder Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-124"
+                          success: true
+                          request:
+                            action: "GET_FOLDER"
+                            target:
+                              resource_id: "FolderID_xyz789"
+                              resource_path: "/documents/project/"
+                            payload:
+                              share_track_hash: "track456"
+                          response:
+                            result:
+                              folder:
+                                id: "FolderID_xyz789"
+                                name: "project"
+                                parent_folder_uuid: "FolderID_root"
+                                subfolder_uuids:
+                                  ["FolderID_subdir1", "FolderID_subdir2"]
+                                file_uuids: ["FileID_abc123", "FileID_def456"]
+                                full_folder_path: "/documents/project/"
+                                tags: ["project", "active"]
+                                created_by: "UserID_123"
+                                created_date_ms: 1672531200000
+                                last_updated_date_ms: 1672531200000
+                                last_updated_by: "UserID_123"
+                                disk_id: "DiskID_abc123"
+                                deleted: false
+                                expires_at: 1704067200000
+                                canister_id: "abc123xyz456"
+                                has_sovereign_permissions: true
+                              permissions:
+                                - permission_id: "DirectoryPermissionID_123"
+                                  grant_type: "VIEW"
+                                - permission_id: "DirectoryPermissionID_456"
+                                  grant_type: "EDIT"
+                              requester_id: "UserID_123"
+                            error: null
+                createFolderSuccess:
+                  summary: Create Folder Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-125"
+                          success: true
+                          request:
+                            action: "CREATE_FOLDER"
+                            target:
+                              resource_id: "FolderID_xyz789"
+                              resource_path: "/documents/"
+                            payload:
+                              name: "project-alpha"
+                              tags: ["project", "alpha"]
+                              disk_id: "DiskID_abc123"
+                              expires_at: 1704067200000
+                          response:
+                            result:
+                              id: "FolderID_new123"
+                              name: "project-alpha"
+                              parent_folder_uuid: "FolderID_xyz789"
+                              subfolder_uuids: []
+                              file_uuids: []
+                              full_folder_path: "/documents/project-alpha/"
+                              tags: ["project", "alpha"]
+                              created_by: "UserID_123"
+                              created_date_ms: 1672531200000
+                              last_updated_date_ms: 1672531200000
+                              last_updated_by: "UserID_123"
+                              disk_id: "DiskID_abc123"
+                              deleted: false
+                              expires_at: 1704067200000
+                              canister_id: "abc123xyz456"
+                              has_sovereign_permissions: true
+                            error: null
+
+                updateFileSuccess:
+                  summary: Update File Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-126"
+                          success: true
+                          request:
+                            action: "UPDATE_FILE"
+                            target:
+                              resource_id: "FileID_abc123"
+                              resource_path: "/documents/project/file.txt"
+                            payload:
+                              name: "updated-example.txt"
+                              tags: ["project", "updated"]
+                              raw_url: "https://example.com/updated-file.txt"
+                          response:
+                            result:
+                              id: "FileID_abc123"
+                              name: "updated-example.txt"
+                              folder_uuid: "FolderID_xyz789"
+                              file_version: 2
+                              prior_version: "FileID_abc122"
+                              extension: "txt"
+                              full_file_path: "/documents/project/updated-example.txt"
+                              tags: ["project", "updated"]
+                              created_by: "UserID_123"
+                              created_date_ms: 1672531200000
+                              disk_id: "DiskID_abc123"
+                              disk_type: "AwsBucket"
+                              file_size: 1024
+                              raw_url: "https://example.com/updated-file.txt"
+                              last_updated_date_ms: 1674345600000
+                              last_updated_by: "UserID_123"
+                              deleted: false
+                              canister_id: "abc123xyz456"
+                              expires_at: 1704067200000
+                              has_sovereign_permissions: true
+                            error: null
+
+                updateFolderSuccess:
+                  summary: Update Folder Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-127"
+                          success: true
+                          request:
+                            action: "UPDATE_FOLDER"
+                            target:
+                              resource_id: "FolderID_xyz789"
+                              resource_path: "/documents/project/"
+                            payload:
+                              name: "project-beta"
+                              tags: ["project", "beta"]
+                          response:
+                            result:
+                              id: "FolderID_xyz789"
+                              name: "project-beta"
+                              parent_folder_uuid: "FolderID_root"
+                              subfolder_uuids:
+                                ["FolderID_subdir1", "FolderID_subdir2"]
+                              file_uuids: ["FileID_abc123", "FileID_def456"]
+                              full_folder_path: "/documents/project-beta/"
+                              tags: ["project", "beta"]
+                              created_by: "UserID_123"
+                              created_date_ms: 1672531200000
+                              last_updated_date_ms: 1674345600000
+                              last_updated_by: "UserID_123"
+                              disk_id: "DiskID_abc123"
+                              deleted: false
+                              expires_at: 1704067200000
+                              canister_id: "abc123xyz456"
+                              has_sovereign_permissions: true
+                            error: null
+
+                deleteFileSuccess:
+                  summary: Delete File Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-128"
+                          success: true
+                          request:
+                            action: "DELETE_FILE"
+                            target:
+                              resource_id: "FileID_abc123"
+                              resource_path: "/documents/project/file.txt"
+                            payload:
+                              permanent: false
+                          response:
+                            result:
+                              file_id: "FileID_abc123"
+                              path_to_trash: "/trash/documents/project/file.txt"
+                            error: null
+
+                deleteFolderSuccess:
+                  summary: Delete Folder Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-129"
+                          success: true
+                          request:
+                            action: "DELETE_FOLDER"
+                            target:
+                              resource_id: "FolderID_xyz789"
+                              resource_path: "/documents/project/"
+                            payload:
+                              permanent: false
+                          response:
+                            result:
+                              folder_id: "FolderID_xyz789"
+                              path_to_trash: "/trash/documents/project/"
+                              deleted_files: ["FileID_abc123", "FileID_def456"]
+                              deleted_folders:
+                                ["FolderID_subdir1", "FolderID_subdir2"]
+                            error: null
+
+                copyFileSuccess:
+                  summary: Copy File Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-130"
+                          success: true
+                          request:
+                            action: "COPY_FILE"
+                            target:
+                              resource_id: "FileID_abc123"
+                              resource_path: "/documents/project/file.txt"
+                            payload:
+                              destination_folder_id: "FolderID_new123"
+                              destination_folder_path: "/documents/archive/"
+                              file_conflict_resolution: "KEEP_BOTH"
+                          response:
+                            result:
+                              id: "FileID_copy123"
+                              name: "file.txt"
+                              folder_uuid: "FolderID_new123"
+                              file_version: 1
+                              extension: "txt"
+                              full_file_path: "/documents/archive/file.txt"
+                              tags: ["project", "documentation"]
+                              created_by: "UserID_123"
+                              created_date_ms: 1674345600000
+                              disk_id: "DiskID_abc123"
+                              disk_type: "AwsBucket"
+                              file_size: 1024
+                              raw_url: "https://example.com/file-copy.txt"
+                              last_updated_date_ms: 1674345600000
+                              last_updated_by: "UserID_123"
+                              deleted: false
+                              canister_id: "abc123xyz456"
+                              expires_at: 1704067200000
+                              has_sovereign_permissions: true
+                            error: null
+
+                copyFolderSuccess:
+                  summary: Copy Folder Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-131"
+                          success: true
+                          request:
+                            action: "COPY_FOLDER"
+                            target:
+                              resource_id: "FolderID_xyz789"
+                              resource_path: "/documents/project/"
+                            payload:
+                              destination_folder_id: "FolderID_new123"
+                              destination_folder_path: "/documents/archive/"
+                              file_conflict_resolution: "KEEP_BOTH"
+                          response:
+                            result:
+                              id: "FolderID_copy789"
+                              name: "project"
+                              parent_folder_uuid: "FolderID_new123"
+                              subfolder_uuids:
+                                ["FolderID_copysubdir1", "FolderID_copysubdir2"]
+                              file_uuids:
+                                ["FileID_copyabc123", "FileID_copydef456"]
+                              full_folder_path: "/documents/archive/project/"
+                              tags: ["project", "active"]
+                              created_by: "UserID_123"
+                              created_date_ms: 1674345600000
+                              last_updated_date_ms: 1674345600000
+                              last_updated_by: "UserID_123"
+                              disk_id: "DiskID_abc123"
+                              deleted: false
+                              expires_at: 1704067200000
+                              canister_id: "abc123xyz456"
+                              has_sovereign_permissions: true
+                            error: null
+
+                moveFileSuccess:
+                  summary: Move File Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-132"
+                          success: true
+                          request:
+                            action: "MOVE_FILE"
+                            target:
+                              resource_id: "FileID_abc123"
+                              resource_path: "/documents/project/file.txt"
+                            payload:
+                              destination_folder_id: "FolderID_new123"
+                              destination_folder_path: "/documents/archive/"
+                              file_conflict_resolution: "KEEP_BOTH"
+                          response:
+                            result:
+                              id: "FileID_abc123"
+                              name: "file.txt"
+                              folder_uuid: "FolderID_new123"
+                              file_version: 1
+                              extension: "txt"
+                              full_file_path: "/documents/archive/file.txt"
+                              tags: ["project", "documentation"]
+                              created_by: "UserID_123"
+                              created_date_ms: 1672531200000
+                              disk_id: "DiskID_abc123"
+                              disk_type: "AwsBucket"
+                              file_size: 1024
+                              raw_url: "https://example.com/file.txt"
+                              last_updated_date_ms: 1674345600000
+                              last_updated_by: "UserID_123"
+                              deleted: false
+                              canister_id: "abc123xyz456"
+                              expires_at: 1704067200000
+                              has_sovereign_permissions: true
+                            error: null
+
+                moveFolderSuccess:
+                  summary: Move Folder Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-133"
+                          success: true
+                          request:
+                            action: "MOVE_FOLDER"
+                            target:
+                              resource_id: "FolderID_xyz789"
+                              resource_path: "/documents/project/"
+                            payload:
+                              destination_folder_id: "FolderID_new123"
+                              destination_folder_path: "/documents/archive/"
+                              file_conflict_resolution: "KEEP_BOTH"
+                          response:
+                            result:
+                              id: "FolderID_xyz789"
+                              name: "project"
+                              parent_folder_uuid: "FolderID_new123"
+                              subfolder_uuids:
+                                ["FolderID_subdir1", "FolderID_subdir2"]
+                              file_uuids: ["FileID_abc123", "FileID_def456"]
+                              full_folder_path: "/documents/archive/project/"
+                              tags: ["project", "active"]
+                              created_by: "UserID_123"
+                              created_date_ms: 1672531200000
+                              last_updated_date_ms: 1674345600000
+                              last_updated_by: "UserID_123"
+                              disk_id: "DiskID_abc123"
+                              deleted: false
+                              expires_at: 1704067200000
+                              canister_id: "abc123xyz456"
+                              has_sovereign_permissions: true
+                            error: null
+
+                restoreTrashSuccess:
+                  summary: Restore from Trash Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-134"
+                          success: true
+                          request:
+                            action: "RESTORE_TRASH"
+                            target:
+                              resource_id: "FolderID_xyz789"
+                              resource_path: "/trash/project/"
+                            payload:
+                              file_conflict_resolution: "KEEP_BOTH"
+                              restore_to_folder_path: "/restored-files/project/"
+                          response:
+                            result:
+                              restored_files: ["FileID_abc123", "FileID_def456"]
+                              restored_folders:
+                                [
+                                  "FolderID_xyz789",
+                                  "FolderID_subdir1",
+                                  "FolderID_subdir2",
+                                ]
+                            error: null
+
         default:
           description: Error response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalidPermission:
+                  summary: Permission Denied Error
+                  value:
+                    err:
+                      code: 403
+                      message: "You don't have permission to perform this action"
+                resourceNotFound:
+                  summary: Resource Not Found Error
+                  value:
+                    err:
+                      code: 404
+                      message: "The requested resource could not be found"
       security:
         - BearerAuth: []
 
@@ -280,21 +932,10 @@ paths:
                 - $ref: "#/components/schemas/CreateContactRequest"
                 - $ref: "#/components/schemas/UpdateContactRequest"
               discriminator:
-                propertyName: id
-            examples:
-              create:
-                summary: Create a new contact
-                value:
-                  icp_principal: "xyz123abc456"
-                  nickname: "John Doe"
-                  public_note: "Project manager"
-                  evm_public_address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
-              update:
-                summary: Update an existing contact
-                value:
-                  id: "UserID_abc123"
-                  nickname: "Johnny D"
-                  public_note: "Senior Project Manager"
+                propertyName: action
+                mapping:
+                  create: "#/components/schemas/CreateContactRequest"
+                  update: "#/components/schemas/UpdateContactRequest"
       responses:
         "200":
           description: Contact successfully created or updated
@@ -804,20 +1445,10 @@ paths:
                 - $ref: "#/components/schemas/CreateDriveRequest"
                 - $ref: "#/components/schemas/UpdateDriveRequest"
               discriminator:
-                propertyName: id
-            examples:
-              create:
-                summary: Create a new drive
-                value:
-                  name: "Project Files"
-                  icp_principal: "abc123xyz456"
-                  public_note: "Main project storage"
-              update:
-                summary: Update an existing drive
-                value:
-                  id: "DriveID_abc123"
-                  name: "Updated Project Files"
-                  private_note: "Contains confidential data"
+                propertyName: action
+                mapping:
+                  create: "#/components/schemas/CreateDriveRequest"
+                  update: "#/components/schemas/UpdateDriveRequest"
       responses:
         "200":
           description: Drive successfully created or updated
@@ -1340,23 +1971,10 @@ paths:
                 - $ref: "#/components/schemas/CreateDirectoryPermissionRequest"
                 - $ref: "#/components/schemas/UpdateDirectoryPermissionRequest"
               discriminator:
-                propertyName: id
-            examples:
-              create:
-                summary: Create a new directory permission
-                value:
-                  resource_id: "FolderID_abc123"
-                  granted_to: "UserID_xyz789"
-                  permission_types: ["VIEW", "EDIT"]
-                  inheritable: true
-                  note: "Read and edit access to project folder"
-              update:
-                summary: Update an existing directory permission
-                value:
-                  id: "DirectoryPermissionID_abc123"
-                  permission_types: ["VIEW", "EDIT", "DELETE"]
-                  expiry_date_ms: 1688169600000
-                  note: "Updated access with deletion rights"
+                propertyName: action
+                mapping:
+                  create: "#/components/schemas/CreateDirectoryPermissionRequest"
+                  update: "#/components/schemas/UpdateDirectoryPermissionRequest"
       responses:
         "200":
           description: Directory permission successfully created or updated
@@ -1369,12 +1987,7 @@ paths:
                     type: object
                     properties:
                       data:
-                        type: object
-                        properties:
-                          permission:
-                            $ref: "#/components/schemas/DirectoryPermission"
-                        required:
-                          - permission
+                        $ref: "#/components/schemas/DirectoryPermission"
                     required:
                       - data
                 required:
@@ -1628,24 +2241,10 @@ paths:
                 - $ref: "#/components/schemas/CreateSystemPermissionRequest"
                 - $ref: "#/components/schemas/UpdateSystemPermissionRequest"
               discriminator:
-                propertyName: id
-            examples:
-              create:
-                summary: Create a new system permission
-                value:
-                  resource_id:
-                    type: "Table"
-                    value: "DRIVES"
-                  granted_to: "UserID_xyz789"
-                  permission_types: ["VIEW", "CREATE"]
-                  note: "Allow user to view and create drives"
-              update:
-                summary: Update an existing system permission
-                value:
-                  id: "SystemPermissionID_abc123"
-                  permission_types: ["VIEW", "CREATE", "UPDATE"]
-                  expiry_date_ms: 1688169600000
-                  note: "Updated with update permission"
+                propertyName: action
+                mapping:
+                  create: "#/components/schemas/CreateSystemPermissionRequest"
+                  update: "#/components/schemas/UpdateSystemPermissionRequest"
       responses:
         "200":
           description: System permission successfully created or updated
@@ -1658,12 +2257,7 @@ paths:
                     type: object
                     properties:
                       data:
-                        type: object
-                        properties:
-                          permission:
-                            $ref: "#/components/schemas/SystemPermission"
-                        required:
-                          - permission
+                        $ref: "#/components/schemas/SystemPermission"
                     required:
                       - data
                 required:
@@ -2012,20 +2606,10 @@ paths:
                 - $ref: "#/components/schemas/CreateTagRequest"
                 - $ref: "#/components/schemas/UpdateTagRequest"
               discriminator:
-                propertyName: id
-            examples:
-              create:
-                summary: Create a new tag
-                value:
-                  value: "Project-Alpha"
-                  description: "All files related to Project Alpha"
-                  color: "#4287f5"
-              update:
-                summary: Update an existing tag
-                value:
-                  id: "TagID_abc123"
-                  color: "#ff7700"
-                  description: "Updated description for Project Alpha"
+                propertyName: action
+                mapping:
+                  create: "#/components/schemas/CreateTagRequest"
+                  update: "#/components/schemas/UpdateTagRequest"
       responses:
         "200":
           description: Tag successfully created or updated
@@ -2132,7 +2716,7 @@ paths:
                   description: ID of the tag
                 resource_id:
                   type: string
-                  description: ID of the resource to tag or untag. can be any id type
+                  description: ID of the resource to tag or untag (can be any ID)
                   example: "DriveID_abc123"
                 add:
                   type: boolean
@@ -2141,6 +2725,19 @@ paths:
                 - tag_id
                 - resource_id
                 - add
+            examples:
+              addExample:
+                summary: "Add Tag"
+                value:
+                  tag_id: "TagID_abc123"
+                  resource_id: "DriveID_xyz789"
+                  add: true
+              removeExample:
+                summary: "Remove Tag"
+                value:
+                  tag_id: "TagID_abc123"
+                  resource_id: "DriveID_xyz789"
+                  add: false
       responses:
         "200":
           description: Tag operation completed successfully
@@ -2332,20 +2929,10 @@ paths:
                 - $ref: "#/components/schemas/CreateTeamRequest"
                 - $ref: "#/components/schemas/UpdateTeamRequest"
               discriminator:
-                propertyName: id
-            examples:
-              create:
-                summary: Create a new team
-                value:
-                  name: "Product Development"
-                  public_note: "Core product development team"
-                  url_endpoint: "https://teams.officex.app/product-dev"
-              update:
-                summary: Update an existing team
-                value:
-                  id: "TeamID_abc123"
-                  name: "Product & Design"
-                  private_note: "Updated team structure"
+                propertyName: action
+                mapping:
+                  create: "#/components/schemas/CreateTeamRequest"
+                  update: "#/components/schemas/UpdateTeamRequest"
       responses:
         "200":
           description: Team successfully created or updated
@@ -2653,22 +3240,10 @@ paths:
                 - $ref: "#/components/schemas/CreateTeamInviteRequest"
                 - $ref: "#/components/schemas/UpdateTeamInviteRequest"
               discriminator:
-                propertyName: id
-            examples:
-              create:
-                summary: Create a new team invite
-                value:
-                  team_id: "TeamID_abc123"
-                  invitee_id: "UserID_xyz789"
-                  role: "MEMBER"
-                  note: "Invitation to join the project team"
-                  expires_at: 1672531200000
-              update:
-                summary: Update an existing team invite
-                value:
-                  id: "TeamInviteID_abc123"
-                  role: "ADMIN"
-                  note: "Upgraded to admin role"
+                propertyName: action
+                mapping:
+                  create: "#/components/schemas/CreateTeamInviteRequest"
+                  update: "#/components/schemas/UpdateTeamInviteRequest"
       responses:
         "200":
           description: Team invite successfully created or updated
@@ -2962,23 +3537,10 @@ paths:
                 - $ref: "#/components/schemas/CreateWebhookRequest"
                 - $ref: "#/components/schemas/UpdateWebhookRequest"
               discriminator:
-                propertyName: id
-            examples:
-              create:
-                summary: Create a new webhook
-                value:
-                  alt_index: "file-updates"
-                  url: "https://example.com/webhooks/file-updated"
-                  event: "FILE_UPDATED"
-                  signature: "sha256-hash"
-                  description: "Notify when files are updated"
-              update:
-                summary: Update an existing webhook
-                value:
-                  id: "WebhookID_abc123"
-                  url: "https://updated-example.com/webhooks/callback"
-                  active: false
-                  description: "Temporarily disabled webhook"
+                propertyName: action
+                mapping:
+                  create: "#/components/schemas/CreateWebhookRequest"
+                  update: "#/components/schemas/UpdateWebhookRequest"
       responses:
         "200":
           description: Webhook successfully created or updated
@@ -3166,21 +3728,10 @@ paths:
                 - $ref: "#/components/schemas/CreateApiKeyRequest"
                 - $ref: "#/components/schemas/UpdateApiKeyRequest"
               discriminator:
-                propertyName: id
-            examples:
-              create:
-                summary: Create a new API key
-                value:
-                  name: "Development API Key"
-                  user_id: "UserID_abc123"
-                  expires_at: 1703980800000
-              update:
-                summary: Update an existing API key
-                value:
-                  id: "ApiKeyID_abc123"
-                  name: "Production API Key"
-                  is_revoked: false
-                  expires_at: -1
+                propertyName: action
+                mapping:
+                  create: "#/components/schemas/CreateApiKeyRequest"
+                  update: "#/components/schemas/UpdateApiKeyRequest"
       responses:
         "200":
           description: API key successfully created or updated
@@ -4139,17 +4690,6 @@ components:
       description: Unique identifier for a system permission
       example: "SystemPermissionID_abc123"
 
-    DirectoryActionRequestBody:
-      type: object
-      properties:
-        actions:
-          type: array
-          description: List of directory actions to execute
-          items:
-            $ref: "#/components/schemas/DirectoryAction"
-      required:
-        - actions
-
     ListDirectoryRequest:
       type: object
       properties:
@@ -4218,178 +4758,444 @@ components:
     DirectoryAction:
       type: object
       description: Action to perform on a directory resource
-      oneOf:
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [GET_FILE]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/GetFilePayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [GET_FOLDER]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/GetFolderPayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [CREATE_FILE]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/CreateFilePayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [CREATE_FOLDER]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/CreateFolderPayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [UPDATE_FILE]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/UpdateFilePayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [UPDATE_FOLDER]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/UpdateFolderPayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [DELETE_FILE]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/DeleteFilePayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [DELETE_FOLDER]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/DeleteFolderPayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [COPY_FILE]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/CopyFilePayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [COPY_FOLDER]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/CopyFolderPayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [MOVE_FILE]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/MoveFilePayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [MOVE_FOLDER]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/MoveFolderPayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [RESTORE_TRASH]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/RestoreTrashPayload"
-          required:
-            - action
-            - target
-            - payload
       discriminator:
         propertyName: action
+        mapping:
+          GET_FILE: "#/components/schemas/GetFileAction"
+          GET_FOLDER: "#/components/schemas/GetFolderAction"
+          CREATE_FILE: "#/components/schemas/CreateFileAction"
+          CREATE_FOLDER: "#/components/schemas/CreateFolderAction"
+          UPDATE_FILE: "#/components/schemas/UpdateFileAction"
+          UPDATE_FOLDER: "#/components/schemas/UpdateFolderAction"
+          DELETE_FILE: "#/components/schemas/DeleteFileAction"
+          DELETE_FOLDER: "#/components/schemas/DeleteFolderAction"
+          COPY_FILE: "#/components/schemas/CopyFileAction"
+          COPY_FOLDER: "#/components/schemas/CopyFolderAction"
+          MOVE_FILE: "#/components/schemas/MoveFileAction"
+          MOVE_FOLDER: "#/components/schemas/MoveFolderAction"
+          RESTORE_TRASH: "#/components/schemas/RestoreTrashAction"
+      oneOf:
+        - $ref: "#/components/schemas/GetFileAction"
+        - $ref: "#/components/schemas/GetFolderAction"
+        - $ref: "#/components/schemas/CreateFileAction"
+        - $ref: "#/components/schemas/CreateFolderAction"
+        - $ref: "#/components/schemas/UpdateFileAction"
+        - $ref: "#/components/schemas/UpdateFolderAction"
+        - $ref: "#/components/schemas/DeleteFileAction"
+        - $ref: "#/components/schemas/DeleteFolderAction"
+        - $ref: "#/components/schemas/CopyFileAction"
+        - $ref: "#/components/schemas/CopyFolderAction"
+        - $ref: "#/components/schemas/MoveFileAction"
+        - $ref: "#/components/schemas/MoveFolderAction"
+        - $ref: "#/components/schemas/RestoreTrashAction"
+
+    DirectoryActionRequestBody:
+      type: object
+      properties:
+        actions:
+          type: array
+          description: List of directory actions to execute
+          items:
+            $ref: "#/components/schemas/DirectoryAction"
+      required:
+        - actions
+      example:
+        actions:
+          - action: "GET_FILE"
+            target:
+              resource_id: "FileID_abc123"
+              resource_path: "/documents/project/file.txt"
+            payload:
+              share_track_hash: "track123"
+
+    GetFileAction:
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["GET_FILE"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/GetFilePayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "GET_FILE"
+        target:
+          resource_id: "FileID_abc123"
+          resource_path: "/documents/project/file.txt"
+        payload:
+          share_track_hash: "track123"
+
+    GetFileResponse:
+      type: object
+      properties:
+        file:
+          $ref: "#/components/schemas/FileRecord"
+        permissions:
+          type: array
+          items:
+            $ref: "#/components/schemas/DirectoryResourcePermissionFE"
+        requester_id:
+          $ref: "#/components/schemas/UserID"
+      required:
+        - file
+        - permissions
+        - requester_id
+
+    # Update GetFolderAction Schema
+    GetFolderAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["GET_FOLDER"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/GetFolderPayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "GET_FOLDER"
+        target:
+          resource_id: "FolderID_xyz789"
+          resource_path: "/documents/project/"
+        payload:
+          share_track_hash: "track456"
+
+    GetFolderResponse:
+      type: object
+      properties:
+        folder:
+          $ref: "#/components/schemas/FolderRecord"
+        permissions:
+          type: array
+          items:
+            $ref: "#/components/schemas/DirectoryResourcePermissionFE"
+        requester_id:
+          $ref: "#/components/schemas/UserID"
+      required:
+        - folder
+        - permissions
+        - requester_id
+
+    # Update CreateFileAction Schema
+    CreateFileAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["CREATE_FILE"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/CreateFilePayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "CREATE_FILE"
+        target:
+          resource_id: "FolderID_xyz789"
+          resource_path: "/documents/project/"
+        payload:
+          name: "example.txt"
+          extension: "txt"
+          tags: ["project", "documentation"]
+          file_size: 1024
+          raw_url: "https://example.com/file.txt"
+          disk_id: "DiskID_abc123"
+          expires_at: 1704067200000
+          file_conflict_resolution: "KEEP_BOTH"
+          has_sovereign_permissions: true
+          external_id: "external-file-001"
+          external_payload: '{"department": "engineering", "project": "alpha"}'
+
+    # Update CreateFolderAction Schema
+    CreateFolderAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["CREATE_FOLDER"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/CreateFolderPayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "CREATE_FOLDER"
+        target:
+          resource_id: "FolderID_xyz789"
+          resource_path: "/documents/"
+        payload:
+          name: "project-alpha"
+          tags: ["project", "alpha"]
+          disk_id: "DiskID_abc123"
+          expires_at: 1704067200000
+          file_conflict_resolution: "KEEP_BOTH"
+          has_sovereign_permissions: true
+          external_id: "external-folder-001"
+          external_payload: '{"department": "engineering", "project": "alpha"}'
+
+    # Update UpdateFileAction Schema
+    UpdateFileAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["UPDATE_FILE"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/UpdateFilePayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "UPDATE_FILE"
+        target:
+          resource_id: "FileID_abc123"
+          resource_path: "/documents/project/file.txt"
+        payload:
+          name: "updated-example.txt"
+          tags: ["project", "updated"]
+          raw_url: "https://example.com/updated-file.txt"
+          expires_at: 1704067200000
+          external_id: "external-file-001-updated"
+          external_payload: '{"department": "engineering", "project": "alpha", "version": 2}'
+
+    # Update UpdateFolderAction Schema
+    UpdateFolderAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["UPDATE_FOLDER"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/UpdateFolderPayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "UPDATE_FOLDER"
+        target:
+          resource_id: "FolderID_xyz789"
+          resource_path: "/documents/project/"
+        payload:
+          name: "project-beta"
+          tags: ["project", "beta"]
+          expires_at: 1704067200000
+          external_id: "external-folder-001-updated"
+          external_payload: '{"department": "engineering", "project": "beta"}'
+
+    # Update DeleteFileAction Schema
+    DeleteFileAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["DELETE_FILE"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/DeleteFilePayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "DELETE_FILE"
+        target:
+          resource_id: "FileID_abc123"
+          resource_path: "/documents/project/file.txt"
+        payload:
+          permanent: true
+
+    # Update DeleteFolderAction Schema
+    DeleteFolderAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["DELETE_FOLDER"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/DeleteFolderPayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "DELETE_FOLDER"
+        target:
+          resource_id: "FolderID_xyz789"
+          resource_path: "/documents/project/"
+        payload:
+          permanent: true
+
+    # Update CopyFileAction Schema
+    CopyFileAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["COPY_FILE"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/CopyFilePayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "COPY_FILE"
+        target:
+          resource_id: "FileID_abc123"
+          resource_path: "/documents/project/file.txt"
+        payload:
+          destination_folder_id: "FolderID_new123"
+          destination_folder_path: "/documents/archive/"
+          file_conflict_resolution: "KEEP_BOTH"
+
+    # Update CopyFolderAction Schema
+    CopyFolderAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["COPY_FOLDER"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/CopyFolderPayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "COPY_FOLDER"
+        target:
+          resource_id: "FolderID_xyz789"
+          resource_path: "/documents/project/"
+        payload:
+          destination_folder_id: "FolderID_new123"
+          destination_folder_path: "/documents/archive/"
+          file_conflict_resolution: "KEEP_BOTH"
+
+    # Update MoveFileAction Schema
+    MoveFileAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["MOVE_FILE"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/MoveFilePayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "MOVE_FILE"
+        target:
+          resource_id: "FileID_abc123"
+          resource_path: "/documents/project/file.txt"
+        payload:
+          destination_folder_id: "FolderID_new123"
+          destination_folder_path: "/documents/archive/"
+          file_conflict_resolution: "KEEP_BOTH"
+
+    # Update MoveFolderAction Schema
+    MoveFolderAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["MOVE_FOLDER"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/MoveFolderPayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "MOVE_FOLDER"
+        target:
+          resource_id: "FolderID_xyz789"
+          resource_path: "/documents/project/"
+        payload:
+          destination_folder_id: "FolderID_new123"
+          destination_folder_path: "/documents/archive/"
+          file_conflict_resolution: "KEEP_BOTH"
+
+    # Update RestoreTrashAction Schema
+    RestoreTrashAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["RESTORE_TRASH"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/RestoreTrashPayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "RESTORE_TRASH"
+        target:
+          resource_id: "FolderID_xyz789"
+          resource_path: "/trash/project/"
+        payload:
+          file_conflict_resolution: "KEEP_BOTH"
+          restore_to_folder_path: "/restored-files/project/"
 
     DirectoryActionEnum:
       type: string
@@ -4708,11 +5514,14 @@ components:
           description: Result data for successful actions
           nullable: true
           oneOf:
+            - $ref: "#/components/schemas/FileRecord"
+            - $ref: "#/components/schemas/FolderRecord"
             - $ref: "#/components/schemas/GetFileResponse"
             - $ref: "#/components/schemas/GetFolderResponse"
             - $ref: "#/components/schemas/CreateFileResponse"
-            - $ref: "#/components/schemas/FileRecord"
-            - $ref: "#/components/schemas/FolderRecord"
+            - $ref: "#/components/schemas/CreateFolderResponse"
+            - $ref: "#/components/schemas/UpdateFileResponse"
+            - $ref: "#/components/schemas/UpdateFolderResponse"
             - $ref: "#/components/schemas/DeleteFileResponse"
             - $ref: "#/components/schemas/DeleteFolderResponse"
             - $ref: "#/components/schemas/RestoreTrashResponse"
@@ -4732,38 +5541,6 @@ components:
       required:
         - result
         - error
-
-    GetFileResponse:
-      type: object
-      properties:
-        file:
-          $ref: "#/components/schemas/FileRecord"
-        permissions:
-          type: array
-          items:
-            $ref: "#/components/schemas/DirectoryResourcePermissionFE"
-        requester_id:
-          $ref: "#/components/schemas/UserID"
-      required:
-        - file
-        - permissions
-        - requester_id
-
-    GetFolderResponse:
-      type: object
-      properties:
-        folder:
-          $ref: "#/components/schemas/FolderRecord"
-        permissions:
-          type: array
-          items:
-            $ref: "#/components/schemas/DirectoryResourcePermissionFE"
-        requester_id:
-          $ref: "#/components/schemas/UserID"
-      required:
-        - folder
-        - permissions
-        - requester_id
 
     CreateFileResponse:
       type: object
@@ -5090,11 +5867,15 @@ components:
         external_id: "ext-disk-001-updated"
         external_payload: '{"department": "engineering", "cost_center": "cc-67890", "project_id": "p-123456", "updated": true}'
 
-    # Contact Request Schemas
     CreateContactRequest:
       type: object
+      title: Create a new contact
       description: Create a new contact
       properties:
+        action:
+          type: string
+          enum: ["create"]
+          default: "create"
         icp_principal:
           $ref: "#/components/schemas/ICPPrincipalString"
         nickname:
@@ -5126,18 +5907,28 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - icp_principal
         - nickname
       example:
+        action: "create"
         icp_principal: "xyz123abc456"
         nickname: "John Doe"
-        public_note: "Project manager"
         evm_public_address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
+        public_note: "Project manager for Alpha team"
+        private_note: "Primary contact for urgent issues"
+        external_id: "emp-1234"
+        external_payload: '{"department": "product", "title": "Senior Project Manager", "location": "Remote"}'
 
     UpdateContactRequest:
       type: object
+      title: Update an existing contact
       description: Update an existing contact
       properties:
+        action:
+          type: string
+          enum: ["update"]
+          default: "update"
         id:
           $ref: "#/components/schemas/UserID"
           description: ID of the contact to update
@@ -5162,6 +5953,7 @@ components:
           nullable: true
         icp_principal:
           $ref: "#/components/schemas/ICPPrincipalString"
+          nullable: true
         external_id:
           $ref: "#/components/schemas/ExternalID"
           description: External identifier
@@ -5173,17 +5965,28 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - id
       example:
+        action: "update"
         id: "UserID_abc123"
-        nickname: "Johnny D"
-        public_note: "Senior Project Manager"
+        nickname: "Johnny Doe"
+        public_note: "Senior Project Manager for Beta team"
+        private_note: "Recently promoted, great communicator"
+        evm_public_address: "0x82D7656EC7ab88b098defB751B7401B5f6d8976F"
+        icp_principal: "xyz123abc456"
+        external_id: "emp-1234-updated"
+        external_payload: '{"department": "product", "title": "Lead Project Manager", "location": "Remote", "updated": true}'
 
     # Drive Request Schemas
     CreateDriveRequest:
       type: object
       description: Create a new drive
       properties:
+        action:
+          type: string
+          enum: ["create"]
+          default: "create"
         name:
           type: string
           description: Name for the drive
@@ -5216,16 +6019,26 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - name
       example:
+        action: "create"
         name: "Project Files"
         icp_principal: "abc123xyz456"
         public_note: "Main project storage"
+        private_note: "Contains confidential data"
+        url_endpoint: "https://drive.officex.app/project-files"
+        external_id: "ext-drive-001"
+        external_payload: '{"department": "engineering", "project": "alpha"}'
 
     UpdateDriveRequest:
       type: object
       description: Update an existing drive
       properties:
+        action:
+          type: string
+          enum: ["update"]
+          default: "update"
         id:
           $ref: "#/components/schemas/DriveID"
           description: ID of the drive to update
@@ -5246,6 +6059,7 @@ components:
           nullable: true
         icp_principal:
           $ref: "#/components/schemas/ICPPrincipalString"
+          nullable: true
         url_endpoint:
           type: string
           description: URL endpoint for the drive
@@ -5262,17 +6076,25 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - id
       example:
+        action: "update"
         id: "DriveID_abc123"
         name: "Updated Project Files"
         private_note: "Contains confidential data"
+        external_id: "ext-drive-001-updated"
+        external_payload: '{"department": "engineering", "project": "alpha", "updated": true}'
 
     # Team Request Schemas
     CreateTeamRequest:
       type: object
       description: Create a new team
       properties:
+        action:
+          type: string
+          enum: ["create"]
+          default: "create"
         name:
           type: string
           description: Name for the team
@@ -5303,16 +6125,24 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - name
       example:
+        action: "create"
         name: "Product Development"
         public_note: "Core product development team"
         url_endpoint: "https://teams.officex.app/product-dev"
+        external_id: "ext-team-001"
+        external_payload: '{"department": "engineering", "project": "alpha"}'
 
     UpdateTeamRequest:
       type: object
       description: Update an existing team
       properties:
+        action:
+          type: string
+          enum: ["update"]
+          default: "update"
         id:
           $ref: "#/components/schemas/TeamID"
           description: ID of the team to update
@@ -5347,17 +6177,25 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - id
       example:
+        action: "update"
         id: "TeamID_abc123"
         name: "Product & Design"
         private_note: "Updated team structure"
+        external_id: "ext-team-001-updated"
+        external_payload: '{"department": "engineering", "project": "alpha", "updated": true}'
 
     # Team Invite Request Schemas
     CreateTeamInviteRequest:
       type: object
       description: Create a new team invite
       properties:
+        action:
+          type: string
+          enum: ["create"]
+          default: "create"
         team_id:
           $ref: "#/components/schemas/TeamID"
           description: ID of the team for the invite
@@ -5395,19 +6233,27 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - team_id
         - role
       example:
+        action: "create"
         team_id: "TeamID_abc123"
         invitee_id: "UserID_xyz789"
         role: "MEMBER"
         note: "Invitation to join the project team"
         expires_at: 1672531200000
+        external_id: "ext-invite-001"
+        external_payload: '{"department": "engineering", "project": "alpha"}'
 
     UpdateTeamInviteRequest:
       type: object
       description: Update an existing team invite
       properties:
+        action:
+          type: string
+          enum: ["update"]
+          default: "update"
         id:
           $ref: "#/components/schemas/TeamInviteID"
           description: ID of the invite to update
@@ -5442,20 +6288,32 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - id
       example:
+        action: "update"
         id: "TeamInviteID_abc123"
         role: "ADMIN"
         note: "Upgraded to admin role"
+        external_id: "ext-invite-001-updated"
+        external_payload: '{"department": "engineering", "project": "alpha", "updated": true}'
 
     # Tag Request Schemas
     CreateTagRequest:
       type: object
+      title: Create a new tag
       description: Create a new tag
       properties:
+        action:
+          type: string
+          enum: ["create"]
+          default: "create"
+          description: |
+            Must be `"create"`. This indicates to the UI or backend that this
+            request is for creating a new Tag.
         value:
           type: string
-          description: The tag value
+          description: The tag value (e.g., "Project-Alpha")
           maxLength: 256
         description:
           type: string
@@ -5478,21 +6336,33 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - value
       example:
+        action: "create"
         value: "Project-Alpha"
         description: "All files related to Project Alpha"
         color: "#4287f5"
+        external_id: "ext-tag-001"
+        external_payload: '{"team": "alpha", "some_field": "some_value"}'
 
     UpdateTagRequest:
       type: object
+      title: Update an existing tag
       description: Update an existing tag
       properties:
+        action:
+          type: string
+          enum: ["update"]
+          default: "update"
+          description: |
+            Must be `"update"`. This indicates to the UI or backend that this
+            request is for updating an existing Tag.
         id:
           $ref: "#/components/schemas/TagID"
           description: ID of the tag to update
         value:
-          $ref: "#/components/schemas/TagValue"
+          type: string
           description: New value for the tag
           maxLength: 256
           nullable: true
@@ -5517,17 +6387,29 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - id
       example:
+        action: "update"
         id: "TagID_abc123"
+        value: "Project-Beta"
         color: "#ff7700"
-        description: "Updated description for Project Alpha"
+        description: "Updated description for the Beta project"
+        external_id: "ext-tag-001-updated"
+        external_payload: '{"team": "beta", "updated_field": true}'
 
     # Webhook Request Schemas
     CreateWebhookRequest:
       type: object
+      title: Create a new webhook
       description: Create a new webhook
       properties:
+        action:
+          type: string
+          enum: ["create"]
+          default: "create"
+          description: |
+            Must be `"create"`. Indicates this request is for creating a new Webhook.
         alt_index:
           type: string
           description: Alternative index for the webhook
@@ -5566,20 +6448,32 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - alt_index
         - url
         - event
       example:
+        action: "create"
         alt_index: "file-updates"
         url: "https://example.com/webhooks/file-updated"
         event: "FILE_UPDATED"
         signature: "sha256-hash"
         description: "Notify when files are updated"
+        filters: "team=engineering"
+        external_id: "ext-webhook-001"
+        external_payload: '{"department": "engineering", "webhookType": "fileUpdates"}'
 
     UpdateWebhookRequest:
       type: object
+      title: Update an existing webhook
       description: Update an existing webhook
       properties:
+        action:
+          type: string
+          enum: ["update"]
+          default: "update"
+          description: |
+            Must be `"update"`. Indicates this request is for updating an existing Webhook.
         id:
           $ref: "#/components/schemas/WebhookID"
           description: ID of the webhook to update
@@ -5618,18 +6512,27 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - id
       example:
+        action: "update"
         id: "WebhookID_abc123"
         url: "https://updated-example.com/webhooks/callback"
         active: false
         description: "Temporarily disabled webhook"
+        filters: "team=marketing"
+        external_id: "ext-webhook-001-updated"
+        external_payload: '{"department": "marketing", "webhookType": "fileUpdates", "disabledReason": "maintenance"}'
 
-    # API Key Request Schemas
     CreateApiKeyRequest:
       type: object
+      title: Create a new API key
       description: Create a new API key
       properties:
+        action:
+          type: string
+          enum: ["create"]
+          default: "create"
         name:
           type: string
           description: Name for the API key
@@ -5654,16 +6557,25 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - name
       example:
+        action: "create"
         name: "Development API Key"
         user_id: "UserID_abc123"
         expires_at: 1703980800000
+        external_id: "ext-key-001"
+        external_payload: '{"department": "engineering", "purpose": "backend-integration"}'
 
     UpdateApiKeyRequest:
       type: object
+      title: Update an existing API key
       description: Update an existing API key
       properties:
+        action:
+          type: string
+          enum: ["update"]
+          default: "update"
         id:
           $ref: "#/components/schemas/ApiKeyID"
           description: ID of the API key to update
@@ -5693,18 +6605,26 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - id
       example:
+        action: "update"
         id: "ApiKeyID_abc123"
         name: "Production API Key"
         is_revoked: false
         expires_at: -1
+        external_id: "ext-key-001-prod"
+        external_payload: '{"department": "engineering", "purpose": "production-access", "approved_by": "manager-id-123"}'
 
     # Directory Permission Request Schemas
     CreateDirectoryPermissionRequest:
       type: object
       description: Create a new directory permission
       properties:
+        action:
+          type: string
+          enum: ["create"]
+          default: "create"
         resource_id:
           $ref: "#/components/schemas/DirectoryResourceID"
           description: ID of the resource to grant permission for
@@ -5751,19 +6671,31 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - resource_id
         - permission_types
       example:
+        action: "create"
         resource_id: "FolderID_abc123"
         granted_to: "UserID_xyz789"
         permission_types: ["VIEW", "EDIT"]
+        begin_date_ms: 1672531200000
+        expiry_date_ms: 1688169600000
         inheritable: true
         note: "Read and edit access to project folder"
+        metadata:
+          custom_field: "custom_value"
+        external_id: "ext-perm-001"
+        external_payload: '{"department": "engineering", "project": "alpha"}'
 
     UpdateDirectoryPermissionRequest:
       type: object
       description: Update an existing directory permission
       properties:
+        action:
+          type: string
+          enum: ["update"]
+          default: "update"
         id:
           $ref: "#/components/schemas/DirectoryPermissionID"
           description: ID of the permission to update
@@ -5816,18 +6748,27 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - id
       example:
+        action: "update"
         id: "DirectoryPermissionID_abc123"
         permission_types: ["VIEW", "EDIT", "DELETE"]
         expiry_date_ms: 1688169600000
         note: "Updated access with deletion rights"
+        metadata:
+          custom_field: "updated_value"
+        external_id: "ext-perm-001-updated"
+        external_payload: '{"department": "engineering", "project": "alpha", "updated": true}'
 
-    # System Permission Request Schemas
     CreateSystemPermissionRequest:
       type: object
       description: Create a new system permission
       properties:
+        action:
+          type: string
+          enum: ["create"]
+          default: "create"
         resource_id:
           $ref: "#/components/schemas/SystemResourceID"
           description: ID of the resource to grant permission for
@@ -5871,20 +6812,32 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - resource_id
         - permission_types
       example:
+        action: "create"
         resource_id:
           type: "Table"
           value: "DRIVES"
         granted_to: "UserID_xyz789"
         permission_types: ["VIEW", "CREATE"]
+        begin_date_ms: 1672531200000
+        expiry_date_ms: 1688169600000
         note: "Allow user to view and create drives"
+        metadata:
+          custom_field: "custom_value"
+        external_id: "ext-perm-002"
+        external_payload: '{"department": "engineering", "project": "alpha"}'
 
     UpdateSystemPermissionRequest:
       type: object
       description: Update an existing system permission
       properties:
+        action:
+          type: string
+          enum: ["update"]
+          default: "update"
         id:
           $ref: "#/components/schemas/SystemPermissionID"
           description: ID of the permission to update
@@ -5933,12 +6886,18 @@ components:
           maxLength: 8192
           nullable: true
       required:
+        - action
         - id
       example:
+        action: "update"
         id: "SystemPermissionID_abc123"
         permission_types: ["VIEW", "CREATE", "UPDATE"]
         expiry_date_ms: 1688169600000
         note: "Updated with update permission"
+        metadata:
+          custom_field: "updated_value"
+        external_id: "ext-perm-002-updated"
+        external_payload: '{"department": "engineering", "project": "alpha", "updated": true}'
 
     # Common error response
     ErrorResponse:
