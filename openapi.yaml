@@ -4627,6 +4627,11 @@ components:
       description: Unique identifier for a disk
       example: "DiskID_abc123"
 
+    DriveID:
+      type: string
+      description: Unique identifier for a drive
+      example: "DriveID_abc123"
+
     TagID:
       type: string
       description: Unique identifier for a tag
@@ -4636,6 +4641,11 @@ components:
       type: string
       description: Unique identifier for a webhook
       example: "WebhookID_abc123"
+
+    StateDiffRecordID:
+      type: string
+      description: Unique identifier for a state diff record
+      example: "StateDiffRecordID_abc123"
 
     DirectoryResourceID:
       type: string
