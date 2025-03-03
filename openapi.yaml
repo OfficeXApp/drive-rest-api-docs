@@ -11,6 +11,9 @@ tags:
   - name: Directory
     description: Operations for managing files and folders
 
+  - name: Directory Actions
+    description: Data types and models used throughout the API. See POST /directory/actions
+
   - name: Contacts
     description: Operations for managing contacts
 
@@ -46,7 +49,7 @@ paths:
     post:
       tags:
         - Directory
-      summary: List Directory Contents
+      summary: List Directory
       description: List files and folders within a specified directory
       operationId: listDirectory
       parameters:
@@ -88,7 +91,7 @@ paths:
     post:
       tags:
         - Directory
-      summary: Execute Directory Actions
+      summary: Directory Actions
       description: Perform actions on files and folders such as get, create, update, delete, copy, move, and restore
       operationId: directoryAction
       parameters:
@@ -100,6 +103,172 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/DirectoryActionRequestBody"
+            examples:
+              getFile:
+                summary: Get File
+                value:
+                  actions:
+                    - action: "GET_FILE"
+                      target:
+                        resource_id: "FileID_abc123"
+                        resource_path: "/documents/project/file.txt"
+                      payload:
+                        share_track_hash: "track123"
+              getFolder:
+                summary: Get Folder
+                value:
+                  actions:
+                    - action: "GET_FOLDER"
+                      target:
+                        resource_id: "FolderID_xyz789"
+                        resource_path: "/documents/project/"
+                      payload:
+                        share_track_hash: "track456"
+              createFile:
+                summary: Create File
+                value:
+                  actions:
+                    - action: "CREATE_FILE"
+                      target:
+                        resource_id: "FolderID_xyz789"
+                        resource_path: "/documents/project/"
+                      payload:
+                        name: "example.txt"
+                        extension: "txt"
+                        tags: ["project", "documentation"]
+                        file_size: 1024
+                        raw_url: "https://example.com/file.txt"
+                        disk_id: "DiskID_abc123"
+                        expires_at: 1704067200000
+                        file_conflict_resolution: "KEEP_BOTH"
+                        has_sovereign_permissions: true
+                        external_id: "external-file-001"
+                        external_payload: '{"department": "engineering", "project": "alpha"}'
+              createFolder:
+                summary: Create Folder
+                value:
+                  actions:
+                    - action: "CREATE_FOLDER"
+                      target:
+                        resource_id: "FolderID_xyz789"
+                        resource_path: "/documents/"
+                      payload:
+                        name: "project-alpha"
+                        tags: ["project", "alpha"]
+                        disk_id: "DiskID_abc123"
+                        expires_at: 1704067200000
+                        file_conflict_resolution: "KEEP_BOTH"
+                        has_sovereign_permissions: true
+                        external_id: "external-folder-001"
+                        external_payload: '{"department": "engineering", "project": "alpha"}'
+              updateFile:
+                summary: Update File
+                value:
+                  actions:
+                    - action: "UPDATE_FILE"
+                      target:
+                        resource_id: "FileID_abc123"
+                        resource_path: "/documents/project/file.txt"
+                      payload:
+                        name: "updated-example.txt"
+                        tags: ["project", "updated"]
+                        raw_url: "https://example.com/updated-file.txt"
+                        expires_at: 1704067200000
+                        external_id: "external-file-001-updated"
+                        external_payload: '{"department": "engineering", "project": "alpha", "version": 2}'
+              updateFolder:
+                summary: Update Folder
+                value:
+                  actions:
+                    - action: "UPDATE_FOLDER"
+                      target:
+                        resource_id: "FolderID_xyz789"
+                        resource_path: "/documents/project/"
+                      payload:
+                        name: "project-beta"
+                        tags: ["project", "beta"]
+                        expires_at: 1704067200000
+                        external_id: "external-folder-001-updated"
+                        external_payload: '{"department": "engineering", "project": "beta"}'
+              deleteFile:
+                summary: Delete File
+                value:
+                  actions:
+                    - action: "DELETE_FILE"
+                      target:
+                        resource_id: "FileID_abc123"
+                        resource_path: "/documents/project/file.txt"
+                      payload:
+                        permanent: true
+              deleteFolder:
+                summary: Delete Folder
+                value:
+                  actions:
+                    - action: "DELETE_FOLDER"
+                      target:
+                        resource_id: "FolderID_xyz789"
+                        resource_path: "/documents/project/"
+                      payload:
+                        permanent: true
+              copyFile:
+                summary: Copy File
+                value:
+                  actions:
+                    - action: "COPY_FILE"
+                      target:
+                        resource_id: "FileID_abc123"
+                        resource_path: "/documents/project/file.txt"
+                      payload:
+                        destination_folder_id: "FolderID_new123"
+                        destination_folder_path: "/documents/archive/"
+                        file_conflict_resolution: "KEEP_BOTH"
+              copyFolder:
+                summary: Copy Folder
+                value:
+                  actions:
+                    - action: "COPY_FOLDER"
+                      target:
+                        resource_id: "FolderID_xyz789"
+                        resource_path: "/documents/project/"
+                      payload:
+                        destination_folder_id: "FolderID_new123"
+                        destination_folder_path: "/documents/archive/"
+                        file_conflict_resolution: "KEEP_BOTH"
+              moveFile:
+                summary: Move File
+                value:
+                  actions:
+                    - action: "MOVE_FILE"
+                      target:
+                        resource_id: "FileID_abc123"
+                        resource_path: "/documents/project/file.txt"
+                      payload:
+                        destination_folder_id: "FolderID_new123"
+                        destination_folder_path: "/documents/archive/"
+                        file_conflict_resolution: "KEEP_BOTH"
+              moveFolder:
+                summary: Move Folder
+                value:
+                  actions:
+                    - action: "MOVE_FOLDER"
+                      target:
+                        resource_id: "FolderID_xyz789"
+                        resource_path: "/documents/project/"
+                      payload:
+                        destination_folder_id: "FolderID_new123"
+                        destination_folder_path: "/documents/archive/"
+                        file_conflict_resolution: "KEEP_BOTH"
+              restoreTrash:
+                summary: Restore from Trash
+                value:
+                  actions:
+                    - action: "RESTORE_TRASH"
+                      target:
+                        resource_id: "FolderID_xyz789"
+                        resource_path: "/trash/project/"
+                      payload:
+                        file_conflict_resolution: "KEEP_BOTH"
+                        restore_to_folder_path: "/restored-files/project/"
       responses:
         "200":
           description: Actions successfully executed
@@ -119,12 +288,495 @@ paths:
                       - data
                 required:
                   - ok
+              examples:
+                getFileSuccess:
+                  summary: Get File Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-123"
+                          success: true
+                          request:
+                            action: "GET_FILE"
+                            target:
+                              resource_id: "FileID_abc123"
+                              resource_path: "/documents/project/file.txt"
+                            payload:
+                              share_track_hash: "track123"
+                          response:
+                            result:
+                              file:
+                                id: "FileID_abc123"
+                                name: "file.txt"
+                                folder_uuid: "FolderID_xyz789"
+                                file_version: 1
+                                extension: "txt"
+                                full_file_path: "/documents/project/file.txt"
+                                tags: ["project", "documentation"]
+                                created_by: "UserID_123"
+                                created_date_ms: 1672531200000
+                                disk_id: "DiskID_abc123"
+                                disk_type: "AwsBucket"
+                                file_size: 1024
+                                raw_url: "https://example.com/file.txt"
+                                last_updated_date_ms: 1672531200000
+                                last_updated_by: "UserID_123"
+                                deleted: false
+                                canister_id: "abc123xyz456"
+                                expires_at: 1704067200000
+                                has_sovereign_permissions: true
+                              permissions:
+                                - permission_id: "DirectoryPermissionID_123"
+                                  grant_type: "VIEW"
+                                - permission_id: "DirectoryPermissionID_456"
+                                  grant_type: "EDIT"
+                              requester_id: "UserID_123"
+                            error: null
+                createFileSuccess:
+                  summary: Create File Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-123"
+                          success: true
+                          request:
+                            action: "CREATE_FILE"
+                            target:
+                              resource_id: "FolderID_xyz789"
+                              resource_path: "/documents/project/"
+                            payload:
+                              name: "example.txt"
+                              extension: "txt"
+                              tags: ["project", "documentation"]
+                              file_size: 1024
+                              raw_url: "https://example.com/file.txt"
+                              disk_id: "DiskID_abc123"
+                              expires_at: 1704067200000
+                          response:
+                            result:
+                              file:
+                                id: "FileID_abc123"
+                                name: "example.txt"
+                                folder_uuid: "FolderID_xyz789"
+                                file_version: 1
+                                extension: "txt"
+                                full_file_path: "/documents/project/example.txt"
+                                tags: ["project", "documentation"]
+                                created_by: "UserID_123"
+                                created_date_ms: 1672531200000
+                                disk_id: "DiskID_abc123"
+                                disk_type: "AwsBucket"
+                                file_size: 1024
+                                raw_url: "https://example.com/file.txt"
+                                last_updated_date_ms: 1672531200000
+                                last_updated_by: "UserID_123"
+                                deleted: false
+                                canister_id: "abc123xyz456"
+                                expires_at: 1704067200000
+                                has_sovereign_permissions: true
+                              upload:
+                                url: "https://upload.example.com/presigned-url"
+                                fields:
+                                  key: "documents/project/example.txt"
+                                  policy: "base64-encoded-policy"
+                                  x-amz-signature: "signature-value"
+                              notes: "File created successfully"
+                            error: null
+                getFolderSuccess:
+                  summary: Get Folder Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-124"
+                          success: true
+                          request:
+                            action: "GET_FOLDER"
+                            target:
+                              resource_id: "FolderID_xyz789"
+                              resource_path: "/documents/project/"
+                            payload:
+                              share_track_hash: "track456"
+                          response:
+                            result:
+                              folder:
+                                id: "FolderID_xyz789"
+                                name: "project"
+                                parent_folder_uuid: "FolderID_root"
+                                subfolder_uuids:
+                                  ["FolderID_subdir1", "FolderID_subdir2"]
+                                file_uuids: ["FileID_abc123", "FileID_def456"]
+                                full_folder_path: "/documents/project/"
+                                tags: ["project", "active"]
+                                created_by: "UserID_123"
+                                created_date_ms: 1672531200000
+                                last_updated_date_ms: 1672531200000
+                                last_updated_by: "UserID_123"
+                                disk_id: "DiskID_abc123"
+                                deleted: false
+                                expires_at: 1704067200000
+                                canister_id: "abc123xyz456"
+                                has_sovereign_permissions: true
+                              permissions:
+                                - permission_id: "DirectoryPermissionID_123"
+                                  grant_type: "VIEW"
+                                - permission_id: "DirectoryPermissionID_456"
+                                  grant_type: "EDIT"
+                              requester_id: "UserID_123"
+                            error: null
+                createFolderSuccess:
+                  summary: Create Folder Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-125"
+                          success: true
+                          request:
+                            action: "CREATE_FOLDER"
+                            target:
+                              resource_id: "FolderID_xyz789"
+                              resource_path: "/documents/"
+                            payload:
+                              name: "project-alpha"
+                              tags: ["project", "alpha"]
+                              disk_id: "DiskID_abc123"
+                              expires_at: 1704067200000
+                          response:
+                            result:
+                              id: "FolderID_new123"
+                              name: "project-alpha"
+                              parent_folder_uuid: "FolderID_xyz789"
+                              subfolder_uuids: []
+                              file_uuids: []
+                              full_folder_path: "/documents/project-alpha/"
+                              tags: ["project", "alpha"]
+                              created_by: "UserID_123"
+                              created_date_ms: 1672531200000
+                              last_updated_date_ms: 1672531200000
+                              last_updated_by: "UserID_123"
+                              disk_id: "DiskID_abc123"
+                              deleted: false
+                              expires_at: 1704067200000
+                              canister_id: "abc123xyz456"
+                              has_sovereign_permissions: true
+                            error: null
+
+                updateFileSuccess:
+                  summary: Update File Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-126"
+                          success: true
+                          request:
+                            action: "UPDATE_FILE"
+                            target:
+                              resource_id: "FileID_abc123"
+                              resource_path: "/documents/project/file.txt"
+                            payload:
+                              name: "updated-example.txt"
+                              tags: ["project", "updated"]
+                              raw_url: "https://example.com/updated-file.txt"
+                          response:
+                            result:
+                              id: "FileID_abc123"
+                              name: "updated-example.txt"
+                              folder_uuid: "FolderID_xyz789"
+                              file_version: 2
+                              prior_version: "FileID_abc122"
+                              extension: "txt"
+                              full_file_path: "/documents/project/updated-example.txt"
+                              tags: ["project", "updated"]
+                              created_by: "UserID_123"
+                              created_date_ms: 1672531200000
+                              disk_id: "DiskID_abc123"
+                              disk_type: "AwsBucket"
+                              file_size: 1024
+                              raw_url: "https://example.com/updated-file.txt"
+                              last_updated_date_ms: 1674345600000
+                              last_updated_by: "UserID_123"
+                              deleted: false
+                              canister_id: "abc123xyz456"
+                              expires_at: 1704067200000
+                              has_sovereign_permissions: true
+                            error: null
+
+                updateFolderSuccess:
+                  summary: Update Folder Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-127"
+                          success: true
+                          request:
+                            action: "UPDATE_FOLDER"
+                            target:
+                              resource_id: "FolderID_xyz789"
+                              resource_path: "/documents/project/"
+                            payload:
+                              name: "project-beta"
+                              tags: ["project", "beta"]
+                          response:
+                            result:
+                              id: "FolderID_xyz789"
+                              name: "project-beta"
+                              parent_folder_uuid: "FolderID_root"
+                              subfolder_uuids:
+                                ["FolderID_subdir1", "FolderID_subdir2"]
+                              file_uuids: ["FileID_abc123", "FileID_def456"]
+                              full_folder_path: "/documents/project-beta/"
+                              tags: ["project", "beta"]
+                              created_by: "UserID_123"
+                              created_date_ms: 1672531200000
+                              last_updated_date_ms: 1674345600000
+                              last_updated_by: "UserID_123"
+                              disk_id: "DiskID_abc123"
+                              deleted: false
+                              expires_at: 1704067200000
+                              canister_id: "abc123xyz456"
+                              has_sovereign_permissions: true
+                            error: null
+
+                deleteFileSuccess:
+                  summary: Delete File Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-128"
+                          success: true
+                          request:
+                            action: "DELETE_FILE"
+                            target:
+                              resource_id: "FileID_abc123"
+                              resource_path: "/documents/project/file.txt"
+                            payload:
+                              permanent: false
+                          response:
+                            result:
+                              file_id: "FileID_abc123"
+                              path_to_trash: "/trash/documents/project/file.txt"
+                            error: null
+
+                deleteFolderSuccess:
+                  summary: Delete Folder Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-129"
+                          success: true
+                          request:
+                            action: "DELETE_FOLDER"
+                            target:
+                              resource_id: "FolderID_xyz789"
+                              resource_path: "/documents/project/"
+                            payload:
+                              permanent: false
+                          response:
+                            result:
+                              folder_id: "FolderID_xyz789"
+                              path_to_trash: "/trash/documents/project/"
+                              deleted_files: ["FileID_abc123", "FileID_def456"]
+                              deleted_folders:
+                                ["FolderID_subdir1", "FolderID_subdir2"]
+                            error: null
+
+                copyFileSuccess:
+                  summary: Copy File Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-130"
+                          success: true
+                          request:
+                            action: "COPY_FILE"
+                            target:
+                              resource_id: "FileID_abc123"
+                              resource_path: "/documents/project/file.txt"
+                            payload:
+                              destination_folder_id: "FolderID_new123"
+                              destination_folder_path: "/documents/archive/"
+                              file_conflict_resolution: "KEEP_BOTH"
+                          response:
+                            result:
+                              id: "FileID_copy123"
+                              name: "file.txt"
+                              folder_uuid: "FolderID_new123"
+                              file_version: 1
+                              extension: "txt"
+                              full_file_path: "/documents/archive/file.txt"
+                              tags: ["project", "documentation"]
+                              created_by: "UserID_123"
+                              created_date_ms: 1674345600000
+                              disk_id: "DiskID_abc123"
+                              disk_type: "AwsBucket"
+                              file_size: 1024
+                              raw_url: "https://example.com/file-copy.txt"
+                              last_updated_date_ms: 1674345600000
+                              last_updated_by: "UserID_123"
+                              deleted: false
+                              canister_id: "abc123xyz456"
+                              expires_at: 1704067200000
+                              has_sovereign_permissions: true
+                            error: null
+
+                copyFolderSuccess:
+                  summary: Copy Folder Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-131"
+                          success: true
+                          request:
+                            action: "COPY_FOLDER"
+                            target:
+                              resource_id: "FolderID_xyz789"
+                              resource_path: "/documents/project/"
+                            payload:
+                              destination_folder_id: "FolderID_new123"
+                              destination_folder_path: "/documents/archive/"
+                              file_conflict_resolution: "KEEP_BOTH"
+                          response:
+                            result:
+                              id: "FolderID_copy789"
+                              name: "project"
+                              parent_folder_uuid: "FolderID_new123"
+                              subfolder_uuids:
+                                ["FolderID_copysubdir1", "FolderID_copysubdir2"]
+                              file_uuids:
+                                ["FileID_copyabc123", "FileID_copydef456"]
+                              full_folder_path: "/documents/archive/project/"
+                              tags: ["project", "active"]
+                              created_by: "UserID_123"
+                              created_date_ms: 1674345600000
+                              last_updated_date_ms: 1674345600000
+                              last_updated_by: "UserID_123"
+                              disk_id: "DiskID_abc123"
+                              deleted: false
+                              expires_at: 1704067200000
+                              canister_id: "abc123xyz456"
+                              has_sovereign_permissions: true
+                            error: null
+
+                moveFileSuccess:
+                  summary: Move File Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-132"
+                          success: true
+                          request:
+                            action: "MOVE_FILE"
+                            target:
+                              resource_id: "FileID_abc123"
+                              resource_path: "/documents/project/file.txt"
+                            payload:
+                              destination_folder_id: "FolderID_new123"
+                              destination_folder_path: "/documents/archive/"
+                              file_conflict_resolution: "KEEP_BOTH"
+                          response:
+                            result:
+                              id: "FileID_abc123"
+                              name: "file.txt"
+                              folder_uuid: "FolderID_new123"
+                              file_version: 1
+                              extension: "txt"
+                              full_file_path: "/documents/archive/file.txt"
+                              tags: ["project", "documentation"]
+                              created_by: "UserID_123"
+                              created_date_ms: 1672531200000
+                              disk_id: "DiskID_abc123"
+                              disk_type: "AwsBucket"
+                              file_size: 1024
+                              raw_url: "https://example.com/file.txt"
+                              last_updated_date_ms: 1674345600000
+                              last_updated_by: "UserID_123"
+                              deleted: false
+                              canister_id: "abc123xyz456"
+                              expires_at: 1704067200000
+                              has_sovereign_permissions: true
+                            error: null
+
+                moveFolderSuccess:
+                  summary: Move Folder Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-133"
+                          success: true
+                          request:
+                            action: "MOVE_FOLDER"
+                            target:
+                              resource_id: "FolderID_xyz789"
+                              resource_path: "/documents/project/"
+                            payload:
+                              destination_folder_id: "FolderID_new123"
+                              destination_folder_path: "/documents/archive/"
+                              file_conflict_resolution: "KEEP_BOTH"
+                          response:
+                            result:
+                              id: "FolderID_xyz789"
+                              name: "project"
+                              parent_folder_uuid: "FolderID_new123"
+                              subfolder_uuids:
+                                ["FolderID_subdir1", "FolderID_subdir2"]
+                              file_uuids: ["FileID_abc123", "FileID_def456"]
+                              full_folder_path: "/documents/archive/project/"
+                              tags: ["project", "active"]
+                              created_by: "UserID_123"
+                              created_date_ms: 1672531200000
+                              last_updated_date_ms: 1674345600000
+                              last_updated_by: "UserID_123"
+                              disk_id: "DiskID_abc123"
+                              deleted: false
+                              expires_at: 1704067200000
+                              canister_id: "abc123xyz456"
+                              has_sovereign_permissions: true
+                            error: null
+
+                restoreTrashSuccess:
+                  summary: Restore from Trash Success Response
+                  value:
+                    ok:
+                      data:
+                        - id: "response-id-134"
+                          success: true
+                          request:
+                            action: "RESTORE_TRASH"
+                            target:
+                              resource_id: "FolderID_xyz789"
+                              resource_path: "/trash/project/"
+                            payload:
+                              file_conflict_resolution: "KEEP_BOTH"
+                              restore_to_folder_path: "/restored-files/project/"
+                          response:
+                            result:
+                              restored_files: ["FileID_abc123", "FileID_def456"]
+                              restored_folders:
+                                [
+                                  "FolderID_xyz789",
+                                  "FolderID_subdir1",
+                                  "FolderID_subdir2",
+                                ]
+                            error: null
+
         default:
           description: Error response
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalidPermission:
+                  summary: Permission Denied Error
+                  value:
+                    err:
+                      code: 403
+                      message: "You don't have permission to perform this action"
+                resourceNotFound:
+                  summary: Resource Not Found Error
+                  value:
+                    err:
+                      code: 404
+                      message: "The requested resource could not be found"
       security:
         - BearerAuth: []
 
@@ -4038,17 +4690,6 @@ components:
       description: Unique identifier for a system permission
       example: "SystemPermissionID_abc123"
 
-    DirectoryActionRequestBody:
-      type: object
-      properties:
-        actions:
-          type: array
-          description: List of directory actions to execute
-          items:
-            $ref: "#/components/schemas/DirectoryAction"
-      required:
-        - actions
-
     ListDirectoryRequest:
       type: object
       properties:
@@ -4117,178 +4758,444 @@ components:
     DirectoryAction:
       type: object
       description: Action to perform on a directory resource
-      oneOf:
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [GET_FILE]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/GetFilePayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [GET_FOLDER]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/GetFolderPayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [CREATE_FILE]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/CreateFilePayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [CREATE_FOLDER]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/CreateFolderPayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [UPDATE_FILE]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/UpdateFilePayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [UPDATE_FOLDER]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/UpdateFolderPayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [DELETE_FILE]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/DeleteFilePayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [DELETE_FOLDER]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/DeleteFolderPayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [COPY_FILE]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/CopyFilePayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [COPY_FOLDER]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/CopyFolderPayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [MOVE_FILE]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/MoveFilePayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [MOVE_FOLDER]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/MoveFolderPayload"
-          required:
-            - action
-            - target
-            - payload
-        - type: object
-          properties:
-            action:
-              type: string
-              enum: [RESTORE_TRASH]
-            target:
-              $ref: "#/components/schemas/ResourceIdentifier"
-            payload:
-              $ref: "#/components/schemas/RestoreTrashPayload"
-          required:
-            - action
-            - target
-            - payload
       discriminator:
         propertyName: action
+        mapping:
+          GET_FILE: "#/components/schemas/GetFileAction"
+          GET_FOLDER: "#/components/schemas/GetFolderAction"
+          CREATE_FILE: "#/components/schemas/CreateFileAction"
+          CREATE_FOLDER: "#/components/schemas/CreateFolderAction"
+          UPDATE_FILE: "#/components/schemas/UpdateFileAction"
+          UPDATE_FOLDER: "#/components/schemas/UpdateFolderAction"
+          DELETE_FILE: "#/components/schemas/DeleteFileAction"
+          DELETE_FOLDER: "#/components/schemas/DeleteFolderAction"
+          COPY_FILE: "#/components/schemas/CopyFileAction"
+          COPY_FOLDER: "#/components/schemas/CopyFolderAction"
+          MOVE_FILE: "#/components/schemas/MoveFileAction"
+          MOVE_FOLDER: "#/components/schemas/MoveFolderAction"
+          RESTORE_TRASH: "#/components/schemas/RestoreTrashAction"
+      oneOf:
+        - $ref: "#/components/schemas/GetFileAction"
+        - $ref: "#/components/schemas/GetFolderAction"
+        - $ref: "#/components/schemas/CreateFileAction"
+        - $ref: "#/components/schemas/CreateFolderAction"
+        - $ref: "#/components/schemas/UpdateFileAction"
+        - $ref: "#/components/schemas/UpdateFolderAction"
+        - $ref: "#/components/schemas/DeleteFileAction"
+        - $ref: "#/components/schemas/DeleteFolderAction"
+        - $ref: "#/components/schemas/CopyFileAction"
+        - $ref: "#/components/schemas/CopyFolderAction"
+        - $ref: "#/components/schemas/MoveFileAction"
+        - $ref: "#/components/schemas/MoveFolderAction"
+        - $ref: "#/components/schemas/RestoreTrashAction"
+
+    DirectoryActionRequestBody:
+      type: object
+      properties:
+        actions:
+          type: array
+          description: List of directory actions to execute
+          items:
+            $ref: "#/components/schemas/DirectoryAction"
+      required:
+        - actions
+      example:
+        actions:
+          - action: "GET_FILE"
+            target:
+              resource_id: "FileID_abc123"
+              resource_path: "/documents/project/file.txt"
+            payload:
+              share_track_hash: "track123"
+
+    GetFileAction:
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["GET_FILE"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/GetFilePayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "GET_FILE"
+        target:
+          resource_id: "FileID_abc123"
+          resource_path: "/documents/project/file.txt"
+        payload:
+          share_track_hash: "track123"
+
+    GetFileResponse:
+      type: object
+      properties:
+        file:
+          $ref: "#/components/schemas/FileRecord"
+        permissions:
+          type: array
+          items:
+            $ref: "#/components/schemas/DirectoryResourcePermissionFE"
+        requester_id:
+          $ref: "#/components/schemas/UserID"
+      required:
+        - file
+        - permissions
+        - requester_id
+
+    # Update GetFolderAction Schema
+    GetFolderAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["GET_FOLDER"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/GetFolderPayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "GET_FOLDER"
+        target:
+          resource_id: "FolderID_xyz789"
+          resource_path: "/documents/project/"
+        payload:
+          share_track_hash: "track456"
+
+    GetFolderResponse:
+      type: object
+      properties:
+        folder:
+          $ref: "#/components/schemas/FolderRecord"
+        permissions:
+          type: array
+          items:
+            $ref: "#/components/schemas/DirectoryResourcePermissionFE"
+        requester_id:
+          $ref: "#/components/schemas/UserID"
+      required:
+        - folder
+        - permissions
+        - requester_id
+
+    # Update CreateFileAction Schema
+    CreateFileAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["CREATE_FILE"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/CreateFilePayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "CREATE_FILE"
+        target:
+          resource_id: "FolderID_xyz789"
+          resource_path: "/documents/project/"
+        payload:
+          name: "example.txt"
+          extension: "txt"
+          tags: ["project", "documentation"]
+          file_size: 1024
+          raw_url: "https://example.com/file.txt"
+          disk_id: "DiskID_abc123"
+          expires_at: 1704067200000
+          file_conflict_resolution: "KEEP_BOTH"
+          has_sovereign_permissions: true
+          external_id: "external-file-001"
+          external_payload: '{"department": "engineering", "project": "alpha"}'
+
+    # Update CreateFolderAction Schema
+    CreateFolderAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["CREATE_FOLDER"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/CreateFolderPayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "CREATE_FOLDER"
+        target:
+          resource_id: "FolderID_xyz789"
+          resource_path: "/documents/"
+        payload:
+          name: "project-alpha"
+          tags: ["project", "alpha"]
+          disk_id: "DiskID_abc123"
+          expires_at: 1704067200000
+          file_conflict_resolution: "KEEP_BOTH"
+          has_sovereign_permissions: true
+          external_id: "external-folder-001"
+          external_payload: '{"department": "engineering", "project": "alpha"}'
+
+    # Update UpdateFileAction Schema
+    UpdateFileAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["UPDATE_FILE"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/UpdateFilePayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "UPDATE_FILE"
+        target:
+          resource_id: "FileID_abc123"
+          resource_path: "/documents/project/file.txt"
+        payload:
+          name: "updated-example.txt"
+          tags: ["project", "updated"]
+          raw_url: "https://example.com/updated-file.txt"
+          expires_at: 1704067200000
+          external_id: "external-file-001-updated"
+          external_payload: '{"department": "engineering", "project": "alpha", "version": 2}'
+
+    # Update UpdateFolderAction Schema
+    UpdateFolderAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["UPDATE_FOLDER"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/UpdateFolderPayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "UPDATE_FOLDER"
+        target:
+          resource_id: "FolderID_xyz789"
+          resource_path: "/documents/project/"
+        payload:
+          name: "project-beta"
+          tags: ["project", "beta"]
+          expires_at: 1704067200000
+          external_id: "external-folder-001-updated"
+          external_payload: '{"department": "engineering", "project": "beta"}'
+
+    # Update DeleteFileAction Schema
+    DeleteFileAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["DELETE_FILE"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/DeleteFilePayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "DELETE_FILE"
+        target:
+          resource_id: "FileID_abc123"
+          resource_path: "/documents/project/file.txt"
+        payload:
+          permanent: true
+
+    # Update DeleteFolderAction Schema
+    DeleteFolderAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["DELETE_FOLDER"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/DeleteFolderPayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "DELETE_FOLDER"
+        target:
+          resource_id: "FolderID_xyz789"
+          resource_path: "/documents/project/"
+        payload:
+          permanent: true
+
+    # Update CopyFileAction Schema
+    CopyFileAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["COPY_FILE"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/CopyFilePayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "COPY_FILE"
+        target:
+          resource_id: "FileID_abc123"
+          resource_path: "/documents/project/file.txt"
+        payload:
+          destination_folder_id: "FolderID_new123"
+          destination_folder_path: "/documents/archive/"
+          file_conflict_resolution: "KEEP_BOTH"
+
+    # Update CopyFolderAction Schema
+    CopyFolderAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["COPY_FOLDER"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/CopyFolderPayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "COPY_FOLDER"
+        target:
+          resource_id: "FolderID_xyz789"
+          resource_path: "/documents/project/"
+        payload:
+          destination_folder_id: "FolderID_new123"
+          destination_folder_path: "/documents/archive/"
+          file_conflict_resolution: "KEEP_BOTH"
+
+    # Update MoveFileAction Schema
+    MoveFileAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["MOVE_FILE"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/MoveFilePayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "MOVE_FILE"
+        target:
+          resource_id: "FileID_abc123"
+          resource_path: "/documents/project/file.txt"
+        payload:
+          destination_folder_id: "FolderID_new123"
+          destination_folder_path: "/documents/archive/"
+          file_conflict_resolution: "KEEP_BOTH"
+
+    # Update MoveFolderAction Schema
+    MoveFolderAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["MOVE_FOLDER"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/MoveFolderPayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "MOVE_FOLDER"
+        target:
+          resource_id: "FolderID_xyz789"
+          resource_path: "/documents/project/"
+        payload:
+          destination_folder_id: "FolderID_new123"
+          destination_folder_path: "/documents/archive/"
+          file_conflict_resolution: "KEEP_BOTH"
+
+    # Update RestoreTrashAction Schema
+    RestoreTrashAction:
+      x-tags:
+        - Directory Actions
+      type: object
+      properties:
+        action:
+          type: string
+          enum: ["RESTORE_TRASH"]
+        target:
+          $ref: "#/components/schemas/ResourceIdentifier"
+        payload:
+          $ref: "#/components/schemas/RestoreTrashPayload"
+      required:
+        - action
+        - target
+        - payload
+      example:
+        action: "RESTORE_TRASH"
+        target:
+          resource_id: "FolderID_xyz789"
+          resource_path: "/trash/project/"
+        payload:
+          file_conflict_resolution: "KEEP_BOTH"
+          restore_to_folder_path: "/restored-files/project/"
 
     DirectoryActionEnum:
       type: string
@@ -4607,11 +5514,14 @@ components:
           description: Result data for successful actions
           nullable: true
           oneOf:
+            - $ref: "#/components/schemas/FileRecord"
+            - $ref: "#/components/schemas/FolderRecord"
             - $ref: "#/components/schemas/GetFileResponse"
             - $ref: "#/components/schemas/GetFolderResponse"
             - $ref: "#/components/schemas/CreateFileResponse"
-            - $ref: "#/components/schemas/FileRecord"
-            - $ref: "#/components/schemas/FolderRecord"
+            - $ref: "#/components/schemas/CreateFolderResponse"
+            - $ref: "#/components/schemas/UpdateFileResponse"
+            - $ref: "#/components/schemas/UpdateFolderResponse"
             - $ref: "#/components/schemas/DeleteFileResponse"
             - $ref: "#/components/schemas/DeleteFolderResponse"
             - $ref: "#/components/schemas/RestoreTrashResponse"
@@ -4631,38 +5541,6 @@ components:
       required:
         - result
         - error
-
-    GetFileResponse:
-      type: object
-      properties:
-        file:
-          $ref: "#/components/schemas/FileRecord"
-        permissions:
-          type: array
-          items:
-            $ref: "#/components/schemas/DirectoryResourcePermissionFE"
-        requester_id:
-          $ref: "#/components/schemas/UserID"
-      required:
-        - file
-        - permissions
-        - requester_id
-
-    GetFolderResponse:
-      type: object
-      properties:
-        folder:
-          $ref: "#/components/schemas/FolderRecord"
-        permissions:
-          type: array
-          items:
-            $ref: "#/components/schemas/DirectoryResourcePermissionFE"
-        requester_id:
-          $ref: "#/components/schemas/UserID"
-      required:
-        - folder
-        - permissions
-        - requester_id
 
     CreateFileResponse:
       type: object
