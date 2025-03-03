@@ -4688,7 +4688,7 @@ components:
           type: string
           description: Alternative index for the webhook
         event:
-          type: string
+          $ref: "#/components/schemas/WebhookEventLabel"
           description: Type of event that triggers the webhook
         signature:
           type: string
@@ -6027,6 +6027,40 @@ components:
         - StorjWeb3
         - IcpCanister
 
+    WebhookEventLabel:
+      type: string
+      description: Type of event that triggers the webhook
+      enum:
+        - file.viewed
+        - file.created
+        - file.updated
+        - file.deleted
+        - file.shared
+        - folder.viewed
+        - folder.created
+        - folder.updated
+        - folder.deleted
+        - folder.shared
+        - subfile.viewed
+        - subfile.created
+        - subfile.updated
+        - subfile.deleted
+        - subfile.shared
+        - subfolder.viewed
+        - subfolder.created
+        - subfolder.updated
+        - subfolder.deleted
+        - subfolder.shared
+        - team.invite.created
+        - team.invite.updated
+        - drive.restore_trash
+        - drive.state_diffs
+        - tag.added
+        - tag.removed
+      example: file.updated
+
+    # ================================= MANAGE ROUTE TYPES ========================================
+
     CreateDiskRequest:
       type: object
       title: Create a new disk
@@ -6688,9 +6722,8 @@ components:
           description: URL to send webhook events to
           maxLength: 4096
         event:
-          type: string
+          $ref: "#/components/schemas/WebhookEventLabel"
           description: Event type to trigger the webhook
-          maxLength: 256
         signature:
           type: string
           description: Signature for webhook verification
@@ -6723,7 +6756,7 @@ components:
         - event
       example:
         action: "create"
-        alt_index: "file-updates"
+        alt_index: "File_abc246"
         url: "https://example.com/webhooks/file-updated"
         event: "FILE_UPDATED"
         signature: "sha256-hash"
