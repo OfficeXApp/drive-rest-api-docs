@@ -1,0 +1,4477 @@
+openapi: 3.0.3
+info:
+  title: OfficeX Filesharing API
+  description: API for OfficeX filesharing app (clone of Google Drive)
+  version: 1.0.0
+
+tags:
+  - name: API Keys
+    description: Operations for managing API keys
+
+  - name: Contacts
+    description: Operations for managing contacts
+
+  - name: Disks
+    description: Operations for managing disks
+
+  - name: Drives
+    description: Operations for managing drives
+
+  - name: Canister
+    description: Operations for managing own drive canister
+
+  - name: Permissions by Directory
+    description: Operations for managing directory and system permissions
+
+  - name: Permissions by System
+    description: Operations for managing directory and system permissions
+
+  - name: Tags
+    description: Operations for managing tags
+
+  - name: Teams
+    description: Operations for managing teams
+
+  - name: Team Invites
+    description: Operations for managing team invites
+
+  - name: Webhooks
+    description: Operations for managing webhooks
+
+paths:
+  /api_keys/get/{api_key_id}:
+    get:
+      tags:
+        - API Keys
+      summary: Get API Key
+      description: Retrieve an API key by its ID
+      operationId: getApiKey
+      parameters:
+        - name: api_key_id
+          in: path
+          description: ID of the API key to retrieve
+          required: true
+          schema:
+            $ref: "#/components/schemas/ApiKeyID"
+        - $ref: "#/components/parameters/AuthHeader"
+      responses:
+        "200":
+          description: Successful retrieval of the API key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ApiKey"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /api_keys/list/{user_id}:
+    post:
+      tags:
+        - API Keys
+      summary: List API Keys
+      description: List all API keys for a specific user
+      operationId: listApiKeys
+      parameters:
+        - name: user_id
+          in: path
+          description: ID of the user whose API keys to list
+          required: true
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - $ref: "#/components/parameters/AuthHeader"
+      responses:
+        "200":
+          description: Successful retrieval of API keys
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/ApiKey"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /api_keys/upsert:
+    post:
+      tags:
+        - API Keys
+      summary: Create or Update API Key
+      description: Create a new API key or update an existing one
+      operationId: upsertApiKey
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: API key data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  description: Create a new API key
+                  properties:
+                    name:
+                      type: string
+                      description: Name for the API key
+                      maxLength: 256
+                    user_id:
+                      $ref: "#/components/schemas/UserID"
+                      description: ID of the user to create the API key for
+                      nullable: true
+                    expires_at:
+                      type: integer
+                      format: int64
+                      description: Timestamp when the key expires, -1 for never expires
+                      nullable: true
+                    external_id:
+                      type: string
+                      description: External identifier
+                      maxLength: 256
+                      nullable: true
+                    external_payload:
+                      type: string
+                      description: Additional data for external systems
+                      maxLength: 8192
+                      nullable: true
+                  required:
+                    - name
+                - type: object
+                  description: Update an existing API key
+                  properties:
+                    id:
+                      $ref: "#/components/schemas/ApiKeyID"
+                      description: ID of the API key to update
+                      maxLength: 256
+                    name:
+                      type: string
+                      description: New name for the API key
+                      maxLength: 256
+                      nullable: true
+                    expires_at:
+                      type: integer
+                      format: int64
+                      description: New expiration timestamp, -1 for never expires
+                      nullable: true
+                    is_revoked:
+                      type: boolean
+                      description: Whether to revoke the API key
+                      nullable: true
+                    external_id:
+                      $ref: "#/components/schemas/ExternalID"
+                      description: External identifier
+                      maxLength: 256
+                      nullable: true
+                    external_payload:
+                      $ref: "#/components/schemas/ExternalPayload"
+                      description: Additional data for external systems
+                      maxLength: 8192
+                      nullable: true
+                  required:
+                    - id
+              discriminator:
+                propertyName: id
+      responses:
+        "200":
+          description: API key successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ApiKey"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /api_keys/delete:
+    post:
+      tags:
+        - API Keys
+      summary: Delete API Key
+      description: Delete an existing API key
+      operationId: deleteApiKey
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: ID of the API key to delete
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  $ref: "#/components/schemas/ApiKeyID"
+                  description: ID of the API key to delete
+                  maxLength: 256
+              required:
+                - id
+      responses:
+        "200":
+          description: API key successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            $ref: "#/components/schemas/ApiKeyID"
+                            description: ID of the deleted API key
+                          deleted:
+                            type: boolean
+                            description: Whether the API key was successfully deleted
+                        required:
+                          - id
+                          - deleted
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /contacts/get/{contact_id}:
+    get:
+      tags:
+        - Contacts
+      summary: Get Contact
+      description: Retrieve a contact by its ID
+      operationId: getContact
+      parameters:
+        - name: contact_id
+          in: path
+          description: ID of the contact to retrieve
+          required: true
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - $ref: "#/components/parameters/AuthHeader"
+      responses:
+        "200":
+          description: Successful retrieval of the contact
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Contact"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /contacts/list:
+    post:
+      tags:
+        - Contacts
+      summary: List Contacts
+      description: List contacts with optional filtering and pagination
+      operationId: listContacts
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Filtering and pagination parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filters:
+                  type: string
+                  description: Filter string for contacts
+                  maxLength: 256
+                  default: ""
+                page_size:
+                  type: integer
+                  description: Number of items per page
+                  default: 50
+                  minimum: 1
+                  maximum: 1000
+                direction:
+                  type: string
+                  description: Sort direction
+                  enum: [ASC, DESC]
+                  default: "ASC"
+                cursor_up:
+                  type: string
+                  description: Cursor for pagination (previous page)
+                  maxLength: 256
+                  nullable: true
+                cursor_down:
+                  type: string
+                  description: Cursor for pagination (next page)
+                  maxLength: 256
+                  nullable: true
+      responses:
+        "200":
+          description: Successful retrieval of contacts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/Contact"
+                          page_size:
+                            type: integer
+                            description: Number of items per page
+                          total:
+                            type: integer
+                            description: Total number of items
+                          cursor_up:
+                            type: string
+                            description: Cursor for pagination (previous page)
+                            nullable: true
+                          cursor_down:
+                            type: string
+                            description: Cursor for pagination (next page)
+                            nullable: true
+                        required:
+                          - items
+                          - page_size
+                          - total
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /contacts/upsert:
+    post:
+      tags:
+        - Contacts
+      summary: Create or Update Contact
+      description: Create a new contact or update an existing one
+      operationId: upsertContact
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Contact data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  description: Create a new contact
+                  properties:
+                    icp_principal:
+                      $ref: "#/components/schemas/ICPPrincipalString"
+                    nickname:
+                      type: string
+                      description: Nickname for the contact
+                      maxLength: 256
+                    evm_public_address:
+                      $ref: "#/components/schemas/EvmPublicAddress"
+                      description: EVM public address
+                      nullable: true
+                    public_note:
+                      type: string
+                      description: Public note about the contact
+                      maxLength: 8192
+                      nullable: true
+                    private_note:
+                      type: string
+                      description: Private note about the contact
+                      maxLength: 8192
+                      nullable: true
+                    external_id:
+                      $ref: "#/components/schemas/ExternalID"
+                      description: External identifier
+                      maxLength: 256
+                      nullable: true
+                    external_payload:
+                      $ref: "#/components/schemas/ExternalPayload"
+                      description: Additional data for external systems
+                      maxLength: 8192
+                      nullable: true
+                  required:
+                    - icp_principal
+                    - nickname
+                - type: object
+                  description: Update an existing contact
+                  properties:
+                    id:
+                      $ref: "#/components/schemas/UserID"
+                      description: ID of the contact to update
+                    nickname:
+                      type: string
+                      description: New nickname for the contact
+                      maxLength: 256
+                      nullable: true
+                    public_note:
+                      type: string
+                      description: Public note about the contact
+                      maxLength: 8192
+                      nullable: true
+                    private_note:
+                      type: string
+                      description: Private note about the contact
+                      maxLength: 8192
+                      nullable: true
+                    evm_public_address:
+                      $ref: "#/components/schemas/EvmPublicAddress"
+                      description: EVM public address
+                      nullable: true
+                    icp_principal:
+                      $ref: "#/components/schemas/ICPPrincipalString"
+                    external_id:
+                      $ref: "#/components/schemas/ExternalID"
+                      description: External identifier
+                      maxLength: 256
+                      nullable: true
+                    external_payload:
+                      $ref: "#/components/schemas/ExternalPayload"
+                      description: Additional data for external systems
+                      maxLength: 8192
+                      nullable: true
+                  required:
+                    - id
+              discriminator:
+                propertyName: id
+      responses:
+        "200":
+          description: Contact successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Contact"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /contacts/delete:
+    post:
+      tags:
+        - Contacts
+      summary: Delete Contact
+      description: Delete an existing contact
+      operationId: deleteContact
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: ID of the contact to delete
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  $ref: "#/components/schemas/UserID"
+                  description: ID of the contact to delete
+              required:
+                - id
+      responses:
+        "200":
+          description: Contact successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            $ref: "#/components/schemas/UserID"
+                            description: ID of the deleted contact
+                          deleted:
+                            type: boolean
+                            description: Whether the contact was successfully deleted
+                        required:
+                          - id
+                          - deleted
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /disks/get/{disk_id}:
+    get:
+      tags:
+        - Disks
+      summary: Get Disk
+      description: Retrieve a disk by its ID
+      operationId: getDisk
+      parameters:
+        - name: disk_id
+          in: path
+          description: ID of the disk to retrieve
+          required: true
+          schema:
+            $ref: "#/components/schemas/UserID"
+        - $ref: "#/components/parameters/AuthHeader"
+      responses:
+        "200":
+          description: Successful retrieval of the disk
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Disk"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /disks/list:
+    post:
+      tags:
+        - Disks
+      summary: List Disks
+      description: List disks with optional filtering and pagination
+      operationId: listDisks
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Filtering and pagination parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filters:
+                  type: string
+                  description: Filter string for disks
+                  maxLength: 256
+                  default: ""
+                page_size:
+                  type: integer
+                  description: Number of items per page
+                  default: 50
+                  minimum: 1
+                  maximum: 1000
+                direction:
+                  type: string
+                  description: Sort direction
+                  enum: [asc, desc]
+                  default: "asc"
+                cursor_up:
+                  type: string
+                  description: Cursor for pagination (previous page)
+                  maxLength: 256
+                  nullable: true
+                cursor_down:
+                  type: string
+                  description: Cursor for pagination (next page)
+                  maxLength: 256
+                  nullable: true
+      responses:
+        "200":
+          description: Successful retrieval of disks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/Disk"
+                          page_size:
+                            type: integer
+                            description: Number of items per page
+                          total:
+                            type: integer
+                            description: Total number of items
+                          cursor_up:
+                            type: string
+                            description: Cursor for pagination (previous page)
+                            nullable: true
+                          cursor_down:
+                            type: string
+                            description: Cursor for pagination (next page)
+                            nullable: true
+                        required:
+                          - items
+                          - page_size
+                          - total
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /disks/upsert:
+    post:
+      tags:
+        - Disks
+      summary: Create or Update Disk
+      description: Create a new disk or update an existing one
+      operationId: upsertDisk
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Disk data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  description: Create a new disk
+                  properties:
+                    name:
+                      type: string
+                      description: Name for the disk
+                      maxLength: 256
+                    disk_type:
+                      $ref: "#/components/schemas/DiskType"
+                    public_note:
+                      type: string
+                      description: Public note about the disk
+                      maxLength: 8192
+                      nullable: true
+                    private_note:
+                      type: string
+                      description: Private note about the disk
+                      maxLength: 8192
+                      nullable: true
+                    auth_json:
+                      type: string
+                      description: Authentication JSON for the disk
+                      maxLength: 8192
+                      nullable: true
+                    external_id:
+                      $ref: "#/components/schemas/ExternalID"
+                      description: External identifier
+                      maxLength: 256
+                      nullable: true
+                    external_payload:
+                      $ref: "#/components/schemas/ExternalPayload"
+                      description: Additional data for external systems
+                      maxLength: 8192
+                      nullable: true
+                  required:
+                    - name
+                    - disk_type
+                - type: object
+                  description: Update an existing disk
+                  properties:
+                    id:
+                      $ref: "#/components/schemas/UserID"
+                      description: ID of the disk to update
+                    name:
+                      type: string
+                      description: New name for the disk
+                      maxLength: 256
+                      nullable: true
+                    public_note:
+                      type: string
+                      description: Public note about the disk
+                      maxLength: 8192
+                      nullable: true
+                    private_note:
+                      type: string
+                      description: Private note about the disk
+                      maxLength: 8192
+                      nullable: true
+                    auth_json:
+                      type: string
+                      description: Authentication JSON for the disk
+                      maxLength: 8192
+                      nullable: true
+                    external_id:
+                      $ref: "#/components/schemas/ExternalID"
+                      description: External identifier
+                      maxLength: 256
+                      nullable: true
+                    external_payload:
+                      $ref: "#/components/schemas/ExternalPayload"
+                      description: Additional data for external systems
+                      maxLength: 8192
+                      nullable: true
+                  required:
+                    - id
+              discriminator:
+                propertyName: id
+      responses:
+        "200":
+          description: Disk successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Disk"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /disks/delete:
+    post:
+      tags:
+        - Disks
+      summary: Delete Disk
+      description: Delete an existing disk
+      operationId: deleteDisk
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: ID of the disk to delete
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  $ref: "#/components/schemas/UserID"
+                  description: ID of the disk to delete
+              required:
+                - id
+      responses:
+        "200":
+          description: Disk successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            $ref: "#/components/schemas/DiskID"
+                            description: ID of the deleted disk
+                          deleted:
+                            type: boolean
+                            description: Whether the disk was successfully deleted
+                        required:
+                          - id
+                          - deleted
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /drives/get/{drive_id}:
+    get:
+      tags:
+        - Drives
+      summary: Get Drive
+      description: Retrieve a drive by its ID
+      operationId: getDrive
+      parameters:
+        - name: drive_id
+          in: path
+          description: ID of the drive to retrieve
+          required: true
+          schema:
+            $ref: "#/components/schemas/DriveID"
+        - $ref: "#/components/parameters/AuthHeader"
+      responses:
+        "200":
+          description: Successful retrieval of the drive
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Drive"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /drives/list:
+    post:
+      tags:
+        - Drives
+      summary: List Drives
+      description: List drives with optional filtering and pagination
+      operationId: listDrives
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Filtering and pagination parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filters:
+                  type: string
+                  description: Filter string for drives
+                  maxLength: 256
+                  default: ""
+                page_size:
+                  type: integer
+                  description: Number of items per page
+                  default: 50
+                  minimum: 1
+                  maximum: 1000
+                direction:
+                  type: string
+                  description: Sort direction
+                  enum: [ASC, DESC]
+                  default: "ASC"
+                cursor_up:
+                  type: string
+                  description: Cursor for pagination (previous page)
+                  maxLength: 256
+                  nullable: true
+                cursor_down:
+                  type: string
+                  description: Cursor for pagination (next page)
+                  maxLength: 256
+                  nullable: true
+      responses:
+        "200":
+          description: Successful retrieval of drives
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/Drive"
+                          page_size:
+                            type: integer
+                            description: Number of items per page
+                          total:
+                            type: integer
+                            description: Total number of items
+                          cursor_up:
+                            type: string
+                            description: Cursor for pagination (previous page)
+                            nullable: true
+                          cursor_down:
+                            type: string
+                            description: Cursor for pagination (next page)
+                            nullable: true
+                        required:
+                          - items
+                          - page_size
+                          - total
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /drives/upsert:
+    post:
+      tags:
+        - Drives
+      summary: Create or Update Drive
+      description: Create a new drive or update an existing one
+      operationId: upsertDrive
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Drive data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  description: Create a new drive
+                  properties:
+                    name:
+                      type: string
+                      description: Name for the drive
+                      maxLength: 256
+                    icp_principal:
+                      $ref: "#/components/schemas/ICPPrincipalString"
+                    public_note:
+                      type: string
+                      description: Public note about the drive
+                      maxLength: 8192
+                      nullable: true
+                    private_note:
+                      type: string
+                      description: Private note about the drive
+                      maxLength: 8192
+                      nullable: true
+                    url_endpoint:
+                      type: string
+                      description: URL endpoint for the drive
+                      maxLength: 4096
+                      nullable: true
+                    external_id:
+                      $ref: "#/components/schemas/ExternalID"
+                      description: External identifier
+                      maxLength: 256
+                      nullable: true
+                    external_payload:
+                      $ref: "#/components/schemas/ExternalPayload"
+                      description: Additional data for external systems
+                      maxLength: 8192
+                      nullable: true
+                  required:
+                    - name
+                - type: object
+                  description: Update an existing drive
+                  properties:
+                    id:
+                      $ref: "#/components/schemas/DriveID"
+                      description: ID of the drive to update
+                    name:
+                      type: string
+                      description: New name for the drive
+                      maxLength: 256
+                      nullable: true
+                    public_note:
+                      type: string
+                      description: Public note about the drive
+                      maxLength: 8192
+                      nullable: true
+                    private_note:
+                      type: string
+                      description: Private note about the drive
+                      maxLength: 8192
+                      nullable: true
+                    icp_principal:
+                      $ref: "#/components/schemas/ICPPrincipalString"
+                    url_endpoint:
+                      type: string
+                      description: URL endpoint for the drive
+                      maxLength: 4096
+                      nullable: true
+                    external_id:
+                      $ref: "#/components/schemas/ExternalID"
+                      description: External identifier
+                      maxLength: 256
+                      nullable: true
+                    external_payload:
+                      $ref: "#/components/schemas/ExternalPayload"
+                      description: Additional data for external systems
+                      maxLength: 8192
+                      nullable: true
+                  required:
+                    - id
+              discriminator:
+                propertyName: id
+      responses:
+        "200":
+          description: Drive successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Drive"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /drives/delete:
+    post:
+      tags:
+        - Drives
+      summary: Delete Drive
+      description: Delete an existing drive
+      operationId: deleteDrive
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: ID of the drive to delete
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  $ref: "#/components/schemas/DriveID"
+                  description: ID of the drive to delete
+              required:
+                - id
+      responses:
+        "200":
+          description: Drive successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            $ref: "#/components/schemas/DriveID"
+                            description: ID of the deleted drive
+                          deleted:
+                            type: boolean
+                            description: Whether the drive was successfully deleted
+                        required:
+                          - id
+                          - deleted
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /canister/replay:
+    post:
+      tags:
+        - Canister
+      summary: Replay Drive
+      description: Replay state diffs for a drive
+      operationId: replayDrive
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: State diffs to replay
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                diffs:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/StateDiffRecord"
+                  description: List of state diffs to replay
+                notes:
+                  type: string
+                  description: Notes about the replay
+                  maxLength: 8192
+                  nullable: true
+              required:
+                - diffs
+      responses:
+        "200":
+          description: Successfully replayed drive state diffs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          timestamp_ns:
+                            type: integer
+                            format: int64
+                            description: Timestamp in nanoseconds when replay completed
+                          diffs_applied:
+                            type: integer
+                            description: Number of diffs that were applied
+                          checkpoint_diff_id:
+                            type: string
+                            description: ID of the checkpoint diff
+                            nullable: true
+                          final_checksum:
+                            type: string
+                            description: Final state checksum after replay
+                        required:
+                          - timestamp_ns
+                          - diffs_applied
+                          - final_checksum
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /canister/search:
+    post:
+      tags:
+        - Canister
+      summary: Search Drive
+      description: Search within drives
+      operationId: searchDrive
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Search parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  description: Search query
+                  maxLength: 256
+                categories:
+                  type: array
+                  items:
+                    type: string
+                    enum: [FILES, FOLDERS, METADATA]
+                  description: Categories to search in
+                page_size:
+                  type: integer
+                  description: Number of items per page
+                  default: 50
+                  minimum: 1
+                  maximum: 1000
+                cursor_up:
+                  type: string
+                  description: Cursor for pagination (previous page)
+                  maxLength: 256
+                  nullable: true
+                cursor_down:
+                  type: string
+                  description: Cursor for pagination (next page)
+                  maxLength: 256
+                  nullable: true
+                sort_by:
+                  type: string
+                  enum: [CREATED_AT, UPDATED_AT]
+                  default: UPDATED_AT
+                  description: Field to sort by
+                direction:
+                  type: string
+                  enum: [asc, desc]
+                  default: asc
+                  description: Sort direction
+              required:
+                - query
+      responses:
+        "200":
+          description: Successful search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              type: object
+                              description: Search result item
+                          page_size:
+                            type: integer
+                            description: Number of items per page
+                          total:
+                            type: integer
+                            description: Total number of items
+                          cursor_up:
+                            type: string
+                            description: Cursor for pagination (previous page)
+                            nullable: true
+                          cursor_down:
+                            type: string
+                            description: Cursor for pagination (next page)
+                            nullable: true
+                        required:
+                          - items
+                          - page_size
+                          - total
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /canister/reindex:
+    post:
+      tags:
+        - Canister
+      summary: Reindex Drive
+      description: Reindex a drive's searchable content
+      operationId: reindexDrive
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Reindex parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                force:
+                  type: boolean
+                  description: Force reindexing even if the rate limit would be exceeded
+                  nullable: true
+      responses:
+        "200":
+          description: Successful reindexing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          success:
+                            type: boolean
+                            description: Whether reindexing was successful
+                          timestamp_ms:
+                            type: integer
+                            format: int64
+                            description: Timestamp when reindexing completed
+                          indexed_count:
+                            type: integer
+                            description: Number of items indexed
+                        required:
+                          - success
+                          - timestamp_ms
+                          - indexed_count
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /canister/external_id:
+    post:
+      tags:
+        - Canister
+      summary: Get Drives by External IDs
+      description: Retrieve drives using their external identifiers
+      operationId: getDrivesByExternalIds
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: List of external IDs
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                external_ids:
+                  type: array
+                  items:
+                    type: string
+                    maxLength: 256
+                  description: List of external IDs to lookup
+              required:
+                - external_ids
+      responses:
+        "200":
+          description: Successful retrieval of drives by external IDs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          results:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                success:
+                                  type: boolean
+                                  description: Whether the lookup was successful
+                                message:
+                                  type: string
+                                  description: Result message
+                                external_id:
+                                  $ref: "#/components/schemas/ExternalID"
+                                  description: External ID that was looked up
+                                internal_ids:
+                                  type: array
+                                  items:
+                                    type: string
+                                  description: Internal IDs associated with the external ID
+                                  example: ["DriveID_abc123", "UserID_xyz789"]
+                              required:
+                                - success
+                                - message
+                                - external_id
+                                - internal_ids
+                        required:
+                          - results
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /canister/transfer_ownership:
+    post:
+      tags:
+        - Canister
+      summary: Transfer Drive Ownership
+      description: Transfer ownership of a drive to another user (requires owner to call twice with 24h between calls)
+      operationId: transferDriveOwnership
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: New owner information
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                next_owner_id:
+                  $ref: "#/components/schemas/UserID"
+                  description: ID of the user to transfer ownership to
+              required:
+                - next_owner_id
+      responses:
+        "200":
+          description: Ownership transfer initiated or completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            enum: [REQUESTED, COMPLETED]
+                            description: Status of the transfer request
+                          ready_ms:
+                            type: integer
+                            format: int64
+                            description: Timestamp when the transfer will be ready to complete
+                        required:
+                          - status
+                          - ready_ms
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /permissions/directory/get/{directory_permission_id}:
+    get:
+      tags:
+        - Permissions by Directory
+      summary: Get Directory Permission
+      description: Retrieve a directory permission by its ID
+      operationId: getDirectoryPermission
+      parameters:
+        - name: directory_permission_id
+          in: path
+          description: ID of the directory permission to retrieve
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/AuthHeader"
+      responses:
+        "200":
+          description: Successful retrieval of the directory permission
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/DirectoryPermission"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /permissions/directory/upsert:
+    post:
+      tags:
+        - Permissions by Directory
+      summary: Create or Update Directory Permission
+      description: Create a new directory permission or update an existing one
+      operationId: upsertDirectoryPermission
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Directory permission data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  $ref: "#/components/schemas/DirectoryPermissionID"
+                  description: ID of the permission to update (omit for create)
+                  nullable: true
+                resource_id:
+                  $ref: "#/components/schemas/DirectoryResourceID"
+                  description: ID of the resource to grant permission for
+                granted_to:
+                  $ref: "#/components/schemas/GranteeID"
+                  description: ID of the user/team to grant permission to
+                  nullable: true
+                permission_types:
+                  type: array
+                  items:
+                    type: string
+                    enum: [VIEW, UPLOAD, EDIT, DELETE, INVITE, MANAGE]
+                  description: Types of permissions to grant
+                begin_date_ms:
+                  type: integer
+                  format: int64
+                  description: When the permission becomes active
+                  nullable: true
+                expiry_date_ms:
+                  type: integer
+                  format: int64
+                  description: When the permission expires
+                  nullable: true
+                inheritable:
+                  type: boolean
+                  description: Whether permission applies to sub-resources
+                note:
+                  type: string
+                  description: Note about the permission
+                  maxLength: 8192
+                  nullable: true
+                metadata:
+                  type: object
+                  description: Additional metadata for the permission
+                  nullable: true
+                external_id:
+                  $ref: "#/components/schemas/ExternalID"
+                  description: External identifier
+                  maxLength: 256
+                  nullable: true
+                external_payload:
+                  $ref: "#/components/schemas/ExternalPayload"
+                  description: Additional data for external systems
+                  maxLength: 8192
+                  nullable: true
+              required:
+                - resource_id
+                - permission_types
+      responses:
+        "200":
+          description: Directory permission successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          permission:
+                            $ref: "#/components/schemas/DirectoryPermission"
+                        required:
+                          - permission
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /permissions/directory/delete:
+    post:
+      tags:
+        - Permissions by Directory
+      summary: Delete Directory Permission
+      description: Delete an existing directory permission
+      operationId: deleteDirectoryPermission
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: ID of the directory permission to delete
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                permission_id:
+                  $ref: "#/components/schemas/DirectoryPermissionID"
+                  description: ID of the directory permission to delete
+              required:
+                - permission_id
+      responses:
+        "200":
+          description: Directory permission successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          deleted_id:
+                            $ref: "#/components/schemas/DirectoryPermissionID"
+                            description: ID of the deleted directory permission
+                        required:
+                          - deleted_id
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /permissions/directory/check:
+    post:
+      tags:
+        - Permissions by Directory
+      summary: Check Permissions by Directory
+      description: Check what permissions a user has for a specific resource
+      operationId: checkDirectoryPermissions
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Resource and grantee to check permissions for
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resource_id:
+                  $ref: "#/components/schemas/DirectoryResourceID"
+                  description: ID of the resource to check permissions for
+                grantee_id:
+                  $ref: "#/components/schemas/GranteeID"
+                  description: ID of the user/team to check permissions for
+              required:
+                - resource_id
+                - grantee_id
+      responses:
+        "200":
+          description: Successful permission check
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          resource_id:
+                            $ref: "#/components/schemas/DirectoryResourceID"
+                            description: ID of the resource checked
+                          grantee_id:
+                            $ref: "#/components/schemas/GranteeID"
+                            description: ID of the grantee checked
+                          permissions:
+                            type: array
+                            items:
+                              type: string
+                              enum: [VIEW, UPLOAD, EDIT, DELETE, INVITE, MANAGE]
+                            description: Permissions the grantee has for the resource
+                        required:
+                          - resource_id
+                          - grantee_id
+                          - permissions
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /permissions/directory/redeem:
+    post:
+      tags:
+        - Permissions by Directory
+      summary: Redeem Directory Permission
+      description: Redeem a placeholder permission for a specific user
+      operationId: redeemDirectoryPermission
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Permission and user information
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                permission_id:
+                  $ref: "#/components/schemas/DirectoryPermissionID"
+                  description: ID of the placeholder permission to redeem
+                user_id:
+                  $ref: "#/components/schemas/UserID"
+                  description: ID of the user to redeem the permission for
+              required:
+                - permission_id
+                - user_id
+      responses:
+        "200":
+          description: Permission successfully redeemed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          permission:
+                            $ref: "#/components/schemas/DirectoryPermission"
+                        required:
+                          - permission
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /permissions/system/get/{system_permission_id}:
+    get:
+      tags:
+        - Permissions by System
+      summary: Get System Permission
+      description: Retrieve a system permission by its ID
+      operationId: getSystemPermission
+      parameters:
+        - name: system_permission_id
+          in: path
+          description: ID of the system permission to retrieve
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/AuthHeader"
+      responses:
+        "200":
+          description: Successful retrieval of the system permission
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/SystemPermission"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /permissions/system/upsert:
+    post:
+      tags:
+        - Permissions by System
+      summary: Create or Update System Permission
+      description: Create a new system permission or update an existing one
+      operationId: upsertSystemPermission
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: System permission data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  $ref: "#/components/schemas/SystemPermissionID"
+                  description: ID of the permission to update (omit for create)
+                  nullable: true
+                resource_id:
+                  $ref: "#/components/schemas/SystemResourceID"
+                  description: ID of the resource to grant permission for
+
+                granted_to:
+                  $ref: "#/components/schemas/GranteeID"
+                  description: ID of the user/team to grant permission to
+                  nullable: true
+                permission_types:
+                  type: array
+                  items:
+                    type: string
+                    enum: [CREATE, UPDATE, DELETE, VIEW, INVITE]
+                  description: Types of permissions to grant
+                begin_date_ms:
+                  type: integer
+                  format: int64
+                  description: When the permission becomes active
+                  nullable: true
+                expiry_date_ms:
+                  type: integer
+                  format: int64
+                  description: When the permission expires
+                  nullable: true
+                note:
+                  type: string
+                  description: Note about the permission
+                  maxLength: 8192
+                  nullable: true
+                metadata:
+                  type: object
+                  description: Additional metadata for the permission
+                  nullable: true
+                external_id:
+                  $ref: "#/components/schemas/ExternalID"
+                  description: External identifier
+                  maxLength: 256
+                  nullable: true
+                external_payload:
+                  $ref: "#/components/schemas/ExternalPayload"
+                  description: Additional data for external systems
+                  maxLength: 8192
+                  nullable: true
+              required:
+                - resource_id
+                - permission_types
+      responses:
+        "200":
+          description: System permission successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          permission:
+                            $ref: "#/components/schemas/SystemPermission"
+                        required:
+                          - permission
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /permissions/system/delete:
+    post:
+      tags:
+        - Permissions by System
+      summary: Delete System Permission
+      description: Delete an existing system permission
+      operationId: deleteSystemPermission
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: ID of the system permission to delete
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                permission_id:
+                  $ref: "#/components/schemas/SystemPermissionID"
+                  description: ID of the system permission to delete
+              required:
+                - permission_id
+      responses:
+        "200":
+          description: System permission successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          deleted_id:
+                            $ref: "#/components/schemas/SystemPermissionID"
+                            description: ID of the deleted system permission
+                        required:
+                          - deleted_id
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /permissions/system/check:
+    post:
+      tags:
+        - Permissions by System
+      summary: Check Permissions by System
+      description: Check what permissions a user has for a specific system resource
+      operationId: checkSystemPermissions
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Resource and grantee to check permissions for
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                resource_id:
+                  $ref: "#/components/schemas/SystemResourceID"
+                  description: ID of the resource to check permissions for
+                grantee_id:
+                  $ref: "#/components/schemas/GranteeID"
+                  description: ID of the user/team to check permissions for
+              required:
+                - resource_id
+                - grantee_id
+      responses:
+        "200":
+          description: Successful permission check
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          resource_id:
+                            $ref: "#/components/schemas/SystemResourceID"
+                            description: ID of the resource checked
+                          grantee_id:
+                            $ref: "#/components/schemas/GranteeID"
+                            description: ID of the grantee checked
+                          permissions:
+                            type: array
+                            items:
+                              type: string
+                              enum: [CREATE, UPDATE, DELETE, VIEW, INVITE]
+                            description: Permissions the grantee has for the resource
+                        required:
+                          - resource_id
+                          - grantee_id
+                          - permissions
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /permissions/system/redeem:
+    post:
+      tags:
+        - Permissions by System
+      summary: Redeem System Permission
+      description: Redeem a placeholder permission for a specific user
+      operationId: redeemSystemPermission
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Permission and user information
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                permission_id:
+                  $ref: "#/components/schemas/SystemPermissionID"
+                  description: ID of the placeholder permission to redeem
+                user_id:
+                  $ref: "#/components/schemas/UserID"
+                  description: ID of the user to redeem the permission for
+              required:
+                - permission_id
+                - user_id
+      responses:
+        "200":
+          description: Permission successfully redeemed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          permission:
+                            $ref: "#/components/schemas/SystemPermission"
+                        required:
+                          - permission
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /tags/get/{tag_id}:
+    get:
+      tags:
+        - Tags
+      summary: Get Tag
+      description: Retrieve a tag by its ID
+      operationId: getTag
+      parameters:
+        - name: id
+          in: path
+          description: ID of the tag to retrieve, or the tag value string itself
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/AuthHeader"
+      responses:
+        "200":
+          description: Successful retrieval of the tag
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Tag"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /tags/list:
+    post:
+      tags:
+        - Tags
+      summary: List Tags
+      description: List tags with optional filtering and pagination
+      operationId: listTags
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Filtering and pagination parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filters:
+                  type: object
+                  properties:
+                    prefix:
+                      type: string
+                      description: Filter tags by prefix
+                      maxLength: 256
+                      nullable: true
+                page_size:
+                  type: integer
+                  description: Number of items per page
+                  default: 50
+                  minimum: 1
+                  maximum: 1000
+                direction:
+                  type: string
+                  description: Sort direction
+                  enum: [asc, desc]
+                  default: "asc"
+                cursor_up:
+                  type: string
+                  description: Cursor for pagination (previous page)
+                  maxLength: 256
+                  nullable: true
+                cursor_down:
+                  type: string
+                  description: Cursor for pagination (next page)
+                  maxLength: 256
+                  nullable: true
+      responses:
+        "200":
+          description: Successful retrieval of tags
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/Tag"
+                          page_size:
+                            type: integer
+                            description: Number of items per page
+                          total:
+                            type: integer
+                            description: Total number of items
+                          cursor_up:
+                            type: string
+                            description: Cursor for pagination (previous page)
+                            nullable: true
+                          cursor_down:
+                            type: string
+                            description: Cursor for pagination (next page)
+                            nullable: true
+                        required:
+                          - items
+                          - page_size
+                          - total
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /tags/upsert:
+    post:
+      tags:
+        - Tags
+      summary: Create or Update Tag
+      description: Create a new tag or update an existing one
+      operationId: upsertTag
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Tag data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  description: Create a new tag
+                  properties:
+                    value:
+                      type: string
+                      description: The tag value
+                      maxLength: 256
+                    description:
+                      type: string
+                      description: Description of the tag
+                      maxLength: 8192
+                      nullable: true
+                    color:
+                      type: string
+                      description: Color in hex format (e.g., #RRGGBB)
+                      pattern: "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+                      nullable: true
+                    external_id:
+                      $ref: "#/components/schemas/ExternalID"
+                      description: External identifier
+                      maxLength: 256
+                      nullable: true
+                    external_payload:
+                      $ref: "#/components/schemas/ExternalPayload"
+                      description: Additional data for external systems
+                      maxLength: 8192
+                      nullable: true
+                  required:
+                    - value
+                - type: object
+                  description: Update an existing tag
+                  properties:
+                    id:
+                      $ref: "#/components/schemas/TagID"
+                      description: ID of the tag to update
+                    value:
+                      $ref: "#/components/schemas/TagValue"
+                      description: New value for the tag
+                      maxLength: 256
+                      nullable: true
+                    description:
+                      type: string
+                      description: New description for the tag
+                      maxLength: 8192
+                      nullable: true
+                    color:
+                      type: string
+                      description: New color in hex format (e.g., #RRGGBB)
+                      pattern: "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+                      nullable: true
+                    external_id:
+                      $ref: "#/components/schemas/ExternalID"
+                      description: External identifier
+                      maxLength: 256
+                      nullable: true
+                    external_payload:
+                      $ref: "#/components/schemas/ExternalPayload"
+                      description: Additional data for external systems
+                      maxLength: 8192
+                      nullable: true
+                  required:
+                    - id
+              discriminator:
+                propertyName: id
+      responses:
+        "200":
+          description: Tag successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Tag"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /tags/delete:
+    post:
+      tags:
+        - Tags
+      summary: Delete Tag
+      description: Delete an existing tag
+      operationId: deleteTag
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: ID of the tag to delete
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  $ref: "#/components/schemas/TagID"
+                  description: ID of the tag to delete
+              required:
+                - id
+      responses:
+        "200":
+          description: Tag successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            $ref: "#/components/schemas/TagID"
+                            description: ID of the deleted tag
+                          deleted:
+                            type: boolean
+                            description: Whether the tag was successfully deleted
+                        required:
+                          - id
+                          - deleted
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /tags/pin:
+    post:
+      tags:
+        - Tags
+      summary: Add or Remove Tag from Resource
+      description: Add or remove a tag from a resource
+      operationId: tagResource
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Tag and resource information
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tag_id:
+                  $ref: "#/components/schemas/TagID"
+                  description: ID of the tag
+                resource_id:
+                  type: string
+                  description: ID of the resource to tag or untag. can be any id type
+                  example: "DriveID_abc123"
+                add:
+                  type: boolean
+                  description: True to add the tag, false to remove it
+              required:
+                - tag_id
+                - resource_id
+                - add
+      responses:
+        "200":
+          description: Tag operation completed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          success:
+                            type: boolean
+                            description: Whether the operation was successful
+                          message:
+                            type: string
+                            description: Additional information about the operation
+                            nullable: true
+                          tag:
+                            $ref: "#/components/schemas/Tag"
+                            nullable: true
+                        required:
+                          - success
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /teams/get/{team_id}:
+    get:
+      tags:
+        - Teams
+      summary: Get Team
+      description: Retrieve a team by its ID
+      operationId: getTeam
+      parameters:
+        - name: team_id
+          in: path
+          description: ID of the team to retrieve
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/AuthHeader"
+      responses:
+        "200":
+          description: Successful retrieval of the team
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Team"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /teams/list:
+    post:
+      tags:
+        - Teams
+      summary: List Teams
+      description: List teams with optional filtering and pagination
+      operationId: listTeams
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Filtering and pagination parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filters:
+                  type: string
+                  description: Filter string for teams
+                  maxLength: 256
+                  default: ""
+                page_size:
+                  type: integer
+                  description: Number of items per page
+                  default: 50
+                  minimum: 1
+                  maximum: 1000
+                direction:
+                  type: string
+                  description: Sort direction
+                  enum: [asc, desc]
+                  default: "asc"
+                cursor_up:
+                  type: string
+                  description: Cursor for pagination (previous page)
+                  maxLength: 256
+                  nullable: true
+                cursor_down:
+                  type: string
+                  description: Cursor for pagination (next page)
+                  maxLength: 256
+                  nullable: true
+      responses:
+        "200":
+          description: Successful retrieval of teams
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/Team"
+                          page_size:
+                            type: integer
+                            description: Number of items per page
+                          total:
+                            type: integer
+                            description: Total number of items
+                          cursor_up:
+                            type: string
+                            description: Cursor for pagination (previous page)
+                            nullable: true
+                          cursor_down:
+                            type: string
+                            description: Cursor for pagination (next page)
+                            nullable: true
+                        required:
+                          - items
+                          - page_size
+                          - total
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /teams/upsert:
+    post:
+      tags:
+        - Teams
+      summary: Create or Update Team
+      description: Create a new team or update an existing one
+      operationId: upsertTeam
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Team data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  description: Create a new team
+                  properties:
+                    name:
+                      type: string
+                      description: Name for the team
+                      maxLength: 256
+                    public_note:
+                      type: string
+                      description: Public note about the team
+                      maxLength: 8192
+                      nullable: true
+                    private_note:
+                      type: string
+                      description: Private note about the team
+                      maxLength: 8192
+                      nullable: true
+                    url_endpoint:
+                      type: string
+                      description: URL endpoint for the team
+                      maxLength: 4096
+                      nullable: true
+                    external_id:
+                      $ref: "#/components/schemas/ExternalID"
+                      description: External identifier
+                      maxLength: 256
+                      nullable: true
+                    external_payload:
+                      $ref: "#/components/schemas/ExternalPayload"
+                      description: Additional data for external systems
+                      maxLength: 8192
+                      nullable: true
+                  required:
+                    - name
+                - type: object
+                  description: Update an existing team
+                  properties:
+                    id:
+                      $ref: "#/components/schemas/TeamID"
+                      description: ID of the team to update
+                    name:
+                      type: string
+                      description: New name for the team
+                      maxLength: 256
+                      nullable: true
+                    public_note:
+                      type: string
+                      description: Public note about the team
+                      maxLength: 8192
+                      nullable: true
+                    private_note:
+                      type: string
+                      description: Private note about the team
+                      maxLength: 8192
+                      nullable: true
+                    url_endpoint:
+                      type: string
+                      description: URL endpoint for the team
+                      maxLength: 4096
+                      nullable: true
+                    external_id:
+                      $ref: "#/components/schemas/ExternalID"
+                      description: External identifier
+                      maxLength: 256
+                      nullable: true
+                    external_payload:
+                      $ref: "#/components/schemas/ExternalPayload"
+                      description: Additional data for external systems
+                      maxLength: 8192
+                      nullable: true
+                  required:
+                    - id
+              discriminator:
+                propertyName: id
+      responses:
+        "200":
+          description: Team successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Team"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /teams/delete:
+    post:
+      tags:
+        - Teams
+      summary: Delete Team
+      description: Delete an existing team
+      operationId: deleteTeam
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: ID of the team to delete
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  $ref: "#/components/schemas/TeamID"
+                  description: ID of the team to delete
+              required:
+                - id
+      responses:
+        "200":
+          description: Team successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            $ref: "#/components/schemas/TeamID"
+                            description: ID of the deleted team
+                          deleted:
+                            type: boolean
+                            description: Whether the team was successfully deleted
+                        required:
+                          - id
+                          - deleted
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /teams/validate:
+    post:
+      tags:
+        - Teams
+      summary: Validate Team Membership
+      description: Verify if a user belongs to a specific team
+      operationId: validateTeam
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: User and team information to validate
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  $ref: "#/components/schemas/UserID"
+                  description: ID of the user to check
+                team_id:
+                  $ref: "#/components/schemas/TeamID"
+                  description: ID of the team to check
+              required:
+                - user_id
+                - team_id
+      responses:
+        "200":
+          description: Team membership validation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          is_member:
+                            type: boolean
+                            description: Whether the user is a member of the team
+                          team_id:
+                            $ref: "#/components/schemas/TeamID"
+                            description: ID of the team that was checked
+                          user_id:
+                            $ref: "#/components/schemas/UserID"
+                            description: ID of the user that was checked
+                        required:
+                          - is_member
+                          - team_id
+                          - user_id
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /teams/invites/get/{invite_id}:
+    get:
+      tags:
+        - Team Invites
+      summary: Get Team Invite
+      description: Retrieve a team invite by its ID
+      operationId: getTeamInvite
+      parameters:
+        - name: invite_id
+          in: path
+          description: ID of the team invite to retrieve
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/AuthHeader"
+      responses:
+        "200":
+          description: Successful retrieval of the team invite
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/TeamInvite"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /teams/invites/list:
+    post:
+      tags:
+        - Team Invites
+      summary: List Team Invites
+      description: List team invites with optional filtering and pagination
+      operationId: listTeamInvites
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Team ID and pagination parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                team_id:
+                  $ref: "#/components/schemas/TeamID"
+                  description: ID of the team to list invites for
+                filters:
+                  type: string
+                  description: Filter string for team invites
+                  maxLength: 256
+                  default: ""
+                page_size:
+                  type: integer
+                  description: Number of items per page
+                  default: 50
+                  minimum: 1
+                  maximum: 1000
+                direction:
+                  type: string
+                  description: Sort direction
+                  enum: [asc, desc]
+                  default: "asc"
+                cursor_up:
+                  type: string
+                  description: Cursor for pagination (previous page)
+                  maxLength: 256
+                  nullable: true
+                cursor_down:
+                  type: string
+                  description: Cursor for pagination (next page)
+                  maxLength: 256
+                  nullable: true
+              required:
+                - team_id
+      responses:
+        "200":
+          description: Successful retrieval of team invites
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/TeamInvite"
+                          page_size:
+                            type: integer
+                            description: Number of items per page
+                          total:
+                            type: integer
+                            description: Total number of items
+                          cursor_up:
+                            type: string
+                            description: Cursor for pagination (previous page)
+                            nullable: true
+                          cursor_down:
+                            type: string
+                            description: Cursor for pagination (next page)
+                            nullable: true
+                        required:
+                          - items
+                          - page_size
+                          - total
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /teams/invites/upsert:
+    post:
+      tags:
+        - Team Invites
+      summary: Create or Update Team Invite
+      description: Create a new team invite or update an existing one
+      operationId: upsertTeamInvite
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Team invite data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  description: Create a new team invite
+                  properties:
+                    team_id:
+                      $ref: "#/components/schemas/TeamID"
+                      description: ID of the team for the invite
+                    invitee_id:
+                      $ref: "#/components/schemas/UserID"
+                      description: ID of the user to invite
+                      nullable: true
+                    role:
+                      type: string
+                      enum: [ADMIN, MEMBER]
+                      description: Role to assign to the invited user
+                    active_from:
+                      type: integer
+                      format: int64
+                      description: Timestamp when the invite becomes active
+                      nullable: true
+                    expires_at:
+                      type: integer
+                      format: int64
+                      description: Timestamp when the invite expires
+                      nullable: true
+                    note:
+                      type: string
+                      description: Note about the invite
+                      maxLength: 8192
+                      nullable: true
+                    external_id:
+                      $ref: "#/components/schemas/ExternalID"
+                      description: External identifier
+                      maxLength: 256
+                      nullable: true
+                    external_payload:
+                      $ref: "#/components/schemas/ExternalPayload"
+                      description: Additional data for external systems
+                      maxLength: 8192
+                      nullable: true
+                  required:
+                    - team_id
+                    - role
+                - type: object
+                  description: Update an existing team invite
+                  properties:
+                    id:
+                      $ref: "#/components/schemas/TeamInviteID"
+                      description: ID of the invite to update
+                    role:
+                      type: string
+                      enum: [ADMIN, MEMBER]
+                      description: New role to assign
+                      nullable: true
+                    active_from:
+                      type: integer
+                      format: int64
+                      description: New timestamp when the invite becomes active
+                      nullable: true
+                    expires_at:
+                      type: integer
+                      format: int64
+                      description: New timestamp when the invite expires
+                      nullable: true
+                    note:
+                      type: string
+                      description: New note about the invite
+                      maxLength: 8192
+                      nullable: true
+                    external_id:
+                      $ref: "#/components/schemas/ExternalID"
+                      description: External identifier
+                      maxLength: 256
+                      nullable: true
+                    external_payload:
+                      $ref: "#/components/schemas/ExternalPayload"
+                      description: Additional data for external systems
+                      maxLength: 8192
+                      nullable: true
+                  required:
+                    - id
+              discriminator:
+                propertyName: id
+      responses:
+        "200":
+          description: Team invite successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/TeamInvite"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /teams/invites/delete:
+    post:
+      tags:
+        - Team Invites
+      summary: Delete Team Invite
+      description: Delete an existing team invite
+      operationId: deleteTeamInvite
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: ID of the team invite to delete
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  $ref: "#/components/schemas/TeamInviteID"
+                  description: ID of the team invite to delete
+              required:
+                - id
+      responses:
+        "200":
+          description: Team invite successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            $ref: "#/components/schemas/TeamInviteID"
+                            description: ID of the deleted team invite
+                          deleted:
+                            type: boolean
+                            description: Whether the team invite was successfully deleted
+                        required:
+                          - id
+                          - deleted
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /teams/invites/redeem:
+    post:
+      tags:
+        - Team Invites
+      summary: Redeem Team Invite
+      description: Redeem a team invite for a specific user
+      operationId: redeemTeamInvite
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Invite and user information
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                invite_id:
+                  $ref: "#/components/schemas/TeamInviteID"
+                  description: ID of the team invite to redeem
+                user_id:
+                  $ref: "#/components/schemas/UserID"
+                  description: ID of the user to redeem the invite for
+              required:
+                - invite_id
+                - user_id
+      responses:
+        "200":
+          description: Team invite successfully redeemed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          invite:
+                            $ref: "#/components/schemas/TeamInvite"
+                        required:
+                          - invite
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /webhooks/get/{webhook_id}:
+    get:
+      tags:
+        - Webhooks
+      summary: Get Webhook
+      description: Retrieve a webhook by its ID
+      operationId: getWebhook
+      parameters:
+        - name: webhook_id
+          in: path
+          description: ID of the webhook to retrieve
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/AuthHeader"
+      responses:
+        "200":
+          description: Successful retrieval of the webhook
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Webhook"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /webhooks/list:
+    post:
+      tags:
+        - Webhooks
+      summary: List Webhooks
+      description: List webhooks with optional filtering and pagination
+      operationId: listWebhooks
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Filtering and pagination parameters
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filters:
+                  type: string
+                  description: Filter string for webhooks
+                  maxLength: 256
+                  default: ""
+                page_size:
+                  type: integer
+                  description: Number of items per page
+                  default: 50
+                  minimum: 1
+                  maximum: 1000
+                direction:
+                  type: string
+                  description: Sort direction
+                  enum: [asc, desc]
+                  default: "asc"
+                cursor_up:
+                  type: string
+                  description: Cursor for pagination (previous page)
+                  maxLength: 256
+                  nullable: true
+                cursor_down:
+                  type: string
+                  description: Cursor for pagination (next page)
+                  maxLength: 256
+                  nullable: true
+      responses:
+        "200":
+          description: Successful retrieval of webhooks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              $ref: "#/components/schemas/Webhook"
+                          page_size:
+                            type: integer
+                            description: Number of items per page
+                          total:
+                            type: integer
+                            description: Total number of items
+                          cursor_up:
+                            type: string
+                            description: Cursor for pagination (previous page)
+                            nullable: true
+                          cursor_down:
+                            type: string
+                            description: Cursor for pagination (next page)
+                            nullable: true
+                        required:
+                          - items
+                          - page_size
+                          - total
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /webhooks/upsert:
+    post:
+      tags:
+        - Webhooks
+      summary: Create or Update Webhook
+      description: Create a new webhook or update an existing one
+      operationId: upsertWebhook
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Webhook data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  description: Create a new webhook
+                  properties:
+                    alt_index:
+                      type: string
+                      description: Alternative index for the webhook
+                      maxLength: 256
+                    url:
+                      type: string
+                      description: URL to send webhook events to
+                      maxLength: 4096
+                    event:
+                      type: string
+                      description: Event type to trigger the webhook
+                      maxLength: 256
+                    signature:
+                      type: string
+                      description: Signature for webhook verification
+                      maxLength: 256
+                      nullable: true
+                    description:
+                      type: string
+                      description: Description of the webhook
+                      maxLength: 8192
+                      nullable: true
+                    filters:
+                      type: string
+                      description: Filter string for events
+                      maxLength: 256
+                      nullable: true
+                    external_id:
+                      $ref: "#/components/schemas/ExternalID"
+                      description: External identifier
+                      maxLength: 256
+                      nullable: true
+                    external_payload:
+                      $ref: "#/components/schemas/ExternalPayload"
+                      description: Additional data for external systems
+                      maxLength: 8192
+                      nullable: true
+                  required:
+                    - alt_index
+                    - url
+                    - event
+                - type: object
+                  description: Update an existing webhook
+                  properties:
+                    id:
+                      $ref: "#/components/schemas/WebhookID"
+                      description: ID of the webhook to update
+                    url:
+                      type: string
+                      description: New URL for the webhook
+                      maxLength: 4096
+                      nullable: true
+                    signature:
+                      type: string
+                      description: New signature for webhook verification
+                      maxLength: 256
+                      nullable: true
+                    description:
+                      type: string
+                      description: New description for the webhook
+                      maxLength: 8192
+                      nullable: true
+                    active:
+                      type: boolean
+                      description: Whether the webhook is active
+                      nullable: true
+                    filters:
+                      type: string
+                      description: New filter string for events
+                      maxLength: 256
+                      nullable: true
+                    external_id:
+                      $ref: "#/components/schemas/ExternalID"
+                      description: External identifier
+                      maxLength: 256
+                      nullable: true
+                    external_payload:
+                      $ref: "#/components/schemas/ExternalPayload"
+                      description: Additional data for external systems
+                      maxLength: 8192
+                      nullable: true
+                  required:
+                    - id
+              discriminator:
+                propertyName: id
+      responses:
+        "200":
+          description: Webhook successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Webhook"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /webhooks/delete:
+    post:
+      tags:
+        - Webhooks
+      summary: Delete Webhook
+      description: Delete an existing webhook
+      operationId: deleteWebhook
+      parameters:
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: ID of the webhook to delete
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  $ref: "#/components/schemas/WebhookID"
+                  description: ID of the webhook to delete
+              required:
+                - id
+      responses:
+        "200":
+          description: Webhook successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            $ref: "#/components/schemas/WebhookID"
+                            description: ID of the deleted webhook
+                          deleted:
+                            type: boolean
+                            description: Whether the webhook was successfully deleted
+                        required:
+                          - id
+                          - deleted
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+components:
+  parameters:
+    AuthHeader:
+      name: Authorization
+      in: header
+      description: Bearer token for authentication
+      required: true
+      schema:
+        type: string
+        pattern: '^Bearer\s.+$'
+        example: "Bearer eyJhbGciOiJIUz..."
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      description: Bearer token for authentication
+
+  schemas:
+    # =========================================================================
+    # Core Data Models
+    # =========================================================================
+    ApiKey:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/ApiKeyID"
+        value:
+          $ref: "#/components/schemas/ApiKeyValue"
+          description: This is only visible on GET, not list
+        user_id:
+          $ref: "#/components/schemas/UserID"
+        name:
+          type: string
+          description: Human-readable name for the API key
+        created_at:
+          type: integer
+          format: int64
+          description: Timestamp when the API key was created
+        expires_at:
+          type: integer
+          format: int64
+          description: Timestamp when the API key expires, -1 for never expires
+        is_revoked:
+          type: boolean
+          description: Whether the API key has been revoked
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/TagValue"
+          description: Tags associated with the API key
+        external_id:
+          $ref: "#/components/schemas/ExternalID"
+          nullable: true
+        external_payload:
+          $ref: "#/components/schemas/ExternalPayload"
+          nullable: true
+      required:
+        - id
+        - value
+        - user_id
+        - name
+        - created_at
+        - expires_at
+        - is_revoked
+
+    Contact:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/UserID"
+        nickname:
+          type: string
+          description: Human-readable nickname for the contact
+        public_note:
+          type: string
+          description: Public note about the contact
+        private_note:
+          type: string
+          description: Private note about the contact
+          nullable: true
+        evm_public_address:
+          $ref: "#/components/schemas/EvmPublicAddress"
+          description: EVM public address
+        icp_principal:
+          $ref: "#/components/schemas/ICPPrincipalString"
+        teams:
+          type: array
+          items:
+            $ref: "#/components/schemas/TeamID"
+          description: Teams the contact belongs to
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/TagValue"
+          description: Tags associated with the contact
+        external_id:
+          $ref: "#/components/schemas/ExternalID"
+          nullable: true
+        external_payload:
+          $ref: "#/components/schemas/ExternalPayload"
+          nullable: true
+      required:
+        - id
+        - nickname
+        - public_note
+        - evm_public_address
+        - icp_principal
+        - teams
+        - tags
+
+    Disk:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/DiskID"
+        name:
+          type: string
+          description: Human-readable name for the disk
+        disk_type:
+          $ref: "#/components/schemas/DiskType"
+        public_note:
+          type: string
+          description: Public note about the disk
+          nullable: true
+        private_note:
+          type: string
+          description: Private note about the disk
+          nullable: true
+        auth_json:
+          type: string
+          description: Authentication JSON for the disk
+          nullable: true
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/TagValue"
+          description: Tags associated with the disk
+        external_id:
+          $ref: "#/components/schemas/ExternalID"
+          nullable: true
+        external_payload:
+          $ref: "#/components/schemas/ExternalPayload"
+          nullable: true
+      required:
+        - id
+        - name
+        - disk_type
+        - tags
+
+    Drive:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/DriveID"
+          description: Unique identifier for the drive
+        name:
+          type: string
+          description: Human-readable name for the drive
+        icp_principal:
+          $ref: "#/components/schemas/ICPPrincipalString"
+          description: ICP principal associated with the drive
+        public_note:
+          type: string
+          description: Public note about the drive
+          nullable: true
+        private_note:
+          type: string
+          description: Private note about the drive
+          nullable: true
+        url_endpoint:
+          type: string
+          description: URL endpoint for the drive's REST API
+        last_indexed_ms:
+          type: integer
+          format: int64
+          description: Timestamp when the drive was last indexed
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the drive
+        external_id:
+          $ref: "#/components/schemas/ExternalID"
+          description: External identifier
+          nullable: true
+        external_payload:
+          $ref: "#/components/schemas/ExternalPayload"
+          description: Additional data for external systems
+          nullable: true
+      required:
+        - id
+        - name
+        - icp_principal
+        - url_endpoint
+        - tags
+
+    DirectoryPermission:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/DirectoryPermissionID"
+          description: Unique identifier for the directory permission
+        resource_id:
+          $ref: "#/components/schemas/DirectoryResourceID"
+          description: ID of the resource the permission applies to
+        resource_path:
+          type: string
+          description: Path of the resource the permission applies to
+        granted_to:
+          $ref: "#/components/schemas/GranteeID"
+          description: ID of the user/team granted the permission
+        granted_by:
+          $ref: "#/components/schemas/UserID"
+          description: ID of the user who granted the permission
+        permission_types:
+          type: array
+          items:
+            type: string
+            enum: [VIEW, UPLOAD, EDIT, DELETE, INVITE, MANAGE]
+          description: Types of permissions granted
+        begin_date_ms:
+          type: integer
+          format: int64
+          description: When the permission becomes active
+        expiry_date_ms:
+          type: integer
+          format: int64
+          description: When the permission expires
+        inheritable:
+          type: boolean
+          description: Whether permission applies to sub-resources
+        note:
+          type: string
+          description: Note about the permission
+        created_at:
+          type: integer
+          format: int64
+          description: Timestamp when the permission was created
+        last_modified_at:
+          type: integer
+          format: int64
+          description: Timestamp when the permission was last modified
+        from_placeholder_grantee:
+          type: string
+          description: ID of the placeholder grantee if redeemed
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the permission
+      required:
+        - id
+        - resource_id
+        - resource_path
+        - granted_to
+        - granted_by
+        - permission_types
+        - begin_date_ms
+        - expiry_date_ms
+        - inheritable
+        - note
+        - created_at
+        - last_modified_at
+        - tags
+
+    SystemPermission:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/SystemPermissionID"
+          description: Unique identifier for the system permission
+        resource_id:
+          $ref: "#/components/schemas/SystemResourceID"
+          description: ID of the system resource the permission applies to
+        granted_to:
+          $ref: "#/components/schemas/GranteeID"
+          description: ID of the user/team granted the permission
+        granted_by:
+          $ref: "#/components/schemas/UserID"
+          description: ID of the user who granted the permission
+        permission_types:
+          type: array
+          items:
+            type: string
+            enum: [CREATE, UPDATE, DELETE, VIEW, INVITE]
+          description: Types of permissions granted
+        begin_date_ms:
+          type: integer
+          format: int64
+          description: When the permission becomes active
+        expiry_date_ms:
+          type: integer
+          format: int64
+          description: When the permission expires
+        note:
+          type: string
+          description: Note about the permission
+        created_at:
+          type: integer
+          format: int64
+          description: Timestamp when the permission was created
+        last_modified_at:
+          type: integer
+          format: int64
+          description: Timestamp when the permission was last modified
+        from_placeholder_grantee:
+          type: string
+          description: ID of the placeholder grantee if redeemed
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the permission
+        metadata:
+          type: object
+          description: Additional metadata for the permission
+          nullable: true
+        external_id:
+          $ref: "#/components/schemas/ExternalID"
+          description: External identifier
+          nullable: true
+        external_payload:
+          $ref: "#/components/schemas/ExternalPayload"
+          description: Additional data for external systems
+          nullable: true
+      required:
+        - id
+        - resource_id
+        - granted_to
+        - granted_by
+        - permission_types
+        - begin_date_ms
+        - expiry_date_ms
+        - note
+        - created_at
+        - last_modified_at
+        - tags
+
+    Tag:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/TagID"
+          description: Unique identifier for the tag
+        value:
+          type: string
+          description: Text value of the tag
+        description:
+          type: string
+          description: Description of the tag
+          nullable: true
+        color:
+          type: string
+          description: Color code in hex format
+        created_by:
+          type: string
+          description: ID of the user who created the tag
+        created_at:
+          type: integer
+          format: int64
+          description: Timestamp when the tag was created
+        last_updated_at:
+          type: integer
+          format: int64
+          description: Timestamp when the tag was last updated
+        resources:
+          type: array
+          items:
+            type: object
+            description: Resources tagged with this tag
+        tags:
+          type: array
+          items:
+            type: string
+            description: Other tags associated with this tag
+        external_id:
+          $ref: "#/components/schemas/ExternalID"
+          description: External identifier
+          nullable: true
+        external_payload:
+          $ref: "#/components/schemas/ExternalPayload"
+          description: Additional data for external systems
+          nullable: true
+      required:
+        - id
+        - value
+        - color
+        - created_by
+        - created_at
+        - last_updated_at
+        - resources
+        - tags
+
+    Team:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/TeamID"
+          description: Unique identifier for the team
+        name:
+          type: string
+          description: Name of the team
+        owner:
+          type: string
+          description: ID of the team owner
+        public_note:
+          type: string
+          description: Public note about the team
+          nullable: true
+        private_note:
+          type: string
+          description: Private note about the team
+          nullable: true
+        admin_invites:
+          type: array
+          items:
+            type: string
+          description: List of admin invite IDs
+        member_invites:
+          type: array
+          items:
+            type: string
+          description: List of member invite IDs
+        created_at:
+          type: integer
+          format: int64
+          description: Timestamp when the team was created
+        last_modified_at:
+          type: integer
+          format: int64
+          description: Timestamp when the team was last modified
+        drive_id:
+          $ref: "#/components/schemas/DriveID"
+          description: ID of the team's drive
+        url_endpoint:
+          type: string
+          description: URL endpoint for the team
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the team
+        external_id:
+          $ref: "#/components/schemas/ExternalID"
+          description: External identifier
+          nullable: true
+        external_payload:
+          $ref: "#/components/schemas/ExternalPayload"
+          description: Additional data for external systems
+          nullable: true
+      required:
+        - id
+        - name
+        - owner
+        - admin_invites
+        - member_invites
+        - created_at
+        - last_modified_at
+        - drive_id
+        - url_endpoint
+        - tags
+
+    TeamInvite:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/TeamInviteID"
+          description: Unique identifier for the team invite
+        team_id:
+          $ref: "#/components/schemas/TeamID"
+          description: ID of the team the invite is for
+        inviter_id:
+          $ref: "#/components/schemas/UserID"
+          description: ID of the user who created the invite
+        invitee_id:
+          $ref: "#/components/schemas/UserID"
+          description: ID of the user being invited
+        role:
+          type: string
+          enum: [ADMIN, MEMBER]
+          description: Role assigned to the invitee
+        note:
+          type: string
+          description: Note about the invite
+        active_from:
+          type: integer
+          format: int64
+          description: Timestamp when the invite becomes active
+        expires_at:
+          type: integer
+          format: int64
+          description: Timestamp when the invite expires
+        created_at:
+          type: integer
+          format: int64
+          description: Timestamp when the invite was created
+        last_modified_at:
+          type: integer
+          format: int64
+          description: Timestamp when the invite was last modified
+        from_placeholder_invitee:
+          type: string
+          description: PlaceholderID of the placeholder invitee if redeemed
+          nullable: true
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/TagValue"
+          description: Tags associated with the invite
+        external_id:
+          $ref: "#/components/schemas/ExternalID"
+          description: External identifier
+          nullable: true
+        external_payload:
+          $ref: "#/components/schemas/ExternalPayload"
+          description: Additional data for external systems
+          nullable: true
+      required:
+        - id
+        - team_id
+        - inviter_id
+        - invitee_id
+        - role
+        - note
+        - active_from
+        - expires_at
+        - created_at
+        - last_modified_at
+        - tags
+
+    Webhook:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/WebhookID"
+          description: Unique identifier for the webhook
+        url:
+          type: string
+          description: URL endpoint where webhook events are sent
+        alt_index:
+          type: string
+          description: Alternative index for the webhook
+        event:
+          type: string
+          description: Type of event that triggers the webhook
+        signature:
+          type: string
+          description: Signature for webhook verification
+        description:
+          type: string
+          description: Description of the webhook purpose
+        active:
+          type: boolean
+          description: Whether the webhook is currently active
+        filters:
+          type: string
+          description: Filter criteria for webhook events
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags associated with the webhook
+        external_id:
+          $ref: "#/components/schemas/ExternalID"
+          description: External identifier
+          nullable: true
+        external_payload:
+          $ref: "#/components/schemas/ExternalPayload"
+          description: Additional data for external systems
+          nullable: true
+      required:
+        - id
+        - url
+        - alt_index
+        - event
+        - signature
+        - description
+        - active
+        - filters
+        - tags
+
+    # =========================================================================
+    # IDs (grouped together)
+    # =========================================================================
+    ApiKeyID:
+      type: string
+      description: Unique identifier for an API key
+      example: "ApiKeyID_abc123"
+
+    UserID:
+      type: string
+      description: Unique identifier for a user
+      example: "UserID_abcdef123456"
+
+    TeamID:
+      type: string
+      description: Unique identifier for a team
+      example: "TeamID_123456"
+
+    TeamInviteID:
+      type: string
+      description: Unique identifier for a team invite
+      example: "TeamInviteID_abc123"
+
+    GranteeID:
+      type: string
+      description: Either a UserID or TeamID
+      example: "TeamID_abcdef123456"
+
+    DiskID:
+      type: string
+      description: Unique identifier for a disk
+      example: "DiskID_abc123"
+
+    DirectoryResourceID:
+      type: string
+      description: Unique identifier for a directory resource (file or folder)
+      enum:
+        - "FileID_<id>"
+        - "FolderID_<id>"
+      example: "FileID_abcdef123456"
+
+    SystemResourceID:
+      type: object
+      description: Unique identifier for a system resource (table or record)
+      oneOf:
+        - $ref: "#/components/schemas/SystemTableResource"
+        - $ref: "#/components/schemas/SystemRecordResource"
+
+    DirectoryPermissionID:
+      type: string
+      description: Unique identifier for a directory permission
+      example: "DirectoryPermissionID_abc123"
+
+    SystemPermissionID:
+      type: string
+      description: Unique identifier for a system permission
+      example: "SystemPermissionID_abc123"
+
+    TagID:
+      type: string
+      description: Unique identifier for a tag
+      example: "TagID_abc123"
+
+    WebhookID:
+      type: string
+      description: Unique identifier for a webhook
+      example: "WebhookID_abc123"
+
+    SystemTableResource:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: ["Table"]
+        value:
+          type: string
+          enum:
+            [
+              "DRIVES",
+              "DISKS",
+              "CONTACTS",
+              "TEAMS",
+              "API_KEYS",
+              "PERMISSIONS",
+              "WEBHOOKS",
+              "TAGS",
+            ]
+      required:
+        - type
+        - value
+      example: { "type": "Table", "value": "DRIVES" }
+
+    SystemRecordResource:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: ["Record"]
+        value:
+          type: string
+          description: ID with appropriate prefix (e.g., "DriveID_abcdef123456")
+      required:
+        - type
+        - value
+      example: { "type": "Record", "value": "DriveID_abcdef123456" }
+
+    StateDiffRecord:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/StateDiffRecordID"
+          description: Unique identifier for the state diff
+        timestamp_ns:
+          type: integer
+          format: int64
+          description: Timestamp in nanoseconds when the diff was created
+        notes:
+          type: string
+          description: Notes about the diff
+          nullable: true
+        drive_id:
+          $ref: "#/components/schemas/DriveID"
+          description: ID of the drive this diff applies to
+        url_endpoint:
+          type: string
+          description: URL endpoint where the diff can be fetched
+        implementation:
+          type: string
+          enum: [RUST_ICP_CANISTER, JAVASCRIPT_RUNTIME]
+          description: Implementation type for this diff
+        diff_forward:
+          type: string
+          description: Base64 encoded forward diff
+        diff_backward:
+          type: string
+          description: Base64 encoded backward diff
+        checksum_forward:
+          type: string
+          description: Checksum for the state after applying the forward diff
+        checksum_backward:
+          type: string
+          description: Checksum for the state after applying the backward diff
+      required:
+        - id
+        - timestamp_ns
+        - drive_id
+        - url_endpoint
+        - implementation
+        - diff_forward
+        - diff_backward
+        - checksum_forward
+        - checksum_backward
+
+    # =========================================================================
+    # Basic Types (Core Types)
+    # =========================================================================
+    ApiKeyValue:
+      type: string
+      description: The actual value of an API key. Use it in Authorization Bearer header
+      example: "Authorization: Bearer YOUR_API_KEY_VALUE"
+
+    ICPPrincipalString:
+      type: string
+      description: ICP principal identifier. Eg "_________"
+
+    EvmPublicAddress:
+      type: string
+      description: EVM public address. Eg "0x_________"
+
+    ExternalID:
+      type: string
+      description: External identifier for integration purposes
+      maxLength: 256
+
+    ExternalPayload:
+      type: string
+      description: Additional data for external integrations. Eg Stringified JSON
+      maxLength: 8192
+
+    TagValue:
+      type: string
+      description: String value for a tag
+      maxLength: 256
+
+    DiskType:
+      type: string
+      description: Type of disk storage, currently supported
+      enum:
+        - BrowserCache
+        - LocalSSD
+        - AwsBucket
+        - StorjWeb3
+        - IcpCanister
+
+    # Common error response
+    ErrorResponse:
+      type: object
+      properties:
+        err:
+          type: object
+          properties:
+            code:
+              type: integer
+              format: int32
+              description: HTTP error code
+            message:
+              type: string
+              description: Error message
+          required:
+            - code
+            - message
+      required:
+        - err
