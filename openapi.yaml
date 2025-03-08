@@ -41,11 +41,11 @@ tags:
   - name: Webhooks
     description: Operations for managing webhooks
 
-  - name: Self Canister
+  - name: Organization
     description: Operations for managing own drive canister
 
 paths:
-  /v1/{drive_id}/directory/list:
+  /v1/{organization_id}/directory/list:
     post:
       tags:
         - Directory
@@ -53,7 +53,7 @@ paths:
       description: List files and folders within a specified directory
       operationId: listDirectory
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -92,7 +92,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/directory/action:
+  /v1/{organization_id}/directory/action:
     post:
       tags:
         - Directory
@@ -100,7 +100,7 @@ paths:
       description: Perform actions on files and folders such as get, create, update, delete, copy, move, and restore
       operationId: directoryAction
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -324,7 +324,7 @@ paths:
                                 full_file_path: "/documents/project/file.txt"
                                 tags: ["project", "documentation"]
                                 created_by: "UserID_123"
-                                created_date_ms: 1672531200000
+                                created_at: 1672531200000
                                 disk_id: "DiskID_abc123"
                                 disk_type: "AwsBucket"
                                 file_size: 1024
@@ -373,7 +373,7 @@ paths:
                                 full_file_path: "/documents/project/example.txt"
                                 tags: ["project", "documentation"]
                                 created_by: "UserID_123"
-                                created_date_ms: 1672531200000
+                                created_at: 1672531200000
                                 disk_id: "DiskID_abc123"
                                 disk_type: "AwsBucket"
                                 file_size: 1024
@@ -418,7 +418,7 @@ paths:
                                 full_folder_path: "/documents/project/"
                                 tags: ["project", "active"]
                                 created_by: "UserID_123"
-                                created_date_ms: 1672531200000
+                                created_at: 1672531200000
                                 last_updated_date_ms: 1672531200000
                                 last_updated_by: "UserID_123"
                                 disk_id: "DiskID_abc123"
@@ -460,7 +460,7 @@ paths:
                               full_folder_path: "/documents/project-alpha/"
                               tags: ["project", "alpha"]
                               created_by: "UserID_123"
-                              created_date_ms: 1672531200000
+                              created_at: 1672531200000
                               last_updated_date_ms: 1672531200000
                               last_updated_by: "UserID_123"
                               disk_id: "DiskID_abc123"
@@ -497,7 +497,7 @@ paths:
                               full_file_path: "/documents/project/updated-example.txt"
                               tags: ["project", "updated"]
                               created_by: "UserID_123"
-                              created_date_ms: 1672531200000
+                              created_at: 1672531200000
                               disk_id: "DiskID_abc123"
                               disk_type: "AwsBucket"
                               file_size: 1024
@@ -536,7 +536,7 @@ paths:
                               full_folder_path: "/documents/project-beta/"
                               tags: ["project", "beta"]
                               created_by: "UserID_123"
-                              created_date_ms: 1672531200000
+                              created_at: 1672531200000
                               last_updated_date_ms: 1674345600000
                               last_updated_by: "UserID_123"
                               disk_id: "DiskID_abc123"
@@ -615,7 +615,7 @@ paths:
                               full_file_path: "/documents/archive/file.txt"
                               tags: ["project", "documentation"]
                               created_by: "UserID_123"
-                              created_date_ms: 1674345600000
+                              created_at: 1674345600000
                               disk_id: "DiskID_abc123"
                               disk_type: "AwsBucket"
                               file_size: 1024
@@ -656,7 +656,7 @@ paths:
                               full_folder_path: "/documents/archive/project/"
                               tags: ["project", "active"]
                               created_by: "UserID_123"
-                              created_date_ms: 1674345600000
+                              created_at: 1674345600000
                               last_updated_date_ms: 1674345600000
                               last_updated_by: "UserID_123"
                               disk_id: "DiskID_abc123"
@@ -692,7 +692,7 @@ paths:
                               full_file_path: "/documents/archive/file.txt"
                               tags: ["project", "documentation"]
                               created_by: "UserID_123"
-                              created_date_ms: 1672531200000
+                              created_at: 1672531200000
                               disk_id: "DiskID_abc123"
                               disk_type: "AwsBucket"
                               file_size: 1024
@@ -732,7 +732,7 @@ paths:
                               full_folder_path: "/documents/archive/project/"
                               tags: ["project", "active"]
                               created_by: "UserID_123"
-                              created_date_ms: 1672531200000
+                              created_at: 1672531200000
                               last_updated_date_ms: 1674345600000
                               last_updated_by: "UserID_123"
                               disk_id: "DiskID_abc123"
@@ -790,7 +790,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/contacts/get/{contact_id}:
+  /v1/{organization_id}/contacts/get/{contact_id}:
     get:
       tags:
         - Contacts
@@ -798,7 +798,7 @@ paths:
       description: Retrieve a contact by its ID
       operationId: getContact
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -836,7 +836,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/contacts/list:
+  /v1/{organization_id}/contacts/list:
     post:
       tags:
         - Contacts
@@ -844,7 +844,7 @@ paths:
       description: List contacts with optional filtering and pagination
       operationId: listContacts
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -933,7 +933,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/contacts/upsert:
+  /v1/{organization_id}/contacts/upsert:
     post:
       tags:
         - Contacts
@@ -941,7 +941,7 @@ paths:
       description: Create a new contact or update an existing one
       operationId: upsertContact
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -987,7 +987,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/contacts/delete:
+  /v1/{organization_id}/contacts/delete:
     post:
       tags:
         - Contacts
@@ -995,7 +995,7 @@ paths:
       description: Delete an existing contact
       operationId: deleteContact
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -1050,7 +1050,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/directory/asset/{file_id_with_extension}:
+  /v1/{organization_id}/directory/asset/{file_id_with_extension}:
     get:
       tags:
         - Directory
@@ -1058,7 +1058,7 @@ paths:
       description: Proxy access to file assets with temporary presigned URLs
       operationId: getFileAsset
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -1088,7 +1088,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/disks/get/{disk_id}:
+  /v1/{organization_id}/disks/get/{disk_id}:
     get:
       tags:
         - Disks
@@ -1096,7 +1096,7 @@ paths:
       description: Retrieve a disk by its ID
       operationId: getDisk
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -1134,7 +1134,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/disks/list:
+  /v1/{organization_id}/disks/list:
     post:
       tags:
         - Disks
@@ -1142,7 +1142,7 @@ paths:
       description: List disks with optional filtering and pagination
       operationId: listDisks
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -1170,8 +1170,8 @@ paths:
                 direction:
                   type: string
                   description: Sort direction
-                  enum: [asc, desc]
-                  default: "asc"
+                  enum: [ASC, DESC]
+                  default: "ASC"
                 cursor_up:
                   type: string
                   description: Cursor for pagination (previous page)
@@ -1231,7 +1231,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/disks/upsert:
+  /v1/{organization_id}/disks/upsert:
     post:
       tags:
         - Disks
@@ -1239,7 +1239,7 @@ paths:
       description: Create a new disk or update an existing one
       operationId: upsertDisk
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -1285,7 +1285,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/disks/delete:
+  /v1/{organization_id}/disks/delete:
     post:
       tags:
         - Disks
@@ -1293,7 +1293,7 @@ paths:
       description: Delete an existing disk
       operationId: deleteDisk
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -1348,7 +1348,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/drives/get/{external_drive_id}:
+  /v1/{organization_id}/drives/get/{drive_id}:
     get:
       tags:
         - Drives
@@ -1356,13 +1356,13 @@ paths:
       description: Retrieve a drive by its ID
       operationId: getDrive
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           description: Internal DriveID of own drive for REST routes
           required: true
           schema:
             $ref: "#/components/schemas/DriveID"
-        - name: external_drive_id
+        - name: drive_id
           in: path
           description: ID of the drive to retrieve
           required: true
@@ -1395,7 +1395,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/drives/list:
+  /v1/{organization_id}/drives/list:
     post:
       tags:
         - Drives
@@ -1403,7 +1403,7 @@ paths:
       description: List drives with optional filtering and pagination
       operationId: listDrives
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           description: Internal DriveID of own drive for REST routes
           required: true
@@ -1493,7 +1493,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/drives/upsert:
+  /v1/{organization_id}/drives/upsert:
     post:
       tags:
         - Drives
@@ -1501,7 +1501,7 @@ paths:
       description: Create a new drive or update an existing one
       operationId: upsertDrive
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           description: Internal DriveID of own drive for REST routes
           required: true
@@ -1548,7 +1548,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/drives/delete:
+  /v1/{organization_id}/drives/delete:
     post:
       tags:
         - Drives
@@ -1556,7 +1556,7 @@ paths:
       description: Delete an existing drive
       operationId: deleteDrive
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           description: Internal DriveID of own drive for REST routes
           required: true
@@ -1612,15 +1612,15 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/canister/replay:
+  /v1/{organization_id}/organization/replay:
     post:
       tags:
-        - Self Canister
+        - Organization
       summary: Replay Drive
       description: Replay state diffs for a drive
       operationId: replayDrive
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -1691,15 +1691,15 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/canister/search:
+  /v1/{organization_id}/organization/search:
     post:
       tags:
-        - Self Canister
+        - Organization
       summary: Search Drive
       description: Search within drives
       operationId: searchDrive
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -1746,8 +1746,8 @@ paths:
                   description: Field to sort by
                 direction:
                   type: string
-                  enum: [asc, desc]
-                  default: asc
+                  enum: [ASC, DESC]
+                  default: ASC
                   description: Sort direction
               required:
                 - query
@@ -1801,15 +1801,15 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/canister/reindex:
+  /v1/{organization_id}/organization/reindex:
     post:
       tags:
-        - Self Canister
+        - Organization
       summary: Reindex Drive
       description: Reindex a drive's searchable content
       operationId: reindexDrive
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -1868,15 +1868,15 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/canister/external_id:
+  /v1/{organization_id}/organization/external_id:
     post:
       tags:
-        - Self Canister
+        - Organization
       summary: Get Drives by External IDs
       description: Retrieve drives using their external identifiers
       operationId: getDrivesByExternalIds
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -1952,15 +1952,15 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/canister/transfer_ownership:
+  /v1/{organization_id}/organization/transfer_ownership:
     post:
       tags:
-        - Self Canister
+        - Organization
       summary: Transfer Drive Ownership
       description: Transfer ownership of a drive to another user (requires owner to call twice with 24h between calls)
       operationId: transferDriveOwnership
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -2015,7 +2015,47 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /v1/{drive_id}/permissions/directory/get/{directory_permission_id}:
+  /v1/{organization_id}/organization/whoami:
+    get:
+      tags:
+        - Organization
+      summary: Get Current User Info
+      description: Get information about the current authenticated user
+      operationId: getWhoAmI
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/DriveID"
+        - $ref: "#/components/parameters/AuthHeader"
+      responses:
+        "200":
+          description: Successfully retrieved current user information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/WhoAmIReport"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /v1/{organization_id}/permissions/directory/get/{directory_permission_id}:
     get:
       tags:
         - Permissions by Directory
@@ -2023,7 +2063,7 @@ paths:
       description: Retrieve a directory permission by its ID
       operationId: getDirectoryPermission
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -2061,7 +2101,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/permissions/directory/upsert:
+  /v1/{organization_id}/permissions/directory/upsert:
     post:
       tags:
         - Permissions by Directory
@@ -2069,7 +2109,7 @@ paths:
       description: Create a new directory permission or update an existing one
       operationId: upsertDirectoryPermission
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -2115,7 +2155,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/permissions/directory/delete:
+  /v1/{organization_id}/permissions/directory/delete:
     post:
       tags:
         - Permissions by Directory
@@ -2123,7 +2163,7 @@ paths:
       description: Delete an existing directory permission
       operationId: deleteDirectoryPermission
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -2174,7 +2214,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/permissions/directory/check:
+  /v1/{organization_id}/permissions/directory/check:
     post:
       tags:
         - Permissions by Directory
@@ -2182,7 +2222,7 @@ paths:
       description: Check what permissions a user has for a specific resource
       operationId: checkDirectoryPermissions
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -2248,7 +2288,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/permissions/directory/redeem:
+  /v1/{organization_id}/permissions/directory/redeem:
     post:
       tags:
         - Permissions by Directory
@@ -2256,7 +2296,7 @@ paths:
       description: Redeem a placeholder permission for a specific user
       operationId: redeemDirectoryPermission
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -2310,7 +2350,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/permissions/system/get/{system_permission_id}:
+  /v1/{organization_id}/permissions/system/get/{system_permission_id}:
     get:
       tags:
         - Permissions by System
@@ -2318,7 +2358,7 @@ paths:
       description: Retrieve a system permission by its ID
       operationId: getSystemPermission
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -2356,7 +2396,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/permissions/system/upsert:
+  /v1/{organization_id}/permissions/system/upsert:
     post:
       tags:
         - Permissions by System
@@ -2364,7 +2404,7 @@ paths:
       description: Create a new system permission or update an existing one
       operationId: upsertSystemPermission
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -2410,7 +2450,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/permissions/system/delete:
+  /v1/{organization_id}/permissions/system/delete:
     post:
       tags:
         - Permissions by System
@@ -2418,7 +2458,7 @@ paths:
       description: Delete an existing system permission
       operationId: deleteSystemPermission
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -2469,7 +2509,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/permissions/system/check:
+  /v1/{organization_id}/permissions/system/check:
     post:
       tags:
         - Permissions by System
@@ -2477,7 +2517,7 @@ paths:
       description: Check what permissions a user has for a specific system resource
       operationId: checkSystemPermissions
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -2543,7 +2583,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/permissions/system/redeem:
+  /v1/{organization_id}/permissions/system/redeem:
     post:
       tags:
         - Permissions by System
@@ -2551,7 +2591,7 @@ paths:
       description: Redeem a placeholder permission for a specific user
       operationId: redeemSystemPermission
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -2605,7 +2645,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/tags/get/{tag_id}:
+  /v1/{organization_id}/tags/get/{tag_id}:
     get:
       tags:
         - Tags
@@ -2613,7 +2653,7 @@ paths:
       description: Retrieve a tag by its ID
       operationId: getTag
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -2651,7 +2691,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/tags/list:
+  /v1/{organization_id}/tags/list:
     post:
       tags:
         - Tags
@@ -2659,7 +2699,7 @@ paths:
       description: List tags with optional filtering and pagination
       operationId: listTags
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -2690,8 +2730,8 @@ paths:
                 direction:
                   type: string
                   description: Sort direction
-                  enum: [asc, desc]
-                  default: "asc"
+                  enum: [ASC, DESC]
+                  default: "ASC"
                 cursor_up:
                   type: string
                   description: Cursor for pagination (previous page)
@@ -2751,7 +2791,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/tags/upsert:
+  /v1/{organization_id}/tags/upsert:
     post:
       tags:
         - Tags
@@ -2759,7 +2799,7 @@ paths:
       description: Create a new tag or update an existing one
       operationId: upsertTag
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -2805,7 +2845,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/tags/delete:
+  /v1/{organization_id}/tags/delete:
     post:
       tags:
         - Tags
@@ -2813,7 +2853,7 @@ paths:
       description: Delete an existing tag
       operationId: deleteTag
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -2868,7 +2908,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/tags/pin:
+  /v1/{organization_id}/tags/pin:
     post:
       tags:
         - Tags
@@ -2876,7 +2916,7 @@ paths:
       description: Add or remove a tag from a resource
       operationId: tagResource
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -2956,7 +2996,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/teams/get/{team_id}:
+  /v1/{organization_id}/teams/get/{team_id}:
     get:
       tags:
         - Teams
@@ -2964,7 +3004,7 @@ paths:
       description: Retrieve a team by its ID
       operationId: getTeam
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -3002,7 +3042,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/teams/list:
+  /v1/{organization_id}/teams/list:
     post:
       tags:
         - Teams
@@ -3010,7 +3050,7 @@ paths:
       description: List teams with optional filtering and pagination
       operationId: listTeams
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -3038,8 +3078,8 @@ paths:
                 direction:
                   type: string
                   description: Sort direction
-                  enum: [asc, desc]
-                  default: "asc"
+                  enum: [ASC, DESC]
+                  default: "ASC"
                 cursor_up:
                   type: string
                   description: Cursor for pagination (previous page)
@@ -3099,7 +3139,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/teams/upsert:
+  /v1/{organization_id}/teams/upsert:
     post:
       tags:
         - Teams
@@ -3107,7 +3147,7 @@ paths:
       description: Create a new team or update an existing one
       operationId: upsertTeam
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -3153,7 +3193,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/teams/delete:
+  /v1/{organization_id}/teams/delete:
     post:
       tags:
         - Teams
@@ -3161,7 +3201,7 @@ paths:
       description: Delete an existing team
       operationId: deleteTeam
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -3216,7 +3256,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/teams/validate:
+  /v1/{organization_id}/teams/validate:
     post:
       tags:
         - Teams
@@ -3224,7 +3264,7 @@ paths:
       description: Verify if a user belongs to a specific team
       operationId: validateTeam
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -3287,7 +3327,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/teams/invites/get/{invite_id}:
+  /v1/{organization_id}/teams/invites/get/{invite_id}:
     get:
       tags:
         - Team Invites
@@ -3295,7 +3335,7 @@ paths:
       description: Retrieve a team invite by its ID
       operationId: getTeamInvite
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -3333,7 +3373,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/teams/invites/list:
+  /v1/{organization_id}/teams/invites/list:
     post:
       tags:
         - Team Invites
@@ -3341,7 +3381,7 @@ paths:
       description: List team invites with optional filtering and pagination
       operationId: listTeamInvites
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -3372,8 +3412,8 @@ paths:
                 direction:
                   type: string
                   description: Sort direction
-                  enum: [asc, desc]
-                  default: "asc"
+                  enum: [ASC, DESC]
+                  default: "ASC"
                 cursor_up:
                   type: string
                   description: Cursor for pagination (previous page)
@@ -3435,7 +3475,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/teams/invites/upsert:
+  /v1/{organization_id}/teams/invites/upsert:
     post:
       tags:
         - Team Invites
@@ -3443,7 +3483,7 @@ paths:
       description: Create a new team invite or update an existing one
       operationId: upsertTeamInvite
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -3489,7 +3529,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/teams/invites/delete:
+  /v1/{organization_id}/teams/invites/delete:
     post:
       tags:
         - Team Invites
@@ -3497,7 +3537,7 @@ paths:
       description: Delete an existing team invite
       operationId: deleteTeamInvite
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -3552,7 +3592,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/teams/invites/redeem:
+  /v1/{organization_id}/teams/invites/redeem:
     post:
       tags:
         - Team Invites
@@ -3560,7 +3600,7 @@ paths:
       description: Redeem a team invite for a specific user
       operationId: redeemTeamInvite
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -3614,7 +3654,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/webhooks/get/{webhook_id}:
+  /v1/{organization_id}/webhooks/get/{webhook_id}:
     get:
       tags:
         - Webhooks
@@ -3622,7 +3662,7 @@ paths:
       description: Retrieve a webhook by its ID
       operationId: getWebhook
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -3660,7 +3700,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/webhooks/list:
+  /v1/{organization_id}/webhooks/list:
     post:
       tags:
         - Webhooks
@@ -3668,7 +3708,7 @@ paths:
       description: List webhooks with optional filtering and pagination
       operationId: listWebhooks
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -3696,8 +3736,8 @@ paths:
                 direction:
                   type: string
                   description: Sort direction
-                  enum: [asc, desc]
-                  default: "asc"
+                  enum: [ASC, DESC]
+                  default: "ASC"
                 cursor_up:
                   type: string
                   description: Cursor for pagination (previous page)
@@ -3757,7 +3797,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/webhooks/upsert:
+  /v1/{organization_id}/webhooks/upsert:
     post:
       tags:
         - Webhooks
@@ -3765,7 +3805,7 @@ paths:
       description: Create a new webhook or update an existing one
       operationId: upsertWebhook
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -3811,7 +3851,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/webhooks/delete:
+  /v1/{organization_id}/webhooks/delete:
     post:
       tags:
         - Webhooks
@@ -3819,7 +3859,7 @@ paths:
       description: Delete an existing webhook
       operationId: deleteWebhook
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -3874,7 +3914,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/api_keys/get/{api_key_id}:
+  /v1/{organization_id}/api_keys/get/{api_key_id}:
     get:
       tags:
         - API Keys
@@ -3882,7 +3922,7 @@ paths:
       description: Retrieve an API key by its ID
       operationId: getApiKey
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -3920,7 +3960,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/api_keys/list/{user_id}:
+  /v1/{organization_id}/api_keys/list/{user_id}:
     post:
       tags:
         - API Keys
@@ -3928,7 +3968,7 @@ paths:
       description: List all API keys for a specific user
       operationId: listApiKeys
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -3968,7 +4008,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/api_keys/upsert:
+  /v1/{organization_id}/api_keys/upsert:
     post:
       tags:
         - API Keys
@@ -3976,7 +4016,7 @@ paths:
       description: Create a new API key or update an existing one
       operationId: upsertApiKey
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -4022,7 +4062,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{drive_id}/api_keys/delete:
+  /v1/{organization_id}/api_keys/delete:
     post:
       tags:
         - API Keys
@@ -4030,7 +4070,7 @@ paths:
       description: Delete an existing API key
       operationId: deleteApiKey
       parameters:
-        - name: drive_id
+        - name: organization_id
           in: path
           required: true
           schema:
@@ -4147,7 +4187,7 @@ components:
         created_by:
           $ref: "#/components/schemas/UserID"
           description: ID of the user who created the file
-        created_date_ms:
+        created_at:
           type: integer
           format: int64
           description: Timestamp when the file was created (Unix ms)
@@ -4205,7 +4245,7 @@ components:
         - full_file_path
         - tags
         - created_by
-        - created_date_ms
+        - created_at
         - disk_id
         - disk_type
         - file_size
@@ -4251,7 +4291,7 @@ components:
         created_by:
           $ref: "#/components/schemas/UserID"
           description: ID of the user who created the folder
-        created_date_ms:
+        created_at:
           type: integer
           format: int64
           description: Timestamp when the folder was created (Unix ms)
@@ -4298,7 +4338,7 @@ components:
         - full_folder_path
         - tags
         - created_by
-        - created_date_ms
+        - created_at
         - last_updated_date_ms
         - last_updated_by
         - disk_id
@@ -4356,9 +4396,18 @@ components:
       properties:
         id:
           $ref: "#/components/schemas/UserID"
-        nickname:
+        name:
           type: string
           description: Human-readable nickname for the contact
+        avatar:
+          type: string
+          description: Profile picture url for the contact
+        webhook_url:
+          type: string
+          description: Alert webhook URL for the contact
+        email:
+          type: string
+          description: Primary email for the contact
         public_note:
           type: string
           description: Public note about the contact
@@ -4381,6 +4430,20 @@ components:
           items:
             $ref: "#/components/schemas/TagValue"
           description: Tags associated with the contact
+        created_at:
+          type: integer
+          format: int64
+          description: Timestamp ms when the contact was created
+        last_online_at:
+          type: integer
+          format: int64
+          description: Timestamp ms when the contact was last online
+          nullable: true
+        team_previews:
+          type: array
+          description: Preview of teams the contact belongs to
+          items:
+            $ref: "#/components/schemas/ContactTeamPreview"
         external_id:
           $ref: "#/components/schemas/ExternalID"
           nullable: true
@@ -4429,6 +4492,10 @@ components:
         external_payload:
           $ref: "#/components/schemas/ExternalPayload"
           nullable: true
+        created_at:
+          type: integer
+          format: int64
+          description: Timestamp ms when the disk was created
       required:
         - id
         - name
@@ -4476,6 +4543,10 @@ components:
           $ref: "#/components/schemas/ExternalPayload"
           description: Additional data for external systems
           nullable: true
+        created_at:
+          type: integer
+          format: int64
+          description: Timestamp ms when the drive was created
       required:
         - id
         - name
@@ -4547,6 +4618,9 @@ components:
         name:
           type: string
           description: Name of the team
+        avatar:
+          type: string
+          description: Profile picture url for the team
         owner:
           type: string
           description: ID of the team owner
@@ -4715,6 +4789,10 @@ components:
           $ref: "#/components/schemas/ExternalPayload"
           description: Additional data for external systems
           nullable: true
+        created_at:
+          type: integer
+          format: int64
+          description: Timestamp ms when the webhook was created
       required:
         - id
         - url
@@ -4869,6 +4947,31 @@ components:
         - created_at
         - last_modified_at
         - tags
+
+    WhoAmIReport:
+      type: object
+      properties:
+        userID:
+          $ref: "#/components/schemas/UserID"
+          description: ID of the authenticated user
+        driveID:
+          $ref: "#/components/schemas/DriveID"
+          description: ID of the user's drive
+        icp_principal:
+          $ref: "#/components/schemas/ICPPrincipalString"
+          description: ICP principal of the user
+        evm_public_address:
+          type: string
+          description: EVM public address of the user
+          nullable: true
+        is_owner:
+          type: boolean
+          description: Whether the user is the owner of the drive
+      required:
+        - userID
+        - driveID
+        - icp_principal
+        - is_owner
 
     # =========================================================================
     # IDs (grouped together)
@@ -5507,7 +5610,7 @@ components:
     DriveFullFilePath:
       type: string
       description: Full path to a file or folder in the drive
-      example: "/documents/project/myfile.txt"
+      example: "DiskId::/documents/project/myfile.txt"
 
     # Action Payloads
     GetFilePayload:
@@ -5986,6 +6089,31 @@ components:
         - checksum_forward
         - checksum_backward
 
+    ContactTeamPreview:
+      type: object
+      properties:
+        team_id:
+          $ref: "#/components/schemas/TeamID"
+          description: Unique identifier for the team
+        invite_id:
+          type: string
+          description: Unique identifier for the invite, usually the UserID
+        is_admin:
+          type: bool
+          description: Whether the contact is an admin of the team
+        team_name:
+          type: string
+          description: Team name
+        team_avatar:
+          type: string
+          description: URL to the team's avatar image
+      required:
+        - team_id
+        - invite_id
+        - is_admin
+        - team_name
+        - team_avatar
+
     # =========================================================================
     # Basic Types (Core Types)
     # =========================================================================
@@ -6068,8 +6196,8 @@ components:
       properties:
         action:
           type: string
-          enum: ["create"]
-          default: "create"
+          enum: ["CREATE"]
+          default: "CREATE"
         name:
           type: string
           description: Name for the disk
@@ -6106,7 +6234,7 @@ components:
         - name
         - disk_type
       example:
-        action: "create"
+        action: "CREATE"
         name: "Project Cloud Storage"
         disk_type: "AwsBucket"
         public_note: "Storage for team project files"
@@ -6122,8 +6250,8 @@ components:
       properties:
         action:
           type: string
-          enum: ["update"]
-          default: "update"
+          enum: ["UPDATE"]
+          default: "UPDATE"
         id:
           $ref: "#/components/schemas/DiskID"
           description: ID of the disk to update
@@ -6161,7 +6289,7 @@ components:
         - action
         - id
       example:
-        action: "update"
+        action: "UPDATE"
         id: "DiskID_abc123"
         name: "Updated Storage Name"
         public_note: "Primary storage for project Alpha"
@@ -6177,14 +6305,28 @@ components:
       properties:
         action:
           type: string
-          enum: ["create"]
-          default: "create"
+          enum: ["CREATE"]
+          default: "CREATE"
         icp_principal:
           $ref: "#/components/schemas/ICPPrincipalString"
-        nickname:
+        name:
           type: string
-          description: Nickname for the contact
+          description: Name for the contact
           maxLength: 256
+        avatar:
+          type: string
+          description: Profile picture URL
+          maxLength: 2048
+          nullable: true
+        webhook_url:
+          type: string
+          description: Alternative of email notifications
+          maxLength: 256
+        email:
+          type: string
+          description: Primary email for the contact
+          maxLength: 256
+          nullable: true
         evm_public_address:
           $ref: "#/components/schemas/EvmPublicAddress"
           description: EVM public address
@@ -6214,7 +6356,7 @@ components:
         - icp_principal
         - nickname
       example:
-        action: "create"
+        action: "CREATE"
         icp_principal: "xyz123abc456"
         nickname: "John Doe"
         evm_public_address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
@@ -6230,14 +6372,28 @@ components:
       properties:
         action:
           type: string
-          enum: ["update"]
-          default: "update"
+          enum: ["UPDATE"]
+          default: "UPDATE"
         id:
           $ref: "#/components/schemas/UserID"
           description: ID of the contact to update
-        nickname:
+        name:
           type: string
-          description: New nickname for the contact
+          description: New name for the contact
+          maxLength: 256
+          nullable: true
+        avatar:
+          type: string
+          description: Profile picture URL
+          maxLength: 2048
+          nullable: true
+        webhook_url:
+          type: string
+          description: Alternative of email notifications
+          maxLength: 256
+        email:
+          type: string
+          description: Primary email for the contact
           maxLength: 256
           nullable: true
         public_note:
@@ -6271,7 +6427,7 @@ components:
         - action
         - id
       example:
-        action: "update"
+        action: "UPDATE"
         id: "UserID_abc123"
         nickname: "Johnny Doe"
         public_note: "Senior Project Manager for Beta team"
@@ -6288,8 +6444,8 @@ components:
       properties:
         action:
           type: string
-          enum: ["create"]
-          default: "create"
+          enum: ["CREATE"]
+          default: "CREATE"
         name:
           type: string
           description: Name for the drive
@@ -6325,7 +6481,7 @@ components:
         - action
         - name
       example:
-        action: "create"
+        action: "CREATE"
         name: "Project Files"
         icp_principal: "abc123xyz456"
         public_note: "Main project storage"
@@ -6340,8 +6496,8 @@ components:
       properties:
         action:
           type: string
-          enum: ["update"]
-          default: "update"
+          enum: ["UPDATE"]
+          default: "UPDATE"
         id:
           $ref: "#/components/schemas/DriveID"
           description: ID of the drive to update
@@ -6382,7 +6538,7 @@ components:
         - action
         - id
       example:
-        action: "update"
+        action: "UPDATE"
         id: "DriveID_abc123"
         name: "Updated Project Files"
         private_note: "Contains confidential data"
@@ -6396,12 +6552,17 @@ components:
       properties:
         action:
           type: string
-          enum: ["create"]
-          default: "create"
+          enum: ["CREATE"]
+          default: "CREATE"
         name:
           type: string
           description: Name for the team
           maxLength: 256
+        avatar:
+          type: string
+          description: Profile picture URL
+          maxLength: 2048
+          nullable: true
         public_note:
           type: string
           description: Public note about the team
@@ -6431,7 +6592,7 @@ components:
         - action
         - name
       example:
-        action: "create"
+        action: "CREATE"
         name: "Product Development"
         public_note: "Core product development team"
         url_endpoint: "https://teams.officex.app/product-dev"
@@ -6444,8 +6605,8 @@ components:
       properties:
         action:
           type: string
-          enum: ["update"]
-          default: "update"
+          enum: ["UPDATE"]
+          default: "UPDATE"
         id:
           $ref: "#/components/schemas/TeamID"
           description: ID of the team to update
@@ -6453,6 +6614,11 @@ components:
           type: string
           description: New name for the team
           maxLength: 256
+          nullable: true
+        avatar:
+          type: string
+          description: Profile picture URL
+          maxLength: 2048
           nullable: true
         public_note:
           type: string
@@ -6483,7 +6649,7 @@ components:
         - action
         - id
       example:
-        action: "update"
+        action: "UPDATE"
         id: "TeamID_abc123"
         name: "Product & Design"
         private_note: "Updated team structure"
@@ -6497,8 +6663,8 @@ components:
       properties:
         action:
           type: string
-          enum: ["create"]
-          default: "create"
+          enum: ["CREATE"]
+          default: "CREATE"
         team_id:
           $ref: "#/components/schemas/TeamID"
           description: ID of the team for the invite
@@ -6540,7 +6706,7 @@ components:
         - team_id
         - role
       example:
-        action: "create"
+        action: "CREATE"
         team_id: "TeamID_abc123"
         invitee_id: "UserID_xyz789"
         role: "MEMBER"
@@ -6555,8 +6721,8 @@ components:
       properties:
         action:
           type: string
-          enum: ["update"]
-          default: "update"
+          enum: ["UPDATE"]
+          default: "UPDATE"
         id:
           $ref: "#/components/schemas/TeamInviteID"
           description: ID of the invite to update
@@ -6594,7 +6760,7 @@ components:
         - action
         - id
       example:
-        action: "update"
+        action: "UPDATE"
         id: "TeamInviteID_abc123"
         role: "ADMIN"
         note: "Upgraded to admin role"
@@ -6609,10 +6775,10 @@ components:
       properties:
         action:
           type: string
-          enum: ["create"]
-          default: "create"
+          enum: ["CREATE"]
+          default: "CREATE"
           description: |
-            Must be `"create"`. This indicates to the UI or backend that this
+            Must be `"CREATE"`. This indicates to the UI or backend that this
             request is for creating a new Tag.
         value:
           type: string
@@ -6642,7 +6808,7 @@ components:
         - action
         - value
       example:
-        action: "create"
+        action: "CREATE"
         value: "Project-Alpha"
         description: "All files related to Project Alpha"
         color: "#4287f5"
@@ -6656,10 +6822,10 @@ components:
       properties:
         action:
           type: string
-          enum: ["update"]
-          default: "update"
+          enum: ["UPDATE"]
+          default: "UPDATE"
           description: |
-            Must be `"update"`. This indicates to the UI or backend that this
+            Must be `"UPDATE"`. This indicates to the UI or backend that this
             request is for updating an existing Tag.
         id:
           $ref: "#/components/schemas/TagID"
@@ -6693,7 +6859,7 @@ components:
         - action
         - id
       example:
-        action: "update"
+        action: "UPDATE"
         id: "TagID_abc123"
         value: "Project-Beta"
         color: "#ff7700"
@@ -6709,10 +6875,10 @@ components:
       properties:
         action:
           type: string
-          enum: ["create"]
-          default: "create"
+          enum: ["CREATE"]
+          default: "CREATE"
           description: |
-            Must be `"create"`. Indicates this request is for creating a new Webhook.
+            Must be `"CREATE"`. Indicates this request is for creating a new Webhook.
         alt_index:
           type: string
           description: Alternative index for the webhook
@@ -6755,10 +6921,10 @@ components:
         - url
         - event
       example:
-        action: "create"
+        action: "CREATE"
         alt_index: "File_abc246"
         url: "https://example.com/webhooks/file-updated"
-        event: "FILE_UPDATED"
+        event: "file.updated"
         signature: "sha256-hash"
         description: "Notify when files are updated"
         filters: "team=engineering"
@@ -6772,10 +6938,10 @@ components:
       properties:
         action:
           type: string
-          enum: ["update"]
-          default: "update"
+          enum: ["UPDATE"]
+          default: "UPDATE"
           description: |
-            Must be `"update"`. Indicates this request is for updating an existing Webhook.
+            Must be `"UPDATE"`. Indicates this request is for updating an existing Webhook.
         id:
           $ref: "#/components/schemas/WebhookID"
           description: ID of the webhook to update
@@ -6817,11 +6983,11 @@ components:
         - action
         - id
       example:
-        action: "update"
+        action: "UPDATE"
         id: "WebhookID_abc123"
         url: "https://updated-example.com/webhooks/callback"
         active: false
-        description: "Temporarily disabled webhook"
+        description: "My disabled webhook"
         filters: "team=marketing"
         external_id: "ext-webhook-001-updated"
         external_payload: '{"department": "marketing", "webhookType": "fileUpdates", "disabledReason": "maintenance"}'
@@ -6833,8 +6999,8 @@ components:
       properties:
         action:
           type: string
-          enum: ["create"]
-          default: "create"
+          enum: ["CREATE"]
+          default: "CREATE"
         name:
           type: string
           description: Name for the API key
@@ -6862,7 +7028,7 @@ components:
         - action
         - name
       example:
-        action: "create"
+        action: "CREATE"
         name: "Development API Key"
         user_id: "UserID_abc123"
         expires_at: 1703980800000
@@ -6876,8 +7042,8 @@ components:
       properties:
         action:
           type: string
-          enum: ["update"]
-          default: "update"
+          enum: ["UPDATE"]
+          default: "UPDATE"
         id:
           $ref: "#/components/schemas/ApiKeyID"
           description: ID of the API key to update
@@ -6910,7 +7076,7 @@ components:
         - action
         - id
       example:
-        action: "update"
+        action: "UPDATE"
         id: "ApiKeyID_abc123"
         name: "Production API Key"
         is_revoked: false
@@ -6925,8 +7091,8 @@ components:
       properties:
         action:
           type: string
-          enum: ["create"]
-          default: "create"
+          enum: ["CREATE"]
+          default: "CREATE"
         resource_id:
           $ref: "#/components/schemas/DirectoryResourceID"
           description: ID of the resource to grant permission for
@@ -6977,7 +7143,7 @@ components:
         - resource_id
         - permission_types
       example:
-        action: "create"
+        action: "CREATE"
         resource_id: "FolderID_abc123"
         granted_to: "UserID_xyz789"
         permission_types: ["VIEW", "EDIT"]
@@ -6996,8 +7162,8 @@ components:
       properties:
         action:
           type: string
-          enum: ["update"]
-          default: "update"
+          enum: ["UPDATE"]
+          default: "UPDATE"
         id:
           $ref: "#/components/schemas/DirectoryPermissionID"
           description: ID of the permission to update
@@ -7053,7 +7219,7 @@ components:
         - action
         - id
       example:
-        action: "update"
+        action: "UPDATE"
         id: "DirectoryPermissionID_abc123"
         permission_types: ["VIEW", "EDIT", "DELETE"]
         expiry_date_ms: 1688169600000
@@ -7069,8 +7235,8 @@ components:
       properties:
         action:
           type: string
-          enum: ["create"]
-          default: "create"
+          enum: ["CREATE"]
+          default: "CREATE"
         resource_id:
           $ref: "#/components/schemas/SystemResourceID"
           description: ID of the resource to grant permission for
@@ -7118,7 +7284,7 @@ components:
         - resource_id
         - permission_types
       example:
-        action: "create"
+        action: "CREATE"
         resource_id:
           type: "Table"
           value: "DRIVES"
@@ -7138,8 +7304,8 @@ components:
       properties:
         action:
           type: string
-          enum: ["update"]
-          default: "update"
+          enum: ["UPDATE"]
+          default: "UPDATE"
         id:
           $ref: "#/components/schemas/SystemPermissionID"
           description: ID of the permission to update
@@ -7191,7 +7357,7 @@ components:
         - action
         - id
       example:
-        action: "update"
+        action: "UPDATE"
         id: "SystemPermissionID_abc123"
         permission_types: ["VIEW", "CREATE", "UPDATE"]
         expiry_date_ms: 1688169600000
