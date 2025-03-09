@@ -933,12 +933,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/contacts/upsert:
+  /v1/{organization_id}/contacts/create:
     post:
       tags:
         - Contacts
-      summary: Create or Update Contact
-      description: Create a new contact or update an existing one
+      summary: Create Contact
+      description: Create a new contact
       operationId: upsertContact
       parameters:
         - name: organization_id
@@ -953,14 +953,54 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: "#/components/schemas/CreateContactRequest"
-                - $ref: "#/components/schemas/UpdateContactRequest"
-              discriminator:
-                propertyName: action
-                mapping:
-                  create: "#/components/schemas/CreateContactRequest"
-                  update: "#/components/schemas/UpdateContactRequest"
+              $ref: "#/components/schemas/CreateContactRequest"
+      responses:
+        "200":
+          description: Contact successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Contact"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /v1/{organization_id}/contacts/update:
+    post:
+      tags:
+        - Contacts
+      summary: Update Contact
+      description: Update a contact
+      operationId: upsertContact
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/DriveID"
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Contact data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateContactRequest"
       responses:
         "200":
           description: Contact successfully created or updated
@@ -1231,12 +1271,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/disks/upsert:
+  /v1/{organization_id}/disks/create:
     post:
       tags:
         - Disks
-      summary: Create or Update Disk
-      description: Create a new disk or update an existing one
+      summary: Create Disk
+      description: Create a new disk
       operationId: upsertDisk
       parameters:
         - name: organization_id
@@ -1251,14 +1291,54 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: "#/components/schemas/CreateDiskRequest"
-                - $ref: "#/components/schemas/UpdateDiskRequest"
-              discriminator:
-                propertyName: action
-                mapping:
-                  create: "#/components/schemas/CreateDiskRequest"
-                  update: "#/components/schemas/UpdateDiskRequest"
+              $ref: "#/components/schemas/CreateDiskRequest"
+      responses:
+        "200":
+          description: Disk successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Disk"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /v1/{organization_id}/disks/update:
+    post:
+      tags:
+        - Disks
+      summary: Update Disk
+      description: Update a disk
+      operationId: upsertDisk
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/DriveID"
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Disk data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDiskRequest"
       responses:
         "200":
           description: Disk successfully created or updated
@@ -1493,12 +1573,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/drives/upsert:
+  /v1/{organization_id}/drives/create:
     post:
       tags:
         - Drives
-      summary: Create or Update Drive
-      description: Create a new drive or update an existing one
+      summary: Create Drive
+      description: Create a new drive
       operationId: upsertDrive
       parameters:
         - name: organization_id
@@ -1514,14 +1594,55 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: "#/components/schemas/CreateDriveRequest"
-                - $ref: "#/components/schemas/UpdateDriveRequest"
-              discriminator:
-                propertyName: action
-                mapping:
-                  create: "#/components/schemas/CreateDriveRequest"
-                  update: "#/components/schemas/UpdateDriveRequest"
+              $ref: "#/components/schemas/CreateDriveRequest"
+      responses:
+        "200":
+          description: Drive successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Drive"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /v1/{organization_id}/drives/update:
+    post:
+      tags:
+        - Drives
+      summary: Update Drive
+      description: Update a Drive
+      operationId: upsertDrive
+      parameters:
+        - name: organization_id
+          in: path
+          description: Internal DriveID of own drive for REST routes
+          required: true
+          schema:
+            $ref: "#/components/schemas/DriveID"
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Drive data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDriveRequest"
       responses:
         "200":
           description: Drive successfully created or updated
@@ -2101,12 +2222,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/permissions/directory/upsert:
+  /v1/{organization_id}/permissions/directory/create:
     post:
       tags:
         - Permissions by Directory
-      summary: Create or Update Directory Permission
-      description: Create a new directory permission or update an existing one
+      summary: Create Directory Permission
+      description: Create a new directory permission
       operationId: upsertDirectoryPermission
       parameters:
         - name: organization_id
@@ -2121,14 +2242,54 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: "#/components/schemas/CreateDirectoryPermissionRequest"
-                - $ref: "#/components/schemas/UpdateDirectoryPermissionRequest"
-              discriminator:
-                propertyName: action
-                mapping:
-                  create: "#/components/schemas/CreateDirectoryPermissionRequest"
-                  update: "#/components/schemas/UpdateDirectoryPermissionRequest"
+              $ref: "#/components/schemas/CreateDirectoryPermissionRequest"
+      responses:
+        "200":
+          description: Directory permission successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/DirectoryPermission"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /v1/{organization_id}/permissions/directory/update:
+    post:
+      tags:
+        - Permissions by Directory
+      summary: Update Directory Permission
+      description: Update directory permission
+      operationId: upsertDirectoryPermission
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/DriveID"
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Directory permission data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDirectoryPermissionRequest"
       responses:
         "200":
           description: Directory permission successfully created or updated
@@ -2396,12 +2557,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/permissions/system/upsert:
+  /v1/{organization_id}/permissions/system/create:
     post:
       tags:
         - Permissions by System
-      summary: Create or Update System Permission
-      description: Create a new system permission or update an existing one
+      summary: Create System Permission
+      description: Create a new system permission
       operationId: upsertSystemPermission
       parameters:
         - name: organization_id
@@ -2416,14 +2577,54 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: "#/components/schemas/CreateSystemPermissionRequest"
-                - $ref: "#/components/schemas/UpdateSystemPermissionRequest"
-              discriminator:
-                propertyName: action
-                mapping:
-                  create: "#/components/schemas/CreateSystemPermissionRequest"
-                  update: "#/components/schemas/UpdateSystemPermissionRequest"
+              $ref: "#/components/schemas/CreateSystemPermissionRequest"
+      responses:
+        "200":
+          description: System permission successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/SystemPermission"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /v1/{organization_id}/permissions/system/update:
+    post:
+      tags:
+        - Permissions by System
+      summary: Update System Permission
+      description: Update system permission
+      operationId: upsertSystemPermission
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/DriveID"
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: System permission data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSystemPermissionRequest"
       responses:
         "200":
           description: System permission successfully created or updated
@@ -2791,12 +2992,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/tags/upsert:
+  /v1/{organization_id}/tags/create:
     post:
       tags:
         - Tags
-      summary: Create or Update Tag
-      description: Create a new tag or update an existing one
+      summary: Create Tag
+      description: Create a new tag
       operationId: upsertTag
       parameters:
         - name: organization_id
@@ -2811,14 +3012,54 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: "#/components/schemas/CreateTagRequest"
-                - $ref: "#/components/schemas/UpdateTagRequest"
-              discriminator:
-                propertyName: action
-                mapping:
-                  create: "#/components/schemas/CreateTagRequest"
-                  update: "#/components/schemas/UpdateTagRequest"
+              $ref: "#/components/schemas/CreateTagRequest"
+      responses:
+        "200":
+          description: Tag successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Tag"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /v1/{organization_id}/tags/update:
+    post:
+      tags:
+        - Tags
+      summary: Update Tag
+      description: Update a tag or
+      operationId: upsertTag
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/DriveID"
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Tag data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTagRequest"
       responses:
         "200":
           description: Tag successfully created or updated
@@ -3139,12 +3380,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/teams/upsert:
+  /v1/{organization_id}/teams/create:
     post:
       tags:
         - Teams
-      summary: Create or Update Team
-      description: Create a new team or update an existing one
+      summary: Create Team
+      description: Create a new team
       operationId: upsertTeam
       parameters:
         - name: organization_id
@@ -3159,14 +3400,54 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: "#/components/schemas/CreateTeamRequest"
-                - $ref: "#/components/schemas/UpdateTeamRequest"
-              discriminator:
-                propertyName: action
-                mapping:
-                  create: "#/components/schemas/CreateTeamRequest"
-                  update: "#/components/schemas/UpdateTeamRequest"
+              $ref: "#/components/schemas/CreateTeamRequest"
+      responses:
+        "200":
+          description: Team successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Team"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /v1/{organization_id}/teams/update:
+    post:
+      tags:
+        - Teams
+      summary: Update Team
+      description: Update team
+      operationId: upsertTeam
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/DriveID"
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Team data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTeamRequest"
       responses:
         "200":
           description: Team successfully created or updated
@@ -3475,12 +3756,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/teams/invites/upsert:
+  /v1/{organization_id}/teams/invites/create:
     post:
       tags:
         - Team Invites
-      summary: Create or Update Team Invite
-      description: Create a new team invite or update an existing one
+      summary: Create Team Invite
+      description: Create a new team invite
       operationId: upsertTeamInvite
       parameters:
         - name: organization_id
@@ -3495,14 +3776,54 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: "#/components/schemas/CreateTeamInviteRequest"
-                - $ref: "#/components/schemas/UpdateTeamInviteRequest"
-              discriminator:
-                propertyName: action
-                mapping:
-                  create: "#/components/schemas/CreateTeamInviteRequest"
-                  update: "#/components/schemas/UpdateTeamInviteRequest"
+              $ref: "#/components/schemas/CreateTeamInviteRequest"
+      responses:
+        "200":
+          description: Team invite successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/TeamInvite"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /v1/{organization_id}/teams/invites/update:
+    post:
+      tags:
+        - Team Invites
+      summary: Update Team Invite
+      description: Update team invite
+      operationId: upsertTeamInvite
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/DriveID"
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Team invite data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTeamInviteRequest"
       responses:
         "200":
           description: Team invite successfully created or updated
@@ -3797,12 +4118,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/webhooks/upsert:
+  /v1/{organization_id}/webhooks/create:
     post:
       tags:
         - Webhooks
-      summary: Create or Update Webhook
-      description: Create a new webhook or update an existing one
+      summary: Create Webhook
+      description: Create a new webhook
       operationId: upsertWebhook
       parameters:
         - name: organization_id
@@ -3817,14 +4138,54 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: "#/components/schemas/CreateWebhookRequest"
-                - $ref: "#/components/schemas/UpdateWebhookRequest"
-              discriminator:
-                propertyName: action
-                mapping:
-                  create: "#/components/schemas/CreateWebhookRequest"
-                  update: "#/components/schemas/UpdateWebhookRequest"
+              $ref: "#/components/schemas/CreateWebhookRequest"
+      responses:
+        "200":
+          description: Webhook successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Webhook"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /v1/{organization_id}/webhooks/update:
+    post:
+      tags:
+        - Webhooks
+      summary: Update Webhook
+      description: Update webhook
+      operationId: upsertWebhook
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/DriveID"
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: Webhook data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateWebhookRequest"
       responses:
         "200":
           description: Webhook successfully created or updated
@@ -4008,12 +4369,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/api_keys/upsert:
+  /v1/{organization_id}/api_keys/create:
     post:
       tags:
         - API Keys
-      summary: Create or Update API Key
-      description: Create a new API key or update an existing one
+      summary: Create API Key
+      description: Create a new API key
       operationId: upsertApiKey
       parameters:
         - name: organization_id
@@ -4028,14 +4389,54 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: "#/components/schemas/CreateApiKeyRequest"
-                - $ref: "#/components/schemas/UpdateApiKeyRequest"
-              discriminator:
-                propertyName: action
-                mapping:
-                  create: "#/components/schemas/CreateApiKeyRequest"
-                  update: "#/components/schemas/UpdateApiKeyRequest"
+              $ref: "#/components/schemas/CreateApiKeyRequest"
+      responses:
+        "200":
+          description: API key successfully created or updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/ApiKey"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /v1/{organization_id}/api_keys/update:
+    post:
+      tags:
+        - API Keys
+      summary: Update API Key
+      description: Update API key
+      operationId: upsertApiKey
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/DriveID"
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: API key data to create or update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateApiKeyRequest"
       responses:
         "200":
           description: API key successfully created or updated
@@ -4402,7 +4803,7 @@ components:
         avatar:
           type: string
           description: Profile picture url for the contact
-        webhook_url:
+        notifications_url:
           type: string
           description: Alert webhook URL for the contact
         email:
@@ -4444,6 +4845,11 @@ components:
           description: Preview of teams the contact belongs to
           items:
             $ref: "#/components/schemas/ContactTeamPreview"
+        permission_previews:
+          type: array
+          description: Preview of permissions the requester has
+          items:
+            enum: [CREATE, UPDATE, DELETE, VIEW, INVITE]
         external_id:
           $ref: "#/components/schemas/ExternalID"
           nullable: true
@@ -4893,7 +5299,7 @@ components:
           type: array
           items:
             type: string
-            enum: [CREATE, UPDATE, DELETE, VIEW, INVITE]
+            enum: [CREATE, EDIT, DELETE, VIEW, INVITE]
           description: Types of permissions granted
         begin_date_ms:
           type: integer
@@ -6194,10 +6600,6 @@ components:
       title: Create a new disk
       description: Create a new disk
       properties:
-        action:
-          type: string
-          enum: ["CREATE"]
-          default: "CREATE"
         name:
           type: string
           description: Name for the disk
@@ -6234,7 +6636,6 @@ components:
         - name
         - disk_type
       example:
-        action: "CREATE"
         name: "Project Cloud Storage"
         disk_type: "AwsBucket"
         public_note: "Storage for team project files"
@@ -6248,10 +6649,6 @@ components:
       title: Update an existing disk
       description: Update an existing disk
       properties:
-        action:
-          type: string
-          enum: ["UPDATE"]
-          default: "UPDATE"
         id:
           $ref: "#/components/schemas/DiskID"
           description: ID of the disk to update
@@ -6289,7 +6686,6 @@ components:
         - action
         - id
       example:
-        action: "UPDATE"
         id: "DiskID_abc123"
         name: "Updated Storage Name"
         public_note: "Primary storage for project Alpha"
@@ -6303,10 +6699,6 @@ components:
       title: Create a new contact
       description: Create a new contact
       properties:
-        action:
-          type: string
-          enum: ["CREATE"]
-          default: "CREATE"
         icp_principal:
           $ref: "#/components/schemas/ICPPrincipalString"
         name:
@@ -6318,7 +6710,7 @@ components:
           description: Profile picture URL
           maxLength: 2048
           nullable: true
-        webhook_url:
+        notifications_url:
           type: string
           description: Alternative of email notifications
           maxLength: 256
@@ -6356,7 +6748,6 @@ components:
         - icp_principal
         - nickname
       example:
-        action: "CREATE"
         icp_principal: "xyz123abc456"
         nickname: "John Doe"
         evm_public_address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
@@ -6370,10 +6761,6 @@ components:
       title: Update an existing contact
       description: Update an existing contact
       properties:
-        action:
-          type: string
-          enum: ["UPDATE"]
-          default: "UPDATE"
         id:
           $ref: "#/components/schemas/UserID"
           description: ID of the contact to update
@@ -6387,7 +6774,7 @@ components:
           description: Profile picture URL
           maxLength: 2048
           nullable: true
-        webhook_url:
+        notifications_url:
           type: string
           description: Alternative of email notifications
           maxLength: 256
@@ -6427,7 +6814,6 @@ components:
         - action
         - id
       example:
-        action: "UPDATE"
         id: "UserID_abc123"
         nickname: "Johnny Doe"
         public_note: "Senior Project Manager for Beta team"
@@ -6442,10 +6828,6 @@ components:
       type: object
       description: Create a new drive
       properties:
-        action:
-          type: string
-          enum: ["CREATE"]
-          default: "CREATE"
         name:
           type: string
           description: Name for the drive
@@ -6481,7 +6863,6 @@ components:
         - action
         - name
       example:
-        action: "CREATE"
         name: "Project Files"
         icp_principal: "abc123xyz456"
         public_note: "Main project storage"
@@ -6494,10 +6875,6 @@ components:
       type: object
       description: Update an existing drive
       properties:
-        action:
-          type: string
-          enum: ["UPDATE"]
-          default: "UPDATE"
         id:
           $ref: "#/components/schemas/DriveID"
           description: ID of the drive to update
@@ -6538,7 +6915,6 @@ components:
         - action
         - id
       example:
-        action: "UPDATE"
         id: "DriveID_abc123"
         name: "Updated Project Files"
         private_note: "Contains confidential data"
@@ -6550,10 +6926,6 @@ components:
       type: object
       description: Create a new team
       properties:
-        action:
-          type: string
-          enum: ["CREATE"]
-          default: "CREATE"
         name:
           type: string
           description: Name for the team
@@ -6592,7 +6964,6 @@ components:
         - action
         - name
       example:
-        action: "CREATE"
         name: "Product Development"
         public_note: "Core product development team"
         url_endpoint: "https://teams.officex.app/product-dev"
@@ -6603,10 +6974,6 @@ components:
       type: object
       description: Update an existing team
       properties:
-        action:
-          type: string
-          enum: ["UPDATE"]
-          default: "UPDATE"
         id:
           $ref: "#/components/schemas/TeamID"
           description: ID of the team to update
@@ -6649,7 +7016,6 @@ components:
         - action
         - id
       example:
-        action: "UPDATE"
         id: "TeamID_abc123"
         name: "Product & Design"
         private_note: "Updated team structure"
@@ -6661,10 +7027,6 @@ components:
       type: object
       description: Create a new team invite
       properties:
-        action:
-          type: string
-          enum: ["CREATE"]
-          default: "CREATE"
         team_id:
           $ref: "#/components/schemas/TeamID"
           description: ID of the team for the invite
@@ -6706,7 +7068,6 @@ components:
         - team_id
         - role
       example:
-        action: "CREATE"
         team_id: "TeamID_abc123"
         invitee_id: "UserID_xyz789"
         role: "MEMBER"
@@ -6719,10 +7080,6 @@ components:
       type: object
       description: Update an existing team invite
       properties:
-        action:
-          type: string
-          enum: ["UPDATE"]
-          default: "UPDATE"
         id:
           $ref: "#/components/schemas/TeamInviteID"
           description: ID of the invite to update
@@ -6760,7 +7117,6 @@ components:
         - action
         - id
       example:
-        action: "UPDATE"
         id: "TeamInviteID_abc123"
         role: "ADMIN"
         note: "Upgraded to admin role"
@@ -6773,13 +7129,6 @@ components:
       title: Create a new tag
       description: Create a new tag
       properties:
-        action:
-          type: string
-          enum: ["CREATE"]
-          default: "CREATE"
-          description: |
-            Must be `"CREATE"`. This indicates to the UI or backend that this
-            request is for creating a new Tag.
         value:
           type: string
           description: The tag value (e.g., "Project-Alpha")
@@ -6808,7 +7157,6 @@ components:
         - action
         - value
       example:
-        action: "CREATE"
         value: "Project-Alpha"
         description: "All files related to Project Alpha"
         color: "#4287f5"
@@ -6820,13 +7168,6 @@ components:
       title: Update an existing tag
       description: Update an existing tag
       properties:
-        action:
-          type: string
-          enum: ["UPDATE"]
-          default: "UPDATE"
-          description: |
-            Must be `"UPDATE"`. This indicates to the UI or backend that this
-            request is for updating an existing Tag.
         id:
           $ref: "#/components/schemas/TagID"
           description: ID of the tag to update
@@ -6859,7 +7200,6 @@ components:
         - action
         - id
       example:
-        action: "UPDATE"
         id: "TagID_abc123"
         value: "Project-Beta"
         color: "#ff7700"
@@ -6873,12 +7213,6 @@ components:
       title: Create a new webhook
       description: Create a new webhook
       properties:
-        action:
-          type: string
-          enum: ["CREATE"]
-          default: "CREATE"
-          description: |
-            Must be `"CREATE"`. Indicates this request is for creating a new Webhook.
         alt_index:
           type: string
           description: Alternative index for the webhook
@@ -6921,7 +7255,6 @@ components:
         - url
         - event
       example:
-        action: "CREATE"
         alt_index: "File_abc246"
         url: "https://example.com/webhooks/file-updated"
         event: "file.updated"
@@ -6936,12 +7269,6 @@ components:
       title: Update an existing webhook
       description: Update an existing webhook
       properties:
-        action:
-          type: string
-          enum: ["UPDATE"]
-          default: "UPDATE"
-          description: |
-            Must be `"UPDATE"`. Indicates this request is for updating an existing Webhook.
         id:
           $ref: "#/components/schemas/WebhookID"
           description: ID of the webhook to update
@@ -6983,7 +7310,6 @@ components:
         - action
         - id
       example:
-        action: "UPDATE"
         id: "WebhookID_abc123"
         url: "https://updated-example.com/webhooks/callback"
         active: false
@@ -6997,10 +7323,6 @@ components:
       title: Create a new API key
       description: Create a new API key
       properties:
-        action:
-          type: string
-          enum: ["CREATE"]
-          default: "CREATE"
         name:
           type: string
           description: Name for the API key
@@ -7028,7 +7350,6 @@ components:
         - action
         - name
       example:
-        action: "CREATE"
         name: "Development API Key"
         user_id: "UserID_abc123"
         expires_at: 1703980800000
@@ -7040,10 +7361,6 @@ components:
       title: Update an existing API key
       description: Update an existing API key
       properties:
-        action:
-          type: string
-          enum: ["UPDATE"]
-          default: "UPDATE"
         id:
           $ref: "#/components/schemas/ApiKeyID"
           description: ID of the API key to update
@@ -7076,7 +7393,6 @@ components:
         - action
         - id
       example:
-        action: "UPDATE"
         id: "ApiKeyID_abc123"
         name: "Production API Key"
         is_revoked: false
@@ -7089,10 +7405,6 @@ components:
       type: object
       description: Create a new directory permission
       properties:
-        action:
-          type: string
-          enum: ["CREATE"]
-          default: "CREATE"
         resource_id:
           $ref: "#/components/schemas/DirectoryResourceID"
           description: ID of the resource to grant permission for
@@ -7143,7 +7455,6 @@ components:
         - resource_id
         - permission_types
       example:
-        action: "CREATE"
         resource_id: "FolderID_abc123"
         granted_to: "UserID_xyz789"
         permission_types: ["VIEW", "EDIT"]
@@ -7160,10 +7471,6 @@ components:
       type: object
       description: Update an existing directory permission
       properties:
-        action:
-          type: string
-          enum: ["UPDATE"]
-          default: "UPDATE"
         id:
           $ref: "#/components/schemas/DirectoryPermissionID"
           description: ID of the permission to update
@@ -7219,7 +7526,6 @@ components:
         - action
         - id
       example:
-        action: "UPDATE"
         id: "DirectoryPermissionID_abc123"
         permission_types: ["VIEW", "EDIT", "DELETE"]
         expiry_date_ms: 1688169600000
@@ -7233,10 +7539,6 @@ components:
       type: object
       description: Create a new system permission
       properties:
-        action:
-          type: string
-          enum: ["CREATE"]
-          default: "CREATE"
         resource_id:
           $ref: "#/components/schemas/SystemResourceID"
           description: ID of the resource to grant permission for
@@ -7248,7 +7550,7 @@ components:
           type: array
           items:
             type: string
-            enum: [CREATE, UPDATE, DELETE, VIEW, INVITE]
+            enum: [CREATE, EDIT, DELETE, VIEW, INVITE]
           description: Types of permissions to grant
         begin_date_ms:
           type: integer
@@ -7284,7 +7586,6 @@ components:
         - resource_id
         - permission_types
       example:
-        action: "CREATE"
         resource_id:
           type: "Table"
           value: "DRIVES"
@@ -7302,10 +7603,6 @@ components:
       type: object
       description: Update an existing system permission
       properties:
-        action:
-          type: string
-          enum: ["UPDATE"]
-          default: "UPDATE"
         id:
           $ref: "#/components/schemas/SystemPermissionID"
           description: ID of the permission to update
@@ -7321,7 +7618,7 @@ components:
           type: array
           items:
             type: string
-            enum: [CREATE, UPDATE, DELETE, VIEW, INVITE]
+            enum: [CREATE, EDIT, DELETE, VIEW, INVITE]
           description: Types of permissions to grant
           nullable: true
         begin_date_ms:
@@ -7357,9 +7654,8 @@ components:
         - action
         - id
       example:
-        action: "UPDATE"
         id: "SystemPermissionID_abc123"
-        permission_types: ["VIEW", "CREATE", "UPDATE"]
+        permission_types: ["VIEW", "CREATE", "EDIT"]
         expiry_date_ms: 1688169600000
         note: "Updated with update permission"
         metadata:
