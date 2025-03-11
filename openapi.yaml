@@ -121,7 +121,7 @@ paths:
                     - action: "GET_FILE"
                       target:
                         resource_id: "FileID_abc123"
-                        resource_path: "/documents/project/file.txt"
+                        resource_path: "DiskID::/documents/project/file.txt"
                       payload:
                         share_track_hash: "track123"
               getFolder:
@@ -131,7 +131,7 @@ paths:
                     - action: "GET_FOLDER"
                       target:
                         resource_id: "FolderID_xyz789"
-                        resource_path: "/documents/project/"
+                        resource_path: "DiskID::/documents/project/"
                       payload:
                         share_track_hash: "track456"
               createFile:
@@ -141,7 +141,7 @@ paths:
                     - action: "CREATE_FILE"
                       target:
                         resource_id: "FolderID_xyz789"
-                        resource_path: "/documents/project/"
+                        resource_path: "DiskID::/documents/project/"
                       payload:
                         name: "example.txt"
                         extension: "txt"
@@ -161,7 +161,7 @@ paths:
                     - action: "CREATE_FOLDER"
                       target:
                         resource_id: "FolderID_xyz789"
-                        resource_path: "/documents/"
+                        resource_path: "DiskID::/documents/"
                       payload:
                         name: "project-alpha"
                         tags: ["project", "alpha"]
@@ -178,7 +178,7 @@ paths:
                     - action: "UPDATE_FILE"
                       target:
                         resource_id: "FileID_abc123"
-                        resource_path: "/documents/project/file.txt"
+                        resource_path: "DiskID::/documents/project/file.txt"
                       payload:
                         name: "updated-example.txt"
                         tags: ["project", "updated"]
@@ -193,7 +193,7 @@ paths:
                     - action: "UPDATE_FOLDER"
                       target:
                         resource_id: "FolderID_xyz789"
-                        resource_path: "/documents/project/"
+                        resource_path: "DiskID::/documents/project/"
                       payload:
                         name: "project-beta"
                         tags: ["project", "beta"]
@@ -207,7 +207,7 @@ paths:
                     - action: "DELETE_FILE"
                       target:
                         resource_id: "FileID_abc123"
-                        resource_path: "/documents/project/file.txt"
+                        resource_path: "DiskID::/documents/project/file.txt"
                       payload:
                         permanent: true
               deleteFolder:
@@ -217,7 +217,7 @@ paths:
                     - action: "DELETE_FOLDER"
                       target:
                         resource_id: "FolderID_xyz789"
-                        resource_path: "/documents/project/"
+                        resource_path: "DiskID::/documents/project/"
                       payload:
                         permanent: true
               copyFile:
@@ -227,7 +227,7 @@ paths:
                     - action: "COPY_FILE"
                       target:
                         resource_id: "FileID_abc123"
-                        resource_path: "/documents/project/file.txt"
+                        resource_path: "DiskID::/documents/project/file.txt"
                       payload:
                         destination_folder_id: "FolderID_new123"
                         destination_folder_path: "/documents/archive/"
@@ -239,7 +239,7 @@ paths:
                     - action: "COPY_FOLDER"
                       target:
                         resource_id: "FolderID_xyz789"
-                        resource_path: "/documents/project/"
+                        resource_path: "DiskID::/documents/project/"
                       payload:
                         destination_folder_id: "FolderID_new123"
                         destination_folder_path: "/documents/archive/"
@@ -251,7 +251,7 @@ paths:
                     - action: "MOVE_FILE"
                       target:
                         resource_id: "FileID_abc123"
-                        resource_path: "/documents/project/file.txt"
+                        resource_path: "DiskID::/documents/project/file.txt"
                       payload:
                         destination_folder_id: "FolderID_new123"
                         destination_folder_path: "/documents/archive/"
@@ -263,7 +263,7 @@ paths:
                     - action: "MOVE_FOLDER"
                       target:
                         resource_id: "FolderID_xyz789"
-                        resource_path: "/documents/project/"
+                        resource_path: "DiskID::/documents/project/"
                       payload:
                         destination_folder_id: "FolderID_new123"
                         destination_folder_path: "/documents/archive/"
@@ -275,7 +275,7 @@ paths:
                     - action: "RESTORE_TRASH"
                       target:
                         resource_id: "FolderID_xyz789"
-                        resource_path: "/trash/project/"
+                        resource_path: "DiskID::/trash/project/"
                       payload:
                         file_conflict_resolution: "KEEP_BOTH"
                         restore_to_folder_path: "/restored-files/project/"
@@ -310,7 +310,7 @@ paths:
                             action: "GET_FILE"
                             target:
                               resource_id: "FileID_abc123"
-                              resource_path: "/documents/project/file.txt"
+                              resource_path: "DiskID::/documents/project/file.txt"
                             payload:
                               share_track_hash: "track123"
                           response:
@@ -353,7 +353,7 @@ paths:
                             action: "CREATE_FILE"
                             target:
                               resource_id: "FolderID_xyz789"
-                              resource_path: "/documents/project/"
+                              resource_path: "DiskID::/documents/project/"
                             payload:
                               name: "example.txt"
                               extension: "txt"
@@ -403,7 +403,7 @@ paths:
                             action: "GET_FOLDER"
                             target:
                               resource_id: "FolderID_xyz789"
-                              resource_path: "/documents/project/"
+                              resource_path: "DiskID::/documents/project/"
                             payload:
                               share_track_hash: "track456"
                           response:
@@ -444,7 +444,7 @@ paths:
                             action: "CREATE_FOLDER"
                             target:
                               resource_id: "FolderID_xyz789"
-                              resource_path: "/documents/"
+                              resource_path: "DiskID::/documents/"
                             payload:
                               name: "project-alpha"
                               tags: ["project", "alpha"]
@@ -481,7 +481,7 @@ paths:
                             action: "UPDATE_FILE"
                             target:
                               resource_id: "FileID_abc123"
-                              resource_path: "/documents/project/file.txt"
+                              resource_path: "DiskID::/documents/project/file.txt"
                             payload:
                               name: "updated-example.txt"
                               tags: ["project", "updated"]
@@ -521,7 +521,7 @@ paths:
                             action: "UPDATE_FOLDER"
                             target:
                               resource_id: "FolderID_xyz789"
-                              resource_path: "/documents/project/"
+                              resource_path: "DiskID::/documents/project/"
                             payload:
                               name: "project-beta"
                               tags: ["project", "beta"]
@@ -557,7 +557,7 @@ paths:
                             action: "DELETE_FILE"
                             target:
                               resource_id: "FileID_abc123"
-                              resource_path: "/documents/project/file.txt"
+                              resource_path: "DiskID::/documents/project/file.txt"
                             payload:
                               permanent: false
                           response:
@@ -577,7 +577,7 @@ paths:
                             action: "DELETE_FOLDER"
                             target:
                               resource_id: "FolderID_xyz789"
-                              resource_path: "/documents/project/"
+                              resource_path: "DiskID::/documents/project/"
                             payload:
                               permanent: false
                           response:
@@ -600,7 +600,7 @@ paths:
                             action: "COPY_FILE"
                             target:
                               resource_id: "FileID_abc123"
-                              resource_path: "/documents/project/file.txt"
+                              resource_path: "DiskID::/documents/project/file.txt"
                             payload:
                               destination_folder_id: "FolderID_new123"
                               destination_folder_path: "/documents/archive/"
@@ -639,7 +639,7 @@ paths:
                             action: "COPY_FOLDER"
                             target:
                               resource_id: "FolderID_xyz789"
-                              resource_path: "/documents/project/"
+                              resource_path: "DiskID::/documents/project/"
                             payload:
                               destination_folder_id: "FolderID_new123"
                               destination_folder_path: "/documents/archive/"
@@ -677,7 +677,7 @@ paths:
                             action: "MOVE_FILE"
                             target:
                               resource_id: "FileID_abc123"
-                              resource_path: "/documents/project/file.txt"
+                              resource_path: "DiskID::/documents/project/file.txt"
                             payload:
                               destination_folder_id: "FolderID_new123"
                               destination_folder_path: "/documents/archive/"
@@ -716,7 +716,7 @@ paths:
                             action: "MOVE_FOLDER"
                             target:
                               resource_id: "FolderID_xyz789"
-                              resource_path: "/documents/project/"
+                              resource_path: "DiskID::/documents/project/"
                             payload:
                               destination_folder_id: "FolderID_new123"
                               destination_folder_path: "/documents/archive/"
@@ -753,7 +753,7 @@ paths:
                             action: "RESTORE_TRASH"
                             target:
                               resource_id: "FolderID_xyz789"
-                              resource_path: "/trash/project/"
+                              resource_path: "DiskID::/trash/project/"
                             payload:
                               file_conflict_resolution: "KEEP_BOTH"
                               restore_to_folder_path: "/restored-files/project/"
@@ -5855,7 +5855,7 @@ components:
           - action: "GET_FILE"
             target:
               resource_id: "FileID_abc123"
-              resource_path: "/documents/project/file.txt"
+              resource_path: "DiskID::/documents/project/file.txt"
             payload:
               share_track_hash: "track123"
 
@@ -5877,7 +5877,7 @@ components:
         action: "GET_FILE"
         target:
           resource_id: "FileID_abc123"
-          resource_path: "/documents/project/file.txt"
+          resource_path: "DiskID::/documents/project/file.txt"
         payload:
           share_track_hash: "track123"
 
@@ -5918,7 +5918,7 @@ components:
         action: "GET_FOLDER"
         target:
           resource_id: "FolderID_xyz789"
-          resource_path: "/documents/project/"
+          resource_path: "DiskID::/documents/project/"
         payload:
           share_track_hash: "track456"
 
@@ -5994,7 +5994,7 @@ components:
         action: "CREATE_FOLDER"
         target:
           resource_id: "FolderID_xyz789"
-          resource_path: "/documents/"
+          resource_path: "DiskID::/documents/"
         payload:
           name: "project-alpha"
           tags: ["project", "alpha"]
@@ -6026,7 +6026,7 @@ components:
         action: "UPDATE_FILE"
         target:
           resource_id: "FileID_abc123"
-          resource_path: "/documents/project/file.txt"
+          resource_path: "DiskID::/documents/project/file.txt"
         payload:
           name: "updated-example.txt"
           tags: ["project", "updated"]
@@ -6056,7 +6056,7 @@ components:
         action: "UPDATE_FOLDER"
         target:
           resource_id: "FolderID_xyz789"
-          resource_path: "/documents/project/"
+          resource_path: "DiskID::/documents/project/"
         payload:
           name: "project-beta"
           tags: ["project", "beta"]
@@ -6085,7 +6085,7 @@ components:
         action: "DELETE_FILE"
         target:
           resource_id: "FileID_abc123"
-          resource_path: "/documents/project/file.txt"
+          resource_path: "DiskID::/documents/project/file.txt"
         payload:
           permanent: true
 
@@ -6110,7 +6110,7 @@ components:
         action: "DELETE_FOLDER"
         target:
           resource_id: "FolderID_xyz789"
-          resource_path: "/documents/project/"
+          resource_path: "DiskID::/documents/project/"
         payload:
           permanent: true
 
@@ -6135,7 +6135,7 @@ components:
         action: "COPY_FILE"
         target:
           resource_id: "FileID_abc123"
-          resource_path: "/documents/project/file.txt"
+          resource_path: "DiskID::/documents/project/file.txt"
         payload:
           destination_folder_id: "FolderID_new123"
           destination_folder_path: "/documents/archive/"
@@ -6162,7 +6162,7 @@ components:
         action: "COPY_FOLDER"
         target:
           resource_id: "FolderID_xyz789"
-          resource_path: "/documents/project/"
+          resource_path: "DiskID::/documents/project/"
         payload:
           destination_folder_id: "FolderID_new123"
           destination_folder_path: "/documents/archive/"
@@ -6189,7 +6189,7 @@ components:
         action: "MOVE_FILE"
         target:
           resource_id: "FileID_abc123"
-          resource_path: "/documents/project/file.txt"
+          resource_path: "DiskID::/documents/project/file.txt"
         payload:
           destination_folder_id: "FolderID_new123"
           destination_folder_path: "/documents/archive/"
@@ -6216,7 +6216,7 @@ components:
         action: "MOVE_FOLDER"
         target:
           resource_id: "FolderID_xyz789"
-          resource_path: "/documents/project/"
+          resource_path: "DiskID::/documents/project/"
         payload:
           destination_folder_id: "FolderID_new123"
           destination_folder_path: "/documents/archive/"
@@ -6243,7 +6243,7 @@ components:
         action: "RESTORE_TRASH"
         target:
           resource_id: "FolderID_xyz789"
-          resource_path: "/trash/project/"
+          resource_path: "DiskID::/trash/project/"
         payload:
           file_conflict_resolution: "KEEP_BOTH"
           restore_to_folder_path: "/restored-files/project/"
@@ -6310,6 +6310,7 @@ components:
 
     CreateFilePayload:
       type: object
+      description: Payload for creating a file. Clients can specify body.id = uuidv4 if they want.
       properties:
         name:
           type: string
@@ -6359,6 +6360,7 @@ components:
 
     CreateFolderPayload:
       type: object
+      description: Payload for creating a folder. Clients can specify body.id = uuidv4 if they want.
       properties:
         name:
           type: string
@@ -6467,6 +6469,7 @@ components:
 
     CopyFilePayload:
       type: object
+      description: Payload for copying a file. Clients can specify body.new_copy_id = uuidv4 if they want.
       properties:
         destination_folder_id:
           $ref: "#/components/schemas/FolderID"
@@ -6482,6 +6485,7 @@ components:
 
     CopyFolderPayload:
       type: object
+      description: Payload for copying a file. Clients can specify body.new_copy_id = uuidv4 if they want.
       properties:
         destination_folder_id:
           $ref: "#/components/schemas/FolderID"
@@ -6871,7 +6875,7 @@ components:
     CreateDiskRequest:
       type: object
       title: Create a new disk
-      description: Create a new disk
+      description: Create a new disk. Clients can specify body.id = uuidv4 if they want.
       properties:
         name:
           type: string
@@ -6970,7 +6974,7 @@ components:
     CreateContactRequest:
       type: object
       title: Create a new contact
-      description: Create a new contact
+      description: Create a new contact. Clients can specify body.id = uuidv4 if they want.
       properties:
         icp_principal:
           $ref: "#/components/schemas/ICPPrincipalString"
@@ -7099,7 +7103,7 @@ components:
     # Drive Request Schemas
     CreateDriveRequest:
       type: object
-      description: Create a new drive
+      description: Create a new drive. Clients can specify body.id = uuidv4 if they want.
       properties:
         name:
           type: string
@@ -7197,7 +7201,7 @@ components:
     # Team Request Schemas
     CreateTeamRequest:
       type: object
-      description: Create a new team
+      description: Create a new team. Clients can specify body.id = uuidv4 if they want.
       properties:
         name:
           type: string
@@ -7298,7 +7302,7 @@ components:
     # Team Invite Request Schemas
     CreateTeamInviteRequest:
       type: object
-      description: Create a new team invite
+      description: Create a new team invite. Clients can specify body.id = uuidv4 if they want.
       properties:
         team_id:
           $ref: "#/components/schemas/TeamID"
@@ -7400,7 +7404,7 @@ components:
     CreateTagRequest:
       type: object
       title: Create a new tag
-      description: Create a new tag
+      description: Create a new tag. Clients can specify body.id = uuidv4 if they want.
       properties:
         value:
           type: string
@@ -7484,7 +7488,7 @@ components:
     CreateWebhookRequest:
       type: object
       title: Create a new webhook
-      description: Create a new webhook
+      description: Create a new webhook. Clients can specify body.id = uuidv4 if they want.
       properties:
         alt_index:
           type: string
@@ -7594,7 +7598,7 @@ components:
     CreateApiKeyRequest:
       type: object
       title: Create a new API key
-      description: Create a new API key
+      description: Create a new API key. Clients can specify body.id = uuidv4 if they want.
       properties:
         name:
           type: string
@@ -7676,7 +7680,7 @@ components:
     # Directory Permission Request Schemas
     CreateDirectoryPermissionRequest:
       type: object
-      description: Create a new directory permission
+      description: Create a new directory permission. Clients can specify body.id = uuidv4 if they want.
       properties:
         resource_id:
           $ref: "#/components/schemas/DirectoryResourceID"
@@ -7810,7 +7814,7 @@ components:
 
     CreateSystemPermissionRequest:
       type: object
-      description: Create a new system permission
+      description: Create a new system permission. Clients can specify body.id = uuidv4 if they want.
       properties:
         resource_id:
           $ref: "#/components/schemas/SystemResourceID"
