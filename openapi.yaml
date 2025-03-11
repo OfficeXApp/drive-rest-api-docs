@@ -1090,6 +1090,64 @@ paths:
       security:
         - BearerAuth: []
 
+  /v1/{organization_id}/contacts/redeem:
+    post:
+      tags:
+        - Contacts
+      summary: Redeem a Contact
+      description: Redeems a contact and superswap replace the old user id
+      operationId: redeemContact
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/DriveID"
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: New owner information
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                current_user_id:
+                  $ref: "#/components/schemas/UserID"
+                  description: Current user id, which is a temp
+                new_user_id:
+                  $ref: "#/components/schemas/UserID"
+                  description: New user id decided by user
+                redeem_code:
+                  type: string
+                  description: Redemption code to prove authority
+              required:
+                - giftcard_id
+                - owner_icp_principal
+      responses:
+        "200":
+          description: Successfully redeemed contact into new user id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/Contact"
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /v1/{organization_id}/directory/asset/{file_id_with_extension}:
     get:
       tags:
@@ -2175,6 +2233,216 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
       security:
         - BearerAuth: []
+
+  /v1/{organization_id}/organization/superswap:
+    post:
+      tags:
+        - Organization
+      summary: Swap a userID globally in organization
+      description: Swaps a users id everywhere in an organization, but not in other orgs
+      operationId: superswapUser
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/DriveID"
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: New owner information
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                current_user_id:
+                  $ref: "#/components/schemas/UserID"
+                  description: Current user id for replacement
+                new_user_id:
+                  $ref: "#/components/schemas/UserID"
+                  description: New id for the user
+              required:
+                - next_owner_id
+      responses:
+        "200":
+          description: Successfully swapped user id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          success:
+                            type: boolean
+                            description: Whether the superswap user was successful
+                          message:
+                            type: string
+                            description: Message about the superswap user results
+                        required:
+                          - success
+                          - message
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /v1/{organization_id}/organization/redeem:
+    post:
+      tags:
+        - Organization
+      summary: Swap a userID globally in organization
+      description: Swaps a users id everywhere in an organization, but not in other orgs
+      operationId: superswapUser
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/DriveID"
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: New owner information
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                redeem_code:
+                  $ref: "#/components/schemas/UserID"
+                  description: Redemption code for owner api key
+              required:
+                - redeem_code
+      responses:
+        "200":
+          description: Successfully got owner api key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          drive_id:
+                            $ref: "#/components/schemas/DriveID"
+                            description: Spawned drive id
+                          endpoint_url:
+                            type: string
+                            description: Spawned drive url endpoint
+                          api_key:
+                            type: string
+                            description: Admin api key for the spawned drive
+                          note:
+                            type: string
+                            description: Note about the spawned drive
+                          admin_login_password:
+                            type: string
+                            description: Admin login password for the spawned drive
+                        required:
+                          - success
+                          - message
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /v1/{organization_id}/giftcards/redeem:
+    post:
+      tags:
+        - Organization
+      summary: Redeem a gift card
+      description: Spawn an onchain organization with a prepaid giftcard
+      operationId: superswapUser
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/DriveID"
+        - $ref: "#/components/parameters/AuthHeader"
+      requestBody:
+        description: New owner information
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                giftcard_id:
+                  $ref: "#/components/schemas/GiftCardID"
+                  description: Redemption code for gift card
+                owner_icp_principal:
+                  type: string
+                  description: ICP Principal string
+                organization_name:
+                  type: string
+                  description: Name of organization
+              required:
+                - giftcard_id
+                - owner_icp_principal
+      responses:
+        "200":
+          description: Successfully got owner api key
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          drive_id:
+                            $ref: "#/components/schemas/DriveID"
+                            description: Spawned drive id
+                          owner_id:
+                            $ref: "#/components/schemas/UserID"
+                            description: Owner of the drive
+                          endpoint_url:
+                            type: string
+                            description: http endpoint of the drive
+                          redeem_code:
+                            type: string
+                            description: Redemption code for admin credentials
+                        required:
+                          - drive_id
+                          - owner_id
+                          - endpoint_url
+                          - redeem_code
+                    required:
+                      - data
+                required:
+                  - ok
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /v1/{organization_id}/permissions/directory/get/{directory_permission_id}:
     get:
@@ -4928,7 +5196,7 @@ components:
           type: string
           description: Private note about the drive
           nullable: true
-        url_endpoint:
+        endpoint_url:
           type: string
           description: URL endpoint for the drive's REST API
         last_indexed_ms:
@@ -4957,7 +5225,7 @@ components:
         - id
         - name
         - icp_principal
-        - url_endpoint
+        - endpoint_url
         - tags
 
     Tag:
@@ -5059,7 +5327,7 @@ components:
         drive_id:
           $ref: "#/components/schemas/DriveID"
           description: ID of the team's drive
-        url_endpoint:
+        endpoint_url:
           type: string
           description: URL endpoint for the team
         tags:
@@ -5084,7 +5352,7 @@ components:
         - created_at
         - last_modified_at
         - drive_id
-        - url_endpoint
+        - endpoint_url
         - tags
 
     TeamInvite:
@@ -5427,6 +5695,11 @@ components:
       type: string
       description: Unique identifier for a drive
       example: "DriveID_abc123"
+
+    GiftCardID:
+      type: string
+      description: Unique identifier for a gift card
+      example: "GiftCardID_abc123"
 
     TagID:
       type: string
@@ -6465,7 +6738,7 @@ components:
         drive_id:
           $ref: "#/components/schemas/DriveID"
           description: ID of the drive this diff applies to
-        url_endpoint:
+        endpoint_url:
           type: string
           description: URL endpoint where the diff can be fetched
         implementation:
@@ -6488,7 +6761,7 @@ components:
         - id
         - timestamp_ns
         - drive_id
-        - url_endpoint
+        - endpoint_url
         - implementation
         - diff_forward
         - diff_backward
@@ -6844,7 +7117,7 @@ components:
           description: Private note about the drive
           maxLength: 8192
           nullable: true
-        url_endpoint:
+        endpoint_url:
           type: string
           description: URL endpoint for the drive
           maxLength: 4096
@@ -6867,7 +7140,7 @@ components:
         icp_principal: "abc123xyz456"
         public_note: "Main project storage"
         private_note: "Contains confidential data"
-        url_endpoint: "https://drive.officex.app/project-files"
+        endpoint_url: "https://drive.officex.app/project-files"
         external_id: "ext-drive-001"
         external_payload: '{"department": "engineering", "project": "alpha"}'
 
@@ -6896,7 +7169,7 @@ components:
         icp_principal:
           $ref: "#/components/schemas/ICPPrincipalString"
           nullable: true
-        url_endpoint:
+        endpoint_url:
           type: string
           description: URL endpoint for the drive
           maxLength: 4096
@@ -6945,7 +7218,7 @@ components:
           description: Private note about the team
           maxLength: 8192
           nullable: true
-        url_endpoint:
+        endpoint_url:
           type: string
           description: URL endpoint for the team
           maxLength: 4096
@@ -6966,7 +7239,7 @@ components:
       example:
         name: "Product Development"
         public_note: "Core product development team"
-        url_endpoint: "https://teams.officex.app/product-dev"
+        endpoint_url: "https://teams.officex.app/product-dev"
         external_id: "ext-team-001"
         external_payload: '{"department": "engineering", "project": "alpha"}'
 
@@ -6997,7 +7270,7 @@ components:
           description: Private note about the team
           maxLength: 8192
           nullable: true
-        url_endpoint:
+        endpoint_url:
           type: string
           description: URL endpoint for the team
           maxLength: 4096
