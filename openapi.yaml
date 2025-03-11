@@ -5959,7 +5959,7 @@ components:
         action: "CREATE_FILE"
         target:
           resource_id: "FolderID_xyz789"
-          resource_path: "/documents/project/"
+          resource_path: "DiskID::/documents/project/"
         payload:
           name: "example.txt"
           extension: "txt"
