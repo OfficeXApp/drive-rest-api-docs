@@ -2396,6 +2396,9 @@ paths:
                 owner_icp_principal:
                   type: string
                   description: ICP Principal string
+                owner_name:
+                  type: string
+                  description: Name of owner
                 organization_name:
                   type: string
                   description: Name of organization
@@ -7073,9 +7076,6 @@ components:
         evm_public_address:
           $ref: "#/components/schemas/EvmPublicAddress"
           description: EVM public address
-          nullable: true
-        icp_principal:
-          $ref: "#/components/schemas/ICPPrincipalString"
           nullable: true
         external_id:
           $ref: "#/components/schemas/ExternalID"
