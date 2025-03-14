@@ -18,10 +18,10 @@ tags:
     description: Operations for managing contacts
 
   - name: Teams
-    description: Operations for managing teams
+    description: Operations for managing groups
 
   - name: Team Invites
-    description: Operations for managing team invites
+    description: Operations for managing group invites
 
   - name: Disks
     description: Operations for managing disks
@@ -29,8 +29,8 @@ tags:
   - name: Drives
     description: Operations for managing drives
 
-  - name: Tags
-    description: Operations for managing tags
+  - name: Labels
+    description: Operations for managing labels
 
   - name: Permissions by Directory
     description: Operations for managing directory and system permissions
@@ -2396,6 +2396,9 @@ paths:
                 owner_icp_principal:
                   type: string
                   description: ICP Principal string
+                owner_name:
+                  type: string
+                  description: Name of owner
                 organization_name:
                   type: string
                   description: Name of organization
@@ -2670,7 +2673,7 @@ paths:
                   description: ID of the resource to check permissions for
                 grantee_id:
                   $ref: "#/components/schemas/GranteeID"
-                  description: ID of the user/team to check permissions for
+                  description: ID of the user/group to check permissions for
               required:
                 - resource_id
                 - grantee_id
@@ -3005,7 +3008,7 @@ paths:
                   description: ID of the resource to check permissions for
                 grantee_id:
                   $ref: "#/components/schemas/GranteeID"
-                  description: ID of the user/team to check permissions for
+                  description: ID of the user/group to check permissions for
               required:
                 - resource_id
                 - grantee_id
@@ -3114,13 +3117,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/tags/get/{tag_id}:
+  /v1/{organization_id}/labels/get/{label_id}:
     get:
       tags:
-        - Tags
-      summary: Get Tag
-      description: Retrieve a tag by its ID
-      operationId: getTag
+        - Labels
+      summary: Get Label
+      description: Retrieve a label by its ID
+      operationId: getLabel
       parameters:
         - name: organization_id
           in: path
@@ -3129,14 +3132,14 @@ paths:
             $ref: "#/components/schemas/DriveID"
         - name: id
           in: path
-          description: ID of the tag to retrieve, or the tag value string itself
+          description: ID of the label to retrieve, or the label value string itself
           required: true
           schema:
             type: string
         - $ref: "#/components/parameters/AuthHeader"
       responses:
         "200":
-          description: Successful retrieval of the tag
+          description: Successful retrieval of the label
           content:
             application/json:
               schema:
@@ -3146,7 +3149,7 @@ paths:
                     type: object
                     properties:
                       data:
-                        $ref: "#/components/schemas/Tag"
+                        $ref: "#/components/schemas/Label"
                     required:
                       - data
                 required:
@@ -3160,13 +3163,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/tags/list:
+  /v1/{organization_id}/labels/list:
     post:
       tags:
-        - Tags
-      summary: List Tags
-      description: List tags with optional filtering and pagination
-      operationId: listTags
+        - Labels
+      summary: List Labels
+      description: List labels with optional filtering and pagination
+      operationId: listLabels
       parameters:
         - name: organization_id
           in: path
@@ -3187,7 +3190,7 @@ paths:
                   properties:
                     prefix:
                       type: string
-                      description: Filter tags by prefix
+                      description: Filter labels by prefix
                       maxLength: 256
                       nullable: true
                 page_size:
@@ -3213,7 +3216,7 @@ paths:
                   nullable: true
       responses:
         "200":
-          description: Successful retrieval of tags
+          description: Successful retrieval of labels
           content:
             application/json:
               schema:
@@ -3228,7 +3231,7 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/Tag"
+                              $ref: "#/components/schemas/Label"
                           page_size:
                             type: integer
                             description: Number of items per page
@@ -3260,13 +3263,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/tags/create:
+  /v1/{organization_id}/labels/create:
     post:
       tags:
-        - Tags
-      summary: Create Tag
-      description: Create a new tag
-      operationId: upsertTag
+        - Labels
+      summary: Create Label
+      description: Create a new label
+      operationId: upsertLabel
       parameters:
         - name: organization_id
           in: path
@@ -3275,15 +3278,15 @@ paths:
             $ref: "#/components/schemas/DriveID"
         - $ref: "#/components/parameters/AuthHeader"
       requestBody:
-        description: Tag data to create or update
+        description: Label data to create or update
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateTagRequest"
+              $ref: "#/components/schemas/CreateLabelRequest"
       responses:
         "200":
-          description: Tag successfully created or updated
+          description: Label successfully created or updated
           content:
             application/json:
               schema:
@@ -3293,7 +3296,7 @@ paths:
                     type: object
                     properties:
                       data:
-                        $ref: "#/components/schemas/Tag"
+                        $ref: "#/components/schemas/Label"
                     required:
                       - data
                 required:
@@ -3307,13 +3310,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/tags/update:
+  /v1/{organization_id}/labels/update:
     post:
       tags:
-        - Tags
-      summary: Update Tag
-      description: Update a tag or
-      operationId: upsertTag
+        - Labels
+      summary: Update Label
+      description: Update a label or
+      operationId: upsertLabel
       parameters:
         - name: organization_id
           in: path
@@ -3322,15 +3325,15 @@ paths:
             $ref: "#/components/schemas/DriveID"
         - $ref: "#/components/parameters/AuthHeader"
       requestBody:
-        description: Tag data to create or update
+        description: Label data to create or update
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateTagRequest"
+              $ref: "#/components/schemas/UpdateLabelRequest"
       responses:
         "200":
-          description: Tag successfully created or updated
+          description: Label successfully created or updated
           content:
             application/json:
               schema:
@@ -3340,7 +3343,7 @@ paths:
                     type: object
                     properties:
                       data:
-                        $ref: "#/components/schemas/Tag"
+                        $ref: "#/components/schemas/Label"
                     required:
                       - data
                 required:
@@ -3354,13 +3357,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/tags/delete:
+  /v1/{organization_id}/labels/delete:
     post:
       tags:
-        - Tags
-      summary: Delete Tag
-      description: Delete an existing tag
-      operationId: deleteTag
+        - Labels
+      summary: Delete Label
+      description: Delete an existing label
+      operationId: deleteLabel
       parameters:
         - name: organization_id
           in: path
@@ -3369,7 +3372,7 @@ paths:
             $ref: "#/components/schemas/DriveID"
         - $ref: "#/components/parameters/AuthHeader"
       requestBody:
-        description: ID of the tag to delete
+        description: ID of the label to delete
         required: true
         content:
           application/json:
@@ -3377,13 +3380,13 @@ paths:
               type: object
               properties:
                 id:
-                  $ref: "#/components/schemas/TagID"
-                  description: ID of the tag to delete
+                  $ref: "#/components/schemas/LabelID"
+                  description: ID of the label to delete
               required:
                 - id
       responses:
         "200":
-          description: Tag successfully deleted
+          description: Label successfully deleted
           content:
             application/json:
               schema:
@@ -3396,11 +3399,11 @@ paths:
                         type: object
                         properties:
                           id:
-                            $ref: "#/components/schemas/TagID"
-                            description: ID of the deleted tag
+                            $ref: "#/components/schemas/LabelID"
+                            description: ID of the deleted label
                           deleted:
                             type: boolean
-                            description: Whether the tag was successfully deleted
+                            description: Whether the label was successfully deleted
                         required:
                           - id
                           - deleted
@@ -3417,13 +3420,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/tags/pin:
+  /v1/{organization_id}/labels/pin:
     post:
       tags:
-        - Tags
-      summary: Add or Remove Tag from Resource
-      description: Add or remove a tag from a resource
-      operationId: tagResource
+        - Labels
+      summary: Add or Remove Label from Resource
+      description: Add or remove a label from a resource
+      operationId: labelResource
       parameters:
         - name: organization_id
           in: path
@@ -3432,43 +3435,43 @@ paths:
             $ref: "#/components/schemas/DriveID"
         - $ref: "#/components/parameters/AuthHeader"
       requestBody:
-        description: Tag and resource information
+        description: Label and resource information
         required: true
         content:
           application/json:
             schema:
               type: object
               properties:
-                tag_id:
-                  $ref: "#/components/schemas/TagID"
-                  description: ID of the tag
+                label_id:
+                  $ref: "#/components/schemas/LabelID"
+                  description: ID of the label
                 resource_id:
                   type: string
-                  description: ID of the resource to tag or untag (can be any ID)
+                  description: ID of the resource to label or unlabel (can be any ID)
                   example: "DriveID_abc123"
                 add:
                   type: boolean
-                  description: True to add the tag, false to remove it
+                  description: True to add the label, false to remove it
               required:
-                - tag_id
+                - label_id
                 - resource_id
                 - add
             examples:
               addExample:
-                summary: "Add Tag"
+                summary: "Add Label"
                 value:
-                  tag_id: "TagID_abc123"
+                  tag_id: "LabelID_abc123"
                   resource_id: "DriveID_xyz789"
                   add: true
               removeExample:
-                summary: "Remove Tag"
+                summary: "Remove Label"
                 value:
-                  tag_id: "TagID_abc123"
+                  tag_id: "LabelID_abc123"
                   resource_id: "DriveID_xyz789"
                   add: false
       responses:
         "200":
-          description: Tag operation completed successfully
+          description: Label operation completed successfully
           content:
             application/json:
               schema:
@@ -3487,8 +3490,8 @@ paths:
                             type: string
                             description: Additional information about the operation
                             nullable: true
-                          tag:
-                            $ref: "#/components/schemas/Tag"
+                          label:
+                            $ref: "#/components/schemas/Label"
                             nullable: true
                         required:
                           - success
@@ -3505,12 +3508,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/teams/get/{team_id}:
+  /v1/{organization_id}/groups/get/{group_id}:
     get:
       tags:
         - Teams
       summary: Get Team
-      description: Retrieve a team by its ID
+      description: Retrieve a group by its ID
       operationId: getTeam
       parameters:
         - name: organization_id
@@ -3518,16 +3521,16 @@ paths:
           required: true
           schema:
             $ref: "#/components/schemas/DriveID"
-        - name: team_id
+        - name: group_id
           in: path
-          description: ID of the team to retrieve
+          description: ID of the group to retrieve
           required: true
           schema:
             type: string
         - $ref: "#/components/parameters/AuthHeader"
       responses:
         "200":
-          description: Successful retrieval of the team
+          description: Successful retrieval of the group
           content:
             application/json:
               schema:
@@ -3551,12 +3554,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/teams/list:
+  /v1/{organization_id}/groups/list:
     post:
       tags:
         - Teams
       summary: List Teams
-      description: List teams with optional filtering and pagination
+      description: List groups with optional filtering and pagination
       operationId: listTeams
       parameters:
         - name: organization_id
@@ -3575,7 +3578,7 @@ paths:
               properties:
                 filters:
                   type: string
-                  description: Filter string for teams
+                  description: Filter string for groups
                   maxLength: 256
                   default: ""
                 page_size:
@@ -3601,7 +3604,7 @@ paths:
                   nullable: true
       responses:
         "200":
-          description: Successful retrieval of teams
+          description: Successful retrieval of groups
           content:
             application/json:
               schema:
@@ -3648,12 +3651,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/teams/create:
+  /v1/{organization_id}/groups/create:
     post:
       tags:
         - Teams
       summary: Create Team
-      description: Create a new team
+      description: Create a new group
       operationId: upsertTeam
       parameters:
         - name: organization_id
@@ -3695,12 +3698,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/teams/update:
+  /v1/{organization_id}/groups/update:
     post:
       tags:
         - Teams
       summary: Update Team
-      description: Update team
+      description: Update group
       operationId: upsertTeam
       parameters:
         - name: organization_id
@@ -3742,12 +3745,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/teams/delete:
+  /v1/{organization_id}/groups/delete:
     post:
       tags:
         - Teams
       summary: Delete Team
-      description: Delete an existing team
+      description: Delete an existing group
       operationId: deleteTeam
       parameters:
         - name: organization_id
@@ -3757,7 +3760,7 @@ paths:
             $ref: "#/components/schemas/DriveID"
         - $ref: "#/components/parameters/AuthHeader"
       requestBody:
-        description: ID of the team to delete
+        description: ID of the group to delete
         required: true
         content:
           application/json:
@@ -3766,7 +3769,7 @@ paths:
               properties:
                 id:
                   $ref: "#/components/schemas/TeamID"
-                  description: ID of the team to delete
+                  description: ID of the group to delete
               required:
                 - id
       responses:
@@ -3785,10 +3788,10 @@ paths:
                         properties:
                           id:
                             $ref: "#/components/schemas/TeamID"
-                            description: ID of the deleted team
+                            description: ID of the deleted group
                           deleted:
                             type: boolean
-                            description: Whether the team was successfully deleted
+                            description: Whether the group was successfully deleted
                         required:
                           - id
                           - deleted
@@ -3805,12 +3808,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/teams/validate:
+  /v1/{organization_id}/groups/validate:
     post:
       tags:
         - Teams
       summary: Validate Member
-      description: Verify if a user belongs to a specific team
+      description: Verify if a user belongs to a specific group
       operationId: validateTeam
       parameters:
         - name: organization_id
@@ -3820,7 +3823,7 @@ paths:
             $ref: "#/components/schemas/DriveID"
         - $ref: "#/components/parameters/AuthHeader"
       requestBody:
-        description: User and team information to validate
+        description: User and group information to validate
         required: true
         content:
           application/json:
@@ -3830,12 +3833,12 @@ paths:
                 user_id:
                   $ref: "#/components/schemas/UserID"
                   description: ID of the user to check
-                team_id:
+                group_id:
                   $ref: "#/components/schemas/TeamID"
-                  description: ID of the team to check
+                  description: ID of the group to check
               required:
                 - user_id
-                - team_id
+                - group_id
       responses:
         "200":
           description: Team membership validation result
@@ -3852,16 +3855,16 @@ paths:
                         properties:
                           is_member:
                             type: boolean
-                            description: Whether the user is a member of the team
-                          team_id:
+                            description: Whether the user is a member of the group
+                          group_id:
                             $ref: "#/components/schemas/TeamID"
-                            description: ID of the team that was checked
+                            description: ID of the group that was checked
                           user_id:
                             $ref: "#/components/schemas/UserID"
                             description: ID of the user that was checked
                         required:
                           - is_member
-                          - team_id
+                          - group_id
                           - user_id
                     required:
                       - data
@@ -3876,12 +3879,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/teams/invites/get/{invite_id}:
+  /v1/{organization_id}/groups/invites/get/{invite_id}:
     get:
       tags:
         - Team Invites
       summary: Get Team Invite
-      description: Retrieve a team invite by its ID
+      description: Retrieve a group invite by its ID
       operationId: getTeamInvite
       parameters:
         - name: organization_id
@@ -3891,14 +3894,14 @@ paths:
             $ref: "#/components/schemas/DriveID"
         - name: invite_id
           in: path
-          description: ID of the team invite to retrieve
+          description: ID of the group invite to retrieve
           required: true
           schema:
             type: string
         - $ref: "#/components/parameters/AuthHeader"
       responses:
         "200":
-          description: Successful retrieval of the team invite
+          description: Successful retrieval of the group invite
           content:
             application/json:
               schema:
@@ -3922,12 +3925,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/teams/invites/list:
+  /v1/{organization_id}/groups/invites/list:
     post:
       tags:
         - Team Invites
       summary: List Team Invites
-      description: List team invites with optional filtering and pagination
+      description: List group invites with optional filtering and pagination
       operationId: listTeamInvites
       parameters:
         - name: organization_id
@@ -3944,12 +3947,12 @@ paths:
             schema:
               type: object
               properties:
-                team_id:
+                group_id:
                   $ref: "#/components/schemas/TeamID"
-                  description: ID of the team to list invites for
+                  description: ID of the group to list invites for
                 filters:
                   type: string
-                  description: Filter string for team invites
+                  description: Filter string for group invites
                   maxLength: 256
                   default: ""
                 page_size:
@@ -3974,10 +3977,10 @@ paths:
                   maxLength: 256
                   nullable: true
               required:
-                - team_id
+                - group_id
       responses:
         "200":
-          description: Successful retrieval of team invites
+          description: Successful retrieval of group invites
           content:
             application/json:
               schema:
@@ -4024,12 +4027,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/teams/invites/create:
+  /v1/{organization_id}/groups/invites/create:
     post:
       tags:
         - Team Invites
       summary: Create Team Invite
-      description: Create a new team invite
+      description: Create a new group invite
       operationId: upsertTeamInvite
       parameters:
         - name: organization_id
@@ -4071,12 +4074,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/teams/invites/update:
+  /v1/{organization_id}/groups/invites/update:
     post:
       tags:
         - Team Invites
       summary: Update Team Invite
-      description: Update team invite
+      description: Update group invite
       operationId: upsertTeamInvite
       parameters:
         - name: organization_id
@@ -4118,12 +4121,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/teams/invites/delete:
+  /v1/{organization_id}/groups/invites/delete:
     post:
       tags:
         - Team Invites
       summary: Delete Team Invite
-      description: Delete an existing team invite
+      description: Delete an existing group invite
       operationId: deleteTeamInvite
       parameters:
         - name: organization_id
@@ -4133,7 +4136,7 @@ paths:
             $ref: "#/components/schemas/DriveID"
         - $ref: "#/components/parameters/AuthHeader"
       requestBody:
-        description: ID of the team invite to delete
+        description: ID of the group invite to delete
         required: true
         content:
           application/json:
@@ -4142,7 +4145,7 @@ paths:
               properties:
                 id:
                   $ref: "#/components/schemas/TeamInviteID"
-                  description: ID of the team invite to delete
+                  description: ID of the group invite to delete
               required:
                 - id
       responses:
@@ -4161,10 +4164,10 @@ paths:
                         properties:
                           id:
                             $ref: "#/components/schemas/TeamInviteID"
-                            description: ID of the deleted team invite
+                            description: ID of the deleted group invite
                           deleted:
                             type: boolean
-                            description: Whether the team invite was successfully deleted
+                            description: Whether the group invite was successfully deleted
                         required:
                           - id
                           - deleted
@@ -4181,12 +4184,12 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/teams/invites/redeem:
+  /v1/{organization_id}/groups/invites/redeem:
     post:
       tags:
         - Team Invites
       summary: Redeem Team Invite
-      description: Redeem a team invite for a specific user
+      description: Redeem a group invite for a specific user
       operationId: redeemTeamInvite
       parameters:
         - name: organization_id
@@ -4205,7 +4208,7 @@ paths:
               properties:
                 invite_id:
                   $ref: "#/components/schemas/TeamInviteID"
-                  description: ID of the team invite to redeem
+                  description: ID of the group invite to redeem
                 user_id:
                   $ref: "#/components/schemas/UserID"
                   description: ID of the user to redeem the invite for
@@ -5089,7 +5092,7 @@ components:
           description: EVM public address
         icp_principal:
           $ref: "#/components/schemas/ICPPrincipalString"
-        teams:
+        groups:
           type: array
           items:
             $ref: "#/components/schemas/TeamID"
@@ -5108,9 +5111,9 @@ components:
           format: int64
           description: Timestamp ms when the contact was last online
           nullable: true
-        team_previews:
+        group_previews:
           type: array
-          description: Preview of teams the contact belongs to
+          description: Preview of groups the contact belongs to
           items:
             $ref: "#/components/schemas/ContactTeamPreview"
         permission_previews:
@@ -5130,7 +5133,7 @@ components:
         - public_note
         - evm_public_address
         - icp_principal
-        - teams
+        - groups
         - tags
 
     Disk:
@@ -5228,43 +5231,43 @@ components:
         - endpoint_url
         - tags
 
-    Tag:
+    Label:
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/TagID"
-          description: Unique identifier for the tag
+          $ref: "#/components/schemas/LabelID"
+          description: Unique identifier for the label
         value:
           type: string
-          description: Text value of the tag
+          description: Text value of the label
         description:
           type: string
-          description: Description of the tag
+          description: Description of the label
           nullable: true
         color:
           type: string
           description: Color code in hex format
         created_by:
           type: string
-          description: ID of the user who created the tag
+          description: ID of the user who created the label
         created_at:
           type: integer
           format: int64
-          description: Timestamp when the tag was created
+          description: Timestamp when the label was created
         last_updated_at:
           type: integer
           format: int64
-          description: Timestamp when the tag was last updated
+          description: Timestamp when the label was last updated
         resources:
           type: array
           items:
             type: object
-            description: Resources tagged with this tag
+            description: Resources tagged with this label
         tags:
           type: array
           items:
             type: string
-            description: Other tags associated with this tag
+            description: Other tags associated with this label
         external_id:
           $ref: "#/components/schemas/ExternalID"
           description: External identifier
@@ -5288,23 +5291,23 @@ components:
       properties:
         id:
           $ref: "#/components/schemas/TeamID"
-          description: Unique identifier for the team
+          description: Unique identifier for the group
         name:
           type: string
-          description: Name of the team
+          description: Name of the group
         avatar:
           type: string
-          description: Profile picture url for the team
+          description: Profile picture url for the group
         owner:
           type: string
-          description: ID of the team owner
+          description: ID of the group owner
         public_note:
           type: string
-          description: Public note about the team
+          description: Public note about the group
           nullable: true
         private_note:
           type: string
-          description: Private note about the team
+          description: Private note about the group
           nullable: true
         admin_invites:
           type: array
@@ -5319,22 +5322,22 @@ components:
         created_at:
           type: integer
           format: int64
-          description: Timestamp when the team was created
+          description: Timestamp when the group was created
         last_modified_at:
           type: integer
           format: int64
-          description: Timestamp when the team was last modified
+          description: Timestamp when the group was last modified
         drive_id:
           $ref: "#/components/schemas/DriveID"
-          description: ID of the team's drive
+          description: ID of the group's drive
         endpoint_url:
           type: string
-          description: URL endpoint for the team
+          description: URL endpoint for the group
         tags:
           type: array
           items:
             type: string
-          description: Tags associated with the team
+          description: Tags associated with the group
         external_id:
           $ref: "#/components/schemas/ExternalID"
           description: External identifier
@@ -5360,10 +5363,10 @@ components:
       properties:
         id:
           $ref: "#/components/schemas/TeamInviteID"
-          description: Unique identifier for the team invite
-        team_id:
+          description: Unique identifier for the group invite
+        group_id:
           $ref: "#/components/schemas/TeamID"
-          description: ID of the team the invite is for
+          description: ID of the group the invite is for
         inviter_id:
           $ref: "#/components/schemas/UserID"
           description: ID of the user who created the invite
@@ -5412,7 +5415,7 @@ components:
           nullable: true
       required:
         - id
-        - team_id
+        - group_id
         - inviter_id
         - invitee_id
         - role
@@ -5492,7 +5495,7 @@ components:
           description: Path of the resource the permission applies to
         granted_to:
           $ref: "#/components/schemas/GranteeID"
-          description: ID of the user/team granted the permission
+          description: ID of the user/group granted the permission
         granted_by:
           $ref: "#/components/schemas/UserID"
           description: ID of the user who granted the permission
@@ -5559,7 +5562,7 @@ components:
           description: ID of the system resource the permission applies to
         granted_to:
           $ref: "#/components/schemas/GranteeID"
-          description: ID of the user/team granted the permission
+          description: ID of the user/group granted the permission
         granted_by:
           $ref: "#/components/schemas/UserID"
           description: ID of the user who granted the permission
@@ -5673,12 +5676,12 @@ components:
 
     TeamID:
       type: string
-      description: Unique identifier for a team
+      description: Unique identifier for a group
       example: "TeamID_123456"
 
     TeamInviteID:
       type: string
-      description: Unique identifier for a team invite
+      description: Unique identifier for a group invite
       example: "TeamInviteID_abc123"
 
     GranteeID:
@@ -5701,10 +5704,10 @@ components:
       description: Unique identifier for a gift card
       example: "GiftCardID_abc123"
 
-    TagID:
+    LabelID:
       type: string
-      description: Unique identifier for a tag
-      example: "TagID_abc123"
+      description: Unique identifier for a label
+      example: "LabelID_abc123"
 
     WebhookID:
       type: string
@@ -6700,7 +6703,7 @@ components:
               "DRIVES",
               "DISKS",
               "CONTACTS",
-              "TEAMS",
+              "GROUPS",
               "API_KEYS",
               "PERMISSIONS",
               "WEBHOOKS",
@@ -6775,27 +6778,27 @@ components:
     ContactTeamPreview:
       type: object
       properties:
-        team_id:
+        group_id:
           $ref: "#/components/schemas/TeamID"
-          description: Unique identifier for the team
+          description: Unique identifier for the group
         invite_id:
           type: string
           description: Unique identifier for the invite, usually the UserID
         is_admin:
           type: bool
-          description: Whether the contact is an admin of the team
-        team_name:
+          description: Whether the contact is an admin of the group
+        group_name:
           type: string
           description: Team name
-        team_avatar:
+        group_avatar:
           type: string
-          description: URL to the team's avatar image
+          description: URL to the group's avatar image
       required:
-        - team_id
+        - group_id
         - invite_id
         - is_admin
-        - team_name
-        - team_avatar
+        - group_name
+        - group_avatar
 
     # =========================================================================
     # Basic Types (Core Types)
@@ -6825,7 +6828,7 @@ components:
 
     TagValue:
       type: string
-      description: String value for a tag
+      description: String value for a label
       maxLength: 256
 
     DiskType:
@@ -6862,12 +6865,12 @@ components:
         - subfolder.updated
         - subfolder.deleted
         - subfolder.shared
-        - team.invite.created
-        - team.invite.updated
+        - group.invite.created
+        - group.invite.updated
         - drive.restore_trash
         - drive.state_diffs
-        - tag.added
-        - tag.removed
+        - label.added
+        - label.removed
       example: file.updated
 
     # ================================= MANAGE ROUTE TYPES ========================================
@@ -6915,7 +6918,7 @@ components:
       example:
         name: "Project Cloud Storage"
         disk_type: "AwsBucket"
-        public_note: "Storage for team project files"
+        public_note: "Storage for group project files"
         private_note: "Contains sensitive project data"
         auth_json: '{"access_key": "AKIAIOSFODNN7EXAMPLE", "secret_key": "redacted", "region": "us-west-2", "bucket": "my-project-files"}'
         external_id: "ext-disk-001"
@@ -7028,7 +7031,7 @@ components:
         icp_principal: "xyz123abc456"
         nickname: "John Doe"
         evm_public_address: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F"
-        public_note: "Project manager for Alpha team"
+        public_note: "Project manager for Alpha group"
         private_note: "Primary contact for urgent issues"
         external_id: "emp-1234"
         external_payload: '{"department": "product", "title": "Senior Project Manager", "location": "Remote"}'
@@ -7074,9 +7077,6 @@ components:
           $ref: "#/components/schemas/EvmPublicAddress"
           description: EVM public address
           nullable: true
-        icp_principal:
-          $ref: "#/components/schemas/ICPPrincipalString"
-          nullable: true
         external_id:
           $ref: "#/components/schemas/ExternalID"
           description: External identifier
@@ -7093,7 +7093,7 @@ components:
       example:
         id: "UserID_abc123"
         nickname: "Johnny Doe"
-        public_note: "Senior Project Manager for Beta team"
+        public_note: "Senior Project Manager for Beta group"
         private_note: "Recently promoted, great communicator"
         evm_public_address: "0x82D7656EC7ab88b098defB751B7401B5f6d8976F"
         icp_principal: "xyz123abc456"
@@ -7201,11 +7201,11 @@ components:
     # Team Request Schemas
     CreateTeamRequest:
       type: object
-      description: Create a new team. Clients can specify body.id = uuidv4 if they want.
+      description: Create a new group. Clients can specify body.id = uuidv4 if they want.
       properties:
         name:
           type: string
-          description: Name for the team
+          description: Name for the group
           maxLength: 256
         avatar:
           type: string
@@ -7214,17 +7214,17 @@ components:
           nullable: true
         public_note:
           type: string
-          description: Public note about the team
+          description: Public note about the group
           maxLength: 8192
           nullable: true
         private_note:
           type: string
-          description: Private note about the team
+          description: Private note about the group
           maxLength: 8192
           nullable: true
         endpoint_url:
           type: string
-          description: URL endpoint for the team
+          description: URL endpoint for the group
           maxLength: 4096
           nullable: true
         external_id:
@@ -7242,21 +7242,21 @@ components:
         - name
       example:
         name: "Product Development"
-        public_note: "Core product development team"
-        endpoint_url: "https://teams.officex.app/product-dev"
-        external_id: "ext-team-001"
+        public_note: "Core product development group"
+        endpoint_url: "https://groups.officex.app/product-dev"
+        external_id: "ext-group-001"
         external_payload: '{"department": "engineering", "project": "alpha"}'
 
     UpdateTeamRequest:
       type: object
-      description: Update an existing team
+      description: Update an existing group
       properties:
         id:
           $ref: "#/components/schemas/TeamID"
-          description: ID of the team to update
+          description: ID of the group to update
         name:
           type: string
-          description: New name for the team
+          description: New name for the group
           maxLength: 256
           nullable: true
         avatar:
@@ -7266,17 +7266,17 @@ components:
           nullable: true
         public_note:
           type: string
-          description: Public note about the team
+          description: Public note about the group
           maxLength: 8192
           nullable: true
         private_note:
           type: string
-          description: Private note about the team
+          description: Private note about the group
           maxLength: 8192
           nullable: true
         endpoint_url:
           type: string
-          description: URL endpoint for the team
+          description: URL endpoint for the group
           maxLength: 4096
           nullable: true
         external_id:
@@ -7295,18 +7295,18 @@ components:
       example:
         id: "TeamID_abc123"
         name: "Product & Design"
-        private_note: "Updated team structure"
-        external_id: "ext-team-001-updated"
+        private_note: "Updated group structure"
+        external_id: "ext-group-001-updated"
         external_payload: '{"department": "engineering", "project": "alpha", "updated": true}'
 
     # Team Invite Request Schemas
     CreateTeamInviteRequest:
       type: object
-      description: Create a new team invite. Clients can specify body.id = uuidv4 if they want.
+      description: Create a new group invite. Clients can specify body.id = uuidv4 if they want.
       properties:
-        team_id:
+        group_id:
           $ref: "#/components/schemas/TeamID"
-          description: ID of the team for the invite
+          description: ID of the group for the invite
         invitee_id:
           $ref: "#/components/schemas/UserID"
           description: ID of the user to invite
@@ -7342,20 +7342,20 @@ components:
           nullable: true
       required:
         - action
-        - team_id
+        - group_id
         - role
       example:
-        team_id: "TeamID_abc123"
+        group_id: "TeamID_abc123"
         invitee_id: "UserID_xyz789"
         role: "MEMBER"
-        note: "Invitation to join the project team"
+        note: "Invitation to join the project group"
         expires_at: 1672531200000
         external_id: "ext-invite-001"
         external_payload: '{"department": "engineering", "project": "alpha"}'
 
     UpdateTeamInviteRequest:
       type: object
-      description: Update an existing team invite
+      description: Update an existing group invite
       properties:
         id:
           $ref: "#/components/schemas/TeamInviteID"
@@ -7400,19 +7400,19 @@ components:
         external_id: "ext-invite-001-updated"
         external_payload: '{"department": "engineering", "project": "alpha", "updated": true}'
 
-    # Tag Request Schemas
-    CreateTagRequest:
+    # Label Request Schemas
+    CreateLabelRequest:
       type: object
-      title: Create a new tag
-      description: Create a new tag. Clients can specify body.id = uuidv4 if they want.
+      title: Create a new label
+      description: Create a new label. Clients can specify body.id = uuidv4 if they want.
       properties:
         value:
           type: string
-          description: The tag value (e.g., "Project-Alpha")
+          description: The label value (e.g., "Project-Alpha")
           maxLength: 256
         description:
           type: string
-          description: Description of the tag
+          description: Description of the label
           maxLength: 8192
           nullable: true
         color:
@@ -7437,25 +7437,25 @@ components:
         value: "Project-Alpha"
         description: "All files related to Project Alpha"
         color: "#4287f5"
-        external_id: "ext-tag-001"
-        external_payload: '{"team": "alpha", "some_field": "some_value"}'
+        external_id: "ext-label-001"
+        external_payload: '{"group": "alpha", "some_field": "some_value"}'
 
-    UpdateTagRequest:
+    UpdateLabelRequest:
       type: object
-      title: Update an existing tag
-      description: Update an existing tag
+      title: Update an existing label
+      description: Update an existing label
       properties:
         id:
-          $ref: "#/components/schemas/TagID"
-          description: ID of the tag to update
+          $ref: "#/components/schemas/LabelID"
+          description: ID of the label to update
         value:
           type: string
-          description: New value for the tag
+          description: New value for the label
           maxLength: 256
           nullable: true
         description:
           type: string
-          description: New description for the tag
+          description: New description for the label
           maxLength: 8192
           nullable: true
         color:
@@ -7477,12 +7477,12 @@ components:
         - action
         - id
       example:
-        id: "TagID_abc123"
+        id: "LabelID_abc123"
         value: "Project-Beta"
         color: "#ff7700"
         description: "Updated description for the Beta project"
-        external_id: "ext-tag-001-updated"
-        external_payload: '{"team": "beta", "updated_field": true}'
+        external_id: "ext-label-001-updated"
+        external_payload: '{"group": "beta", "updated_field": true}'
 
     # Webhook Request Schemas
     CreateWebhookRequest:
@@ -7537,7 +7537,7 @@ components:
         event: "file.updated"
         signature: "sha256-hash"
         description: "Notify when files are updated"
-        filters: "team=engineering"
+        filters: "group=engineering"
         external_id: "ext-webhook-001"
         external_payload: '{"department": "engineering", "webhookType": "fileUpdates"}'
 
@@ -7591,7 +7591,7 @@ components:
         url: "https://updated-example.com/webhooks/callback"
         active: false
         description: "My disabled webhook"
-        filters: "team=marketing"
+        filters: "group=marketing"
         external_id: "ext-webhook-001-updated"
         external_payload: '{"department": "marketing", "webhookType": "fileUpdates", "disabledReason": "maintenance"}'
 
@@ -7687,7 +7687,7 @@ components:
           description: ID of the resource to grant permission for
         granted_to:
           $ref: "#/components/schemas/GranteeID"
-          description: ID of the user/team to grant permission to
+          description: ID of the user/group to grant permission to
           nullable: true
         permission_types:
           type: array
@@ -7757,7 +7757,7 @@ components:
           nullable: true
         granted_to:
           $ref: "#/components/schemas/GranteeID"
-          description: ID of the user/team to grant permission to
+          description: ID of the user/group to grant permission to
           nullable: true
         permission_types:
           type: array
@@ -7821,7 +7821,7 @@ components:
           description: ID of the resource to grant permission for
         granted_to:
           $ref: "#/components/schemas/GranteeID"
-          description: ID of the user/team to grant permission to
+          description: ID of the user/group to grant permission to
           nullable: true
         permission_types:
           type: array
@@ -7889,7 +7889,7 @@ components:
           nullable: true
         granted_to:
           $ref: "#/components/schemas/GranteeID"
-          description: ID of the user/team to grant permission to
+          description: ID of the user/group to grant permission to
           nullable: true
         permission_types:
           type: array
