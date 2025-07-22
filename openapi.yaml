@@ -7094,7 +7094,7 @@ components:
         disk_type: "AwsBucket"
         public_note: "Storage for group project files"
         private_note: "Contains sensitive project data"
-        auth_json: '{"access_key": "AKIAIOSFODNN7EXAMPLE", "secret_key": "redacted", "region": "us-west-2", "bucket": "my-project-files"}'
+        auth_json: '{"access_key": "demo", "secret_key": "redacted", "region": "us-west-2", "bucket": "my-project-files"}'
         external_id: "ext-disk-001"
         external_payload: '{"department": "engineering", "cost_center": "cc-12345", "project_id": "p-987654"}'
 
@@ -7144,7 +7144,7 @@ components:
         name: "Updated Storage Name"
         public_note: "Primary storage for project Alpha"
         private_note: "Contains confidential project data"
-        auth_json: '{"access_key": "AKIAIOSFODNN7UPDATED", "region": "us-east-1", "bucket": "project-alpha-files"}'
+        auth_json: '{"access_key": "demo", "region": "us-east-1", "bucket": "project-alpha-files"}'
         external_id: "ext-disk-001-updated"
         external_payload: '{"department": "engineering", "cost_center": "cc-67890", "project_id": "p-123456", "updated": true}'
 
