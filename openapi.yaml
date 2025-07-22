@@ -1,8 +1,21 @@
 openapi: 3.0.3
 info:
   title: OfficeX Filesharing API
-  description: API for OfficeX filesharing app, clone of Google Drive - https://drive.officex.app
-  version: 1.0.0
+  description: |
+    `Copy Prompt via Download button ☝️`
+
+    REST API for OfficeX filesharing app - https://officex.app
+
+    Also try it in iframe mode: https://fir-iframe-officex.web.app
+
+    All the code on Github: 
+    - NodeJS Server (Web2 Backend): https://github.com/OfficeXApp/typescript-server
+    - Rust ICP Canister (Web3 Backend): https://github.com/OfficeXApp/canisters-official
+    - Storage WebApp (Frontend UI): https://github.com/OfficeXApp/Storage
+    - Typescript Types: https://github.com/OfficeXApp/types
+    - Demo iFrame: https://github.com/OfficeXApp/iframe-demo
+
+  version: Beta 1.0
 
 tags:
   - name: API Keys
@@ -17,10 +30,10 @@ tags:
   - name: Contacts
     description: Operations for managing contacts
 
-  - name: Teams
+  - name: Groups
     description: Operations for managing groups
 
-  - name: Team Invites
+  - name: Group Invites
     description: Operations for managing group invites
 
   - name: Disks
@@ -45,7 +58,114 @@ tags:
     description: Operations for managing own drive canister
 
 paths:
-  /v1/{organization_id}/directory/list:
+  /v1/factory/giftcards/spawnorg/upsert:
+    post:
+      tags:
+        - Organization
+      summary: Create New Org (Gift Card Spawn)
+      description: Create a new organization using a gift card with specified revenue and gas cycles.
+      operationId: createNewOrgGiftcardSpawn
+      requestBody:
+        description: Organization details for creation
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrgGiftcardSpawnRequest"
+            example:
+              action: "CREATE"
+              usd_revenue_cents: 0
+              note: "Free User | UserID_fgfzs-e354r-beyhr-75myl-hzbgn-ihvep-f6vxy-rop7f-dku26-2sfv2-mae"
+              gas_cycles_included: 3500000000000
+      responses:
+        "200":
+          description: Successfully created a new organization with the gift card.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/GiftcardSpawnOrgResponse"
+                    required:
+                      - data
+                required:
+                  - ok
+              example:
+                ok:
+                  data:
+                    id: "GiftcardSpawnOrgID_9030a62e-fa93-458b-bfe1-36c2a0d1d4b1"
+                    usd_revenue_cents: 0
+                    note: "Free User | UserID_fgfzs-e354r-beyhr-75myl-hzbgn-ihvep-f6vxy-rop7f-dku26-2sfv2-mae"
+                    gas_cycles_included: 3500000000000
+                    timestamp_ms: 1753116627312
+                    redeemed: false
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /v1/factory/giftcards/spawnorg/redeem:
+    post:
+      tags:
+        - Organization
+      summary: Redeem New Org (Gift Card Redeem)
+      description: Redeem a gift card to spawn an on-chain organization.
+      operationId: redeemNewOrgGiftcardSpawn
+      requestBody:
+        description: Gift card and owner details for redemption
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RedeemOrgGiftcardSpawnRequest"
+            example:
+              giftcard_id: "GiftcardSpawnOrgID_9030a62e-fa93-458b-bfe1-36c2a0d1d4b1"
+              owner_icp_principal: "fgfzs-e354r-beyhr-75myl-hzbgn-ihvep-f6vxy-rop7f-dku26-2sfv2-mae"
+              organization_name: "Weeeb Two"
+              owner_name: "Anon"
+      responses:
+        "200":
+          description: Successfully redeemed the gift card and created the organization.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/RedeemOrgGiftcardSpawnResponse"
+                    required:
+                      - data
+                required:
+                  - ok
+              example:
+                ok:
+                  data:
+                    owner_id: "UserID_fgfzs-e354r-beyhr-75myl-hzbgn-ihvep-f6vxy-rop7f-dku26-2sfv2-mae"
+                    drive_id: "DriveID_chucq-txtgk-5m5ur-mwuku-z2435-fh5hz-b5hr3-2d5mn-a6t65-l3gmx-xae"
+                    endpoint: "http://localhost:8888"
+                    redeem_code: "REDEEM_1753116627346"
+                    disk_auth_json: null
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
+  /v1/drive/{organization_id}/directory/list:
     post:
       tags:
         - Directory
@@ -92,7 +212,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/directory/action:
+  /v1/drive/{organization_id}/directory/action:
     post:
       tags:
         - Directory
@@ -321,7 +441,7 @@ paths:
                                 folder_uuid: "FolderID_xyz789"
                                 file_version: 1
                                 extension: "txt"
-                                full_file_path: "/documents/project/file.txt"
+                                clipped_directory_path: "/documents/project/file.txt"
                                 tags: ["project", "documentation"]
                                 created_by: "UserID_123"
                                 created_at: 1672531200000
@@ -370,7 +490,7 @@ paths:
                                 folder_uuid: "FolderID_xyz789"
                                 file_version: 1
                                 extension: "txt"
-                                full_file_path: "/documents/project/example.txt"
+                                clipped_directory_path: "/documents/project/example.txt"
                                 tags: ["project", "documentation"]
                                 created_by: "UserID_123"
                                 created_at: 1672531200000
@@ -415,7 +535,7 @@ paths:
                                 subfolder_uuids:
                                   ["FolderID_subdir1", "FolderID_subdir2"]
                                 file_uuids: ["FileID_abc123", "FileID_def456"]
-                                full_folder_path: "/documents/project/"
+                                clipped_directory_path: "/documents/project/"
                                 tags: ["project", "active"]
                                 created_by: "UserID_123"
                                 created_at: 1672531200000
@@ -457,7 +577,7 @@ paths:
                               parent_folder_uuid: "FolderID_xyz789"
                               subfolder_uuids: []
                               file_uuids: []
-                              full_folder_path: "/documents/project-alpha/"
+                              clipped_directory_path: "/documents/project-alpha/"
                               tags: ["project", "alpha"]
                               created_by: "UserID_123"
                               created_at: 1672531200000
@@ -494,7 +614,7 @@ paths:
                               file_version: 2
                               prior_version: "FileID_abc122"
                               extension: "txt"
-                              full_file_path: "/documents/project/updated-example.txt"
+                              clipped_directory_path: "/documents/project/updated-example.txt"
                               tags: ["project", "updated"]
                               created_by: "UserID_123"
                               created_at: 1672531200000
@@ -533,7 +653,7 @@ paths:
                               subfolder_uuids:
                                 ["FolderID_subdir1", "FolderID_subdir2"]
                               file_uuids: ["FileID_abc123", "FileID_def456"]
-                              full_folder_path: "/documents/project-beta/"
+                              clipped_directory_path: "/documents/project-beta/"
                               tags: ["project", "beta"]
                               created_by: "UserID_123"
                               created_at: 1672531200000
@@ -612,7 +732,7 @@ paths:
                               folder_uuid: "FolderID_new123"
                               file_version: 1
                               extension: "txt"
-                              full_file_path: "/documents/archive/file.txt"
+                              clipped_directory_path: "/documents/archive/file.txt"
                               tags: ["project", "documentation"]
                               created_by: "UserID_123"
                               created_at: 1674345600000
@@ -653,7 +773,7 @@ paths:
                                 ["FolderID_copysubdir1", "FolderID_copysubdir2"]
                               file_uuids:
                                 ["FileID_copyabc123", "FileID_copydef456"]
-                              full_folder_path: "/documents/archive/project/"
+                              clipped_directory_path: "/documents/archive/project/"
                               tags: ["project", "active"]
                               created_by: "UserID_123"
                               created_at: 1674345600000
@@ -689,7 +809,7 @@ paths:
                               folder_uuid: "FolderID_new123"
                               file_version: 1
                               extension: "txt"
-                              full_file_path: "/documents/archive/file.txt"
+                              clipped_directory_path: "/documents/archive/file.txt"
                               tags: ["project", "documentation"]
                               created_by: "UserID_123"
                               created_at: 1672531200000
@@ -729,7 +849,7 @@ paths:
                               subfolder_uuids:
                                 ["FolderID_subdir1", "FolderID_subdir2"]
                               file_uuids: ["FileID_abc123", "FileID_def456"]
-                              full_folder_path: "/documents/archive/project/"
+                              clipped_directory_path: "/documents/archive/project/"
                               tags: ["project", "active"]
                               created_by: "UserID_123"
                               created_at: 1672531200000
@@ -790,7 +910,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/contacts/get/{contact_id}:
+  /v1/drive/{organization_id}/contacts/get/{contact_id}:
     get:
       tags:
         - Contacts
@@ -836,7 +956,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/contacts/list:
+  /v1/drive/{organization_id}/contacts/list:
     post:
       tags:
         - Contacts
@@ -933,7 +1053,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/contacts/create:
+  /v1/drive/{organization_id}/contacts/create:
     post:
       tags:
         - Contacts
@@ -980,7 +1100,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/contacts/update:
+  /v1/drive/{organization_id}/contacts/update:
     post:
       tags:
         - Contacts
@@ -1027,7 +1147,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/contacts/delete:
+  /v1/drive/{organization_id}/contacts/delete:
     post:
       tags:
         - Contacts
@@ -1090,7 +1210,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/contacts/redeem:
+  /v1/drive/{organization_id}/contacts/redeem:
     post:
       tags:
         - Contacts
@@ -1148,7 +1268,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /v1/{organization_id}/directory/asset/{file_id_with_extension}:
+  /v1/drive/{organization_id}/directory/asset/{file_id_with_extension}:
     get:
       tags:
         - Directory
@@ -1186,7 +1306,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/disks/get/{disk_id}:
+  /v1/drive/{organization_id}/disks/get/{disk_id}:
     get:
       tags:
         - Disks
@@ -1232,7 +1352,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/disks/list:
+  /v1/drive/{organization_id}/disks/list:
     post:
       tags:
         - Disks
@@ -1329,7 +1449,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/disks/create:
+  /v1/drive/{organization_id}/disks/create:
     post:
       tags:
         - Disks
@@ -1376,7 +1496,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/disks/update:
+  /v1/drive/{organization_id}/disks/update:
     post:
       tags:
         - Disks
@@ -1423,7 +1543,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/disks/delete:
+  /v1/drive/{organization_id}/disks/delete:
     post:
       tags:
         - Disks
@@ -1486,7 +1606,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/drives/get/{drive_id}:
+  /v1/drive/{organization_id}/drives/get/{drive_id}:
     get:
       tags:
         - Drives
@@ -1533,7 +1653,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/drives/list:
+  /v1/drive/{organization_id}/drives/list:
     post:
       tags:
         - Drives
@@ -1631,7 +1751,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/drives/create:
+  /v1/drive/{organization_id}/drives/create:
     post:
       tags:
         - Drives
@@ -1679,7 +1799,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/drives/update:
+  /v1/drive/{organization_id}/drives/update:
     post:
       tags:
         - Drives
@@ -1727,7 +1847,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/drives/delete:
+  /v1/drive/{organization_id}/drives/delete:
     post:
       tags:
         - Drives
@@ -1791,7 +1911,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/organization/replay:
+  /v1/drive/{organization_id}/organization/replay:
     post:
       tags:
         - Organization
@@ -1870,7 +1990,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/organization/search:
+  /v1/drive/{organization_id}/organization/search:
     post:
       tags:
         - Organization
@@ -1980,7 +2100,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/organization/reindex:
+  /v1/drive/{organization_id}/organization/reindex:
     post:
       tags:
         - Organization
@@ -2047,7 +2167,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/organization/external_id:
+  /v1/drive/{organization_id}/organization/external_id:
     post:
       tags:
         - Organization
@@ -2131,7 +2251,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/organization/transfer_ownership:
+  /v1/drive/{organization_id}/organization/transfer_ownership:
     post:
       tags:
         - Organization
@@ -2194,7 +2314,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /v1/{organization_id}/organization/whoami:
+  /v1/drive/{organization_id}/organization/whoami:
     get:
       tags:
         - Organization
@@ -2234,7 +2354,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/organization/superswap:
+  /v1/drive/{organization_id}/organization/superswap:
     post:
       tags:
         - Organization
@@ -2298,7 +2418,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /v1/{organization_id}/organization/redeem:
+  /v1/drive/{organization_id}/organization/redeem:
     post:
       tags:
         - Organization
@@ -2368,7 +2488,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /v1/{organization_id}/giftcards/redeem:
+  /v1/drive/{organization_id}/giftcards/redeem:
     post:
       tags:
         - Organization
@@ -2447,7 +2567,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
-  /v1/{organization_id}/permissions/directory/get/{directory_permission_id}:
+  /v1/drive/{organization_id}/permissions/directory/get/{directory_permission_id}:
     get:
       tags:
         - Permissions by Directory
@@ -2493,7 +2613,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/permissions/directory/create:
+  /v1/drive/{organization_id}/permissions/directory/create:
     post:
       tags:
         - Permissions by Directory
@@ -2540,7 +2660,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/permissions/directory/update:
+  /v1/drive/{organization_id}/permissions/directory/update:
     post:
       tags:
         - Permissions by Directory
@@ -2587,7 +2707,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/permissions/directory/delete:
+  /v1/drive/{organization_id}/permissions/directory/delete:
     post:
       tags:
         - Permissions by Directory
@@ -2646,7 +2766,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/permissions/directory/check:
+  /v1/drive/{organization_id}/permissions/directory/check:
     post:
       tags:
         - Permissions by Directory
@@ -2720,7 +2840,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/permissions/directory/redeem:
+  /v1/drive/{organization_id}/permissions/directory/redeem:
     post:
       tags:
         - Permissions by Directory
@@ -2782,7 +2902,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/permissions/system/get/{system_permission_id}:
+  /v1/drive/{organization_id}/permissions/system/get/{system_permission_id}:
     get:
       tags:
         - Permissions by System
@@ -2828,7 +2948,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/permissions/system/create:
+  /v1/drive/{organization_id}/permissions/system/create:
     post:
       tags:
         - Permissions by System
@@ -2875,7 +2995,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/permissions/system/update:
+  /v1/drive/{organization_id}/permissions/system/update:
     post:
       tags:
         - Permissions by System
@@ -2922,7 +3042,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/permissions/system/delete:
+  /v1/drive/{organization_id}/permissions/system/delete:
     post:
       tags:
         - Permissions by System
@@ -2981,7 +3101,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/permissions/system/check:
+  /v1/drive/{organization_id}/permissions/system/check:
     post:
       tags:
         - Permissions by System
@@ -3055,7 +3175,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/permissions/system/redeem:
+  /v1/drive/{organization_id}/permissions/system/redeem:
     post:
       tags:
         - Permissions by System
@@ -3117,7 +3237,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/labels/get/{label_id}:
+  /v1/drive/{organization_id}/labels/get/{label_id}:
     get:
       tags:
         - Labels
@@ -3163,7 +3283,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/labels/list:
+  /v1/drive/{organization_id}/labels/list:
     post:
       tags:
         - Labels
@@ -3263,7 +3383,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/labels/create:
+  /v1/drive/{organization_id}/labels/create:
     post:
       tags:
         - Labels
@@ -3310,7 +3430,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/labels/update:
+  /v1/drive/{organization_id}/labels/update:
     post:
       tags:
         - Labels
@@ -3357,7 +3477,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/labels/delete:
+  /v1/drive/{organization_id}/labels/delete:
     post:
       tags:
         - Labels
@@ -3420,7 +3540,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/labels/pin:
+  /v1/drive/{organization_id}/labels/pin:
     post:
       tags:
         - Labels
@@ -3508,13 +3628,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/groups/get/{group_id}:
+  /v1/drive/{organization_id}/groups/get/{group_id}:
     get:
       tags:
-        - Teams
-      summary: Get Team
+        - Groups
+      summary: Get Group
       description: Retrieve a group by its ID
-      operationId: getTeam
+      operationId: getGroup
       parameters:
         - name: organization_id
           in: path
@@ -3540,7 +3660,7 @@ paths:
                     type: object
                     properties:
                       data:
-                        $ref: "#/components/schemas/Team"
+                        $ref: "#/components/schemas/Group"
                     required:
                       - data
                 required:
@@ -3554,13 +3674,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/groups/list:
+  /v1/drive/{organization_id}/groups/list:
     post:
       tags:
-        - Teams
-      summary: List Teams
+        - Groups
+      summary: List Groups
       description: List groups with optional filtering and pagination
-      operationId: listTeams
+      operationId: listGroups
       parameters:
         - name: organization_id
           in: path
@@ -3619,7 +3739,7 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/Team"
+                              $ref: "#/components/schemas/Group"
                           page_size:
                             type: integer
                             description: Number of items per page
@@ -3651,13 +3771,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/groups/create:
+  /v1/drive/{organization_id}/groups/create:
     post:
       tags:
-        - Teams
-      summary: Create Team
+        - Groups
+      summary: Create Group
       description: Create a new group
-      operationId: upsertTeam
+      operationId: upsertGroup
       parameters:
         - name: organization_id
           in: path
@@ -3666,15 +3786,15 @@ paths:
             $ref: "#/components/schemas/DriveID"
         - $ref: "#/components/parameters/AuthHeader"
       requestBody:
-        description: Team data to create or update
+        description: Group data to create or update
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateTeamRequest"
+              $ref: "#/components/schemas/CreateGroupRequest"
       responses:
         "200":
-          description: Team successfully created or updated
+          description: Group successfully created or updated
           content:
             application/json:
               schema:
@@ -3684,7 +3804,7 @@ paths:
                     type: object
                     properties:
                       data:
-                        $ref: "#/components/schemas/Team"
+                        $ref: "#/components/schemas/Group"
                     required:
                       - data
                 required:
@@ -3698,13 +3818,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/groups/update:
+  /v1/drive/{organization_id}/groups/update:
     post:
       tags:
-        - Teams
-      summary: Update Team
+        - Groups
+      summary: Update Group
       description: Update group
-      operationId: upsertTeam
+      operationId: upsertGroup
       parameters:
         - name: organization_id
           in: path
@@ -3713,15 +3833,15 @@ paths:
             $ref: "#/components/schemas/DriveID"
         - $ref: "#/components/parameters/AuthHeader"
       requestBody:
-        description: Team data to create or update
+        description: Group data to create or update
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateTeamRequest"
+              $ref: "#/components/schemas/UpdateGroupRequest"
       responses:
         "200":
-          description: Team successfully created or updated
+          description: Group successfully created or updated
           content:
             application/json:
               schema:
@@ -3731,7 +3851,7 @@ paths:
                     type: object
                     properties:
                       data:
-                        $ref: "#/components/schemas/Team"
+                        $ref: "#/components/schemas/Group"
                     required:
                       - data
                 required:
@@ -3745,13 +3865,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/groups/delete:
+  /v1/drive/{organization_id}/groups/delete:
     post:
       tags:
-        - Teams
-      summary: Delete Team
+        - Groups
+      summary: Delete Group
       description: Delete an existing group
-      operationId: deleteTeam
+      operationId: deleteGroup
       parameters:
         - name: organization_id
           in: path
@@ -3768,13 +3888,13 @@ paths:
               type: object
               properties:
                 id:
-                  $ref: "#/components/schemas/TeamID"
+                  $ref: "#/components/schemas/GroupID"
                   description: ID of the group to delete
               required:
                 - id
       responses:
         "200":
-          description: Team successfully deleted
+          description: Group successfully deleted
           content:
             application/json:
               schema:
@@ -3787,7 +3907,7 @@ paths:
                         type: object
                         properties:
                           id:
-                            $ref: "#/components/schemas/TeamID"
+                            $ref: "#/components/schemas/GroupID"
                             description: ID of the deleted group
                           deleted:
                             type: boolean
@@ -3808,13 +3928,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/groups/validate:
+  /v1/drive/{organization_id}/groups/validate:
     post:
       tags:
-        - Teams
+        - Groups
       summary: Validate Member
       description: Verify if a user belongs to a specific group
-      operationId: validateTeam
+      operationId: validateGroup
       parameters:
         - name: organization_id
           in: path
@@ -3834,14 +3954,14 @@ paths:
                   $ref: "#/components/schemas/UserID"
                   description: ID of the user to check
                 group_id:
-                  $ref: "#/components/schemas/TeamID"
+                  $ref: "#/components/schemas/GroupID"
                   description: ID of the group to check
               required:
                 - user_id
                 - group_id
       responses:
         "200":
-          description: Team membership validation result
+          description: Group membership validation result
           content:
             application/json:
               schema:
@@ -3857,7 +3977,7 @@ paths:
                             type: boolean
                             description: Whether the user is a member of the group
                           group_id:
-                            $ref: "#/components/schemas/TeamID"
+                            $ref: "#/components/schemas/GroupID"
                             description: ID of the group that was checked
                           user_id:
                             $ref: "#/components/schemas/UserID"
@@ -3879,13 +3999,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/groups/invites/get/{invite_id}:
+  /v1/drive/{organization_id}/groups/invites/get/{invite_id}:
     get:
       tags:
-        - Team Invites
-      summary: Get Team Invite
+        - Group Invites
+      summary: Get Group Invite
       description: Retrieve a group invite by its ID
-      operationId: getTeamInvite
+      operationId: getGroupInvite
       parameters:
         - name: organization_id
           in: path
@@ -3911,7 +4031,7 @@ paths:
                     type: object
                     properties:
                       data:
-                        $ref: "#/components/schemas/TeamInvite"
+                        $ref: "#/components/schemas/GroupInvite"
                     required:
                       - data
                 required:
@@ -3925,13 +4045,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/groups/invites/list:
+  /v1/drive/{organization_id}/groups/invites/list:
     post:
       tags:
-        - Team Invites
-      summary: List Team Invites
+        - Group Invites
+      summary: List Group Invites
       description: List group invites with optional filtering and pagination
-      operationId: listTeamInvites
+      operationId: listGroupInvites
       parameters:
         - name: organization_id
           in: path
@@ -3940,7 +4060,7 @@ paths:
             $ref: "#/components/schemas/DriveID"
         - $ref: "#/components/parameters/AuthHeader"
       requestBody:
-        description: Team ID and pagination parameters
+        description: Group ID and pagination parameters
         required: true
         content:
           application/json:
@@ -3948,7 +4068,7 @@ paths:
               type: object
               properties:
                 group_id:
-                  $ref: "#/components/schemas/TeamID"
+                  $ref: "#/components/schemas/GroupID"
                   description: ID of the group to list invites for
                 filters:
                   type: string
@@ -3995,7 +4115,7 @@ paths:
                           items:
                             type: array
                             items:
-                              $ref: "#/components/schemas/TeamInvite"
+                              $ref: "#/components/schemas/GroupInvite"
                           page_size:
                             type: integer
                             description: Number of items per page
@@ -4027,13 +4147,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/groups/invites/create:
+  /v1/drive/{organization_id}/groups/invites/create:
     post:
       tags:
-        - Team Invites
-      summary: Create Team Invite
+        - Group Invites
+      summary: Create Group Invite
       description: Create a new group invite
-      operationId: upsertTeamInvite
+      operationId: upsertGroupInvite
       parameters:
         - name: organization_id
           in: path
@@ -4042,15 +4162,15 @@ paths:
             $ref: "#/components/schemas/DriveID"
         - $ref: "#/components/parameters/AuthHeader"
       requestBody:
-        description: Team invite data to create or update
+        description: Group invite data to create or update
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateTeamInviteRequest"
+              $ref: "#/components/schemas/CreateGroupInviteRequest"
       responses:
         "200":
-          description: Team invite successfully created or updated
+          description: Group invite successfully created or updated
           content:
             application/json:
               schema:
@@ -4060,7 +4180,7 @@ paths:
                     type: object
                     properties:
                       data:
-                        $ref: "#/components/schemas/TeamInvite"
+                        $ref: "#/components/schemas/GroupInvite"
                     required:
                       - data
                 required:
@@ -4074,13 +4194,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/groups/invites/update:
+  /v1/drive/{organization_id}/groups/invites/update:
     post:
       tags:
-        - Team Invites
-      summary: Update Team Invite
+        - Group Invites
+      summary: Update Group Invite
       description: Update group invite
-      operationId: upsertTeamInvite
+      operationId: upsertGroupInvite
       parameters:
         - name: organization_id
           in: path
@@ -4089,15 +4209,15 @@ paths:
             $ref: "#/components/schemas/DriveID"
         - $ref: "#/components/parameters/AuthHeader"
       requestBody:
-        description: Team invite data to create or update
+        description: Group invite data to create or update
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateTeamInviteRequest"
+              $ref: "#/components/schemas/CreateGroupInviteRequest"
       responses:
         "200":
-          description: Team invite successfully created or updated
+          description: Group invite successfully created or updated
           content:
             application/json:
               schema:
@@ -4107,7 +4227,7 @@ paths:
                     type: object
                     properties:
                       data:
-                        $ref: "#/components/schemas/TeamInvite"
+                        $ref: "#/components/schemas/GroupInvite"
                     required:
                       - data
                 required:
@@ -4121,13 +4241,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/groups/invites/delete:
+  /v1/drive/{organization_id}/groups/invites/delete:
     post:
       tags:
-        - Team Invites
-      summary: Delete Team Invite
+        - Group Invites
+      summary: Delete Group Invite
       description: Delete an existing group invite
-      operationId: deleteTeamInvite
+      operationId: deleteGroupInvite
       parameters:
         - name: organization_id
           in: path
@@ -4144,13 +4264,13 @@ paths:
               type: object
               properties:
                 id:
-                  $ref: "#/components/schemas/TeamInviteID"
+                  $ref: "#/components/schemas/GroupInviteID"
                   description: ID of the group invite to delete
               required:
                 - id
       responses:
         "200":
-          description: Team invite successfully deleted
+          description: Group invite successfully deleted
           content:
             application/json:
               schema:
@@ -4163,7 +4283,7 @@ paths:
                         type: object
                         properties:
                           id:
-                            $ref: "#/components/schemas/TeamInviteID"
+                            $ref: "#/components/schemas/GroupInviteID"
                             description: ID of the deleted group invite
                           deleted:
                             type: boolean
@@ -4184,13 +4304,13 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/groups/invites/redeem:
+  /v1/drive/{organization_id}/groups/invites/redeem:
     post:
       tags:
-        - Team Invites
-      summary: Redeem Team Invite
+        - Group Invites
+      summary: Redeem Group Invite
       description: Redeem a group invite for a specific user
-      operationId: redeemTeamInvite
+      operationId: redeemGroupInvite
       parameters:
         - name: organization_id
           in: path
@@ -4207,7 +4327,7 @@ paths:
               type: object
               properties:
                 invite_id:
-                  $ref: "#/components/schemas/TeamInviteID"
+                  $ref: "#/components/schemas/GroupInviteID"
                   description: ID of the group invite to redeem
                 user_id:
                   $ref: "#/components/schemas/UserID"
@@ -4217,7 +4337,7 @@ paths:
                 - user_id
       responses:
         "200":
-          description: Team invite successfully redeemed
+          description: Group invite successfully redeemed
           content:
             application/json:
               schema:
@@ -4230,7 +4350,7 @@ paths:
                         type: object
                         properties:
                           invite:
-                            $ref: "#/components/schemas/TeamInvite"
+                            $ref: "#/components/schemas/GroupInvite"
                         required:
                           - invite
                     required:
@@ -4246,7 +4366,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/webhooks/get/{webhook_id}:
+  /v1/drive/{organization_id}/webhooks/get/{webhook_id}:
     get:
       tags:
         - Webhooks
@@ -4292,7 +4412,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/webhooks/list:
+  /v1/drive/{organization_id}/webhooks/list:
     post:
       tags:
         - Webhooks
@@ -4389,7 +4509,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/webhooks/create:
+  /v1/drive/{organization_id}/webhooks/create:
     post:
       tags:
         - Webhooks
@@ -4436,7 +4556,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/webhooks/update:
+  /v1/drive/{organization_id}/webhooks/update:
     post:
       tags:
         - Webhooks
@@ -4483,7 +4603,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/webhooks/delete:
+  /v1/drive/{organization_id}/webhooks/delete:
     post:
       tags:
         - Webhooks
@@ -4546,7 +4666,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/api_keys/get/{api_key_id}:
+  /v1/drive/{organization_id}/api_keys/get/{api_key_id}:
     get:
       tags:
         - API Keys
@@ -4592,7 +4712,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/api_keys/list/{user_id}:
+  /v1/drive/{organization_id}/api_keys/list/{user_id}:
     post:
       tags:
         - API Keys
@@ -4640,7 +4760,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/api_keys/create:
+  /v1/drive/{organization_id}/api_keys/create:
     post:
       tags:
         - API Keys
@@ -4687,7 +4807,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/api_keys/update:
+  /v1/drive/{organization_id}/api_keys/update:
     post:
       tags:
         - API Keys
@@ -4734,7 +4854,7 @@ paths:
       security:
         - BearerAuth: []
 
-  /v1/{organization_id}/api_keys/delete:
+  /v1/drive/{organization_id}/api_keys/delete:
     post:
       tags:
         - API Keys
@@ -4798,6 +4918,60 @@ paths:
       security:
         - BearerAuth: []
 
+  /v1/drive/{organization_id}/organization/about:
+    get:
+      tags:
+        - Organization
+      summary: Get Organization Details
+      description: Retrieve detailed information about a specific organization (drive).
+      operationId: getOrganizationDetails
+      parameters:
+        - name: organization_id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/DriveID"
+        - $ref: "#/components/parameters/AuthHeader"
+      responses:
+        "200":
+          description: Successfully retrieved organization details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: object
+                    properties:
+                      data:
+                        $ref: "#/components/schemas/AboutDriveResponseData"
+                    required:
+                      - data
+                required:
+                  - ok
+              example:
+                ok:
+                  data:
+                    gas_cycles: "1000000000000"
+                    organization_name: "Webeb2"
+                    organization_id: "DriveID_lo37u-t76vs-w34l4-5zmto-wjf7n-eni6l-6aohk-wrcds-euxqx-cm5ld-lae"
+                    owner: "UserID_fgfzs-e354r-beyhr-75myl-hzbgn-ihvep-f6vxy-rop7f-dku26-2sfv2-mae"
+                    endpoint: "http://localhost:8888"
+                    canister_id: "lo37u-t76vs-w34l4-5zmto-wjf7n-eni6l-6aohk-wrcds-euxqx-cm5ld-lae"
+                    daily_idle_cycle_burn_rate: "10000000"
+                    controllers:
+                      - "Principal_mock_controller_1"
+                      - "Principal_mock_controller_2"
+                    version: "OfficeX.Web2_Beta.1.0"
+        default:
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+      security:
+        - BearerAuth: []
+
 components:
   parameters:
     AuthHeader:
@@ -4848,7 +5022,7 @@ components:
         extension:
           type: string
           description: File extension
-        full_file_path:
+        clipped_directory_path:
           $ref: "#/components/schemas/DriveFullFilePath"
           description: Full path to the file
         tags:
@@ -4914,7 +5088,7 @@ components:
         - folder_uuid
         - file_version
         - extension
-        - full_file_path
+        - clipped_directory_path
         - tags
         - created_by
         - created_at
@@ -4952,7 +5126,7 @@ components:
           items:
             $ref: "#/components/schemas/FileID"
           description: IDs of files contained in this folder
-        full_folder_path:
+        clipped_directory_path:
           $ref: "#/components/schemas/DriveFullFilePath"
           description: Full path to the folder
         tags:
@@ -5007,7 +5181,7 @@ components:
         - name
         - subfolder_uuids
         - file_uuids
-        - full_folder_path
+        - clipped_directory_path
         - tags
         - created_by
         - created_at
@@ -5095,8 +5269,8 @@ components:
         groups:
           type: array
           items:
-            $ref: "#/components/schemas/TeamID"
-          description: Teams the contact belongs to
+            $ref: "#/components/schemas/GroupID"
+          description: Groups the contact belongs to
         tags:
           type: array
           items:
@@ -5115,7 +5289,7 @@ components:
           type: array
           description: Preview of groups the contact belongs to
           items:
-            $ref: "#/components/schemas/ContactTeamPreview"
+            $ref: "#/components/schemas/ContactGroupPreview"
         permission_previews:
           type: array
           description: Preview of permissions the requester has
@@ -5286,11 +5460,11 @@ components:
         - resources
         - tags
 
-    Team:
+    Group:
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/TeamID"
+          $ref: "#/components/schemas/GroupID"
           description: Unique identifier for the group
         name:
           type: string
@@ -5358,14 +5532,14 @@ components:
         - endpoint_url
         - tags
 
-    TeamInvite:
+    GroupInvite:
       type: object
       properties:
         id:
-          $ref: "#/components/schemas/TeamInviteID"
+          $ref: "#/components/schemas/GroupInviteID"
           description: Unique identifier for the group invite
         group_id:
-          $ref: "#/components/schemas/TeamID"
+          $ref: "#/components/schemas/GroupID"
           description: ID of the group the invite is for
         inviter_id:
           $ref: "#/components/schemas/UserID"
@@ -5674,20 +5848,20 @@ components:
       description: Unique identifier for a user
       example: "UserID_abcdef123456"
 
-    TeamID:
+    GroupID:
       type: string
       description: Unique identifier for a group
-      example: "TeamID_123456"
+      example: "GroupID_123456"
 
-    TeamInviteID:
+    GroupInviteID:
       type: string
       description: Unique identifier for a group invite
-      example: "TeamInviteID_abc123"
+      example: "GroupInviteID_abc123"
 
     GranteeID:
       type: string
-      description: Either a UserID or TeamID
-      example: "TeamID_abcdef123456"
+      description: Either a UserID or GroupID
+      example: "GroupID_abcdef123456"
 
     DiskID:
       type: string
@@ -6775,11 +6949,11 @@ components:
         - checksum_forward
         - checksum_backward
 
-    ContactTeamPreview:
+    ContactGroupPreview:
       type: object
       properties:
         group_id:
-          $ref: "#/components/schemas/TeamID"
+          $ref: "#/components/schemas/GroupID"
           description: Unique identifier for the group
         invite_id:
           type: string
@@ -6789,7 +6963,7 @@ components:
           description: Whether the contact is an admin of the group
         group_name:
           type: string
-          description: Team name
+          description: Group name
         group_avatar:
           type: string
           description: URL to the group's avatar image
@@ -7198,8 +7372,8 @@ components:
         external_id: "ext-drive-001-updated"
         external_payload: '{"department": "engineering", "project": "alpha", "updated": true}'
 
-    # Team Request Schemas
-    CreateTeamRequest:
+    # Group Request Schemas
+    CreateGroupRequest:
       type: object
       description: Create a new group. Clients can specify body.id = uuidv4 if they want.
       properties:
@@ -7247,12 +7421,12 @@ components:
         external_id: "ext-group-001"
         external_payload: '{"department": "engineering", "project": "alpha"}'
 
-    UpdateTeamRequest:
+    UpdateGroupRequest:
       type: object
       description: Update an existing group
       properties:
         id:
-          $ref: "#/components/schemas/TeamID"
+          $ref: "#/components/schemas/GroupID"
           description: ID of the group to update
         name:
           type: string
@@ -7293,19 +7467,19 @@ components:
         - action
         - id
       example:
-        id: "TeamID_abc123"
+        id: "GroupID_abc123"
         name: "Product & Design"
         private_note: "Updated group structure"
         external_id: "ext-group-001-updated"
         external_payload: '{"department": "engineering", "project": "alpha", "updated": true}'
 
-    # Team Invite Request Schemas
-    CreateTeamInviteRequest:
+    # Group Invite Request Schemas
+    CreateGroupInviteRequest:
       type: object
       description: Create a new group invite. Clients can specify body.id = uuidv4 if they want.
       properties:
         group_id:
-          $ref: "#/components/schemas/TeamID"
+          $ref: "#/components/schemas/GroupID"
           description: ID of the group for the invite
         invitee_id:
           $ref: "#/components/schemas/UserID"
@@ -7345,7 +7519,7 @@ components:
         - group_id
         - role
       example:
-        group_id: "TeamID_abc123"
+        group_id: "GroupID_abc123"
         invitee_id: "UserID_xyz789"
         role: "MEMBER"
         note: "Invitation to join the project group"
@@ -7353,12 +7527,12 @@ components:
         external_id: "ext-invite-001"
         external_payload: '{"department": "engineering", "project": "alpha"}'
 
-    UpdateTeamInviteRequest:
+    UpdateGroupInviteRequest:
       type: object
       description: Update an existing group invite
       properties:
         id:
-          $ref: "#/components/schemas/TeamInviteID"
+          $ref: "#/components/schemas/GroupInviteID"
           description: ID of the invite to update
         role:
           type: string
@@ -7394,7 +7568,7 @@ components:
         - action
         - id
       example:
-        id: "TeamInviteID_abc123"
+        id: "GroupInviteID_abc123"
         role: "ADMIN"
         note: "Upgraded to admin role"
         external_id: "ext-invite-001-updated"
@@ -7939,6 +8113,254 @@ components:
           custom_field: "updated_value"
         external_id: "ext-perm-002-updated"
         external_payload: '{"department": "engineering", "project": "alpha", "updated": true}'
+
+    CreateOrgGiftcardSpawnRequest:
+      type: object
+      title: Create New Org (Gift Card Spawn) Request
+      description: Request body for spawning a new organization using a gift card.
+      properties:
+        action:
+          type: string
+          enum: ["CREATE"]
+          description: Action to perform. Must be "CREATE".
+        usd_revenue_cents:
+          type: integer
+          format: int64
+          description: Revenue in USD cents.
+        note:
+          type: string
+          description: A note about the spawned organization.
+          maxLength: 8192
+        gas_cycles_included:
+          type: integer
+          format: int64
+          description: Gas cycles included for the organization.
+        external_id:
+          $ref: "#/components/schemas/ExternalID"
+          description: External identifier.
+          nullable: true
+        disk_auth_json:
+          type: string
+          description: Authentication JSON for the disk.
+          maxLength: 8192
+          nullable: true
+      required:
+        - action
+        - usd_revenue_cents
+        - note
+        - gas_cycles_included
+      example:
+        action: "CREATE"
+        usd_revenue_cents: 0
+        note: "Free User | UserID_fgfzs-e354r-beyhr-75myl-hzbgn-ihvep-f6vxy-rop7f-dku26-2sfv2-mae"
+        gas_cycles_included: 3500000000000
+        external_id: "optional-external-id-123"
+        disk_auth_json: '{"key":"value"}'
+
+    GiftcardSpawnOrgResponse:
+      type: object
+      title: Gift Card Spawn Org Response
+      description: Response data after successfully spawning an organization with a gift card.
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the spawned organization.
+        usd_revenue_cents:
+          type: integer
+          format: int64
+          description: Revenue in USD cents.
+        note:
+          type: string
+          description: Note associated with the organization.
+        gas_cycles_included:
+          type: integer
+          format: int64
+          description: Gas cycles included for the organization.
+        timestamp_ms:
+          type: integer
+          format: int64
+          description: Timestamp in milliseconds when the organization was spawned.
+        redeemed:
+          type: boolean
+          description: Indicates if the gift card has been redeemed.
+        # Added optional fields based on GiftcardSpawnOrg from types/core.ts (assuming this is the source)
+        created_at:
+          type: integer
+          format: int64
+          description: Timestamp in milliseconds when the gift card was created.
+          nullable: true
+        expires_at:
+          type: integer
+          format: int64
+          description: Timestamp in milliseconds when the gift card expires.
+          nullable: true
+        is_revoked:
+          type: boolean
+          description: Whether the gift card has been revoked.
+          nullable: true
+        tags:
+          type: array
+          items:
+            $ref: "#/components/schemas/TagValue"
+          description: Tags associated with the gift card.
+          nullable: true
+        external_id:
+          $ref: "#/components/schemas/ExternalID"
+          description: External identifier.
+          nullable: true
+        external_payload:
+          $ref: "#/components/schemas/ExternalPayload"
+          description: Additional data for external systems.
+          nullable: true
+      required:
+        - id
+        - usd_revenue_cents
+        - note
+        - gas_cycles_included
+        - timestamp_ms
+        - redeemed
+      example:
+        id: "GiftcardSpawnOrgID_9030a62e-fa93-458b-bfe1-36c2a0d1d4b1"
+        usd_revenue_cents: 0
+        note: "Free User | UserID_fgfzs-e354r-beyhr-75myl-hzbgn-ihvep-f6vxy-rop7f-dku26-2sfv2-mae"
+        gas_cycles_included: 3500000000000
+        timestamp_ms: 1753116627312
+        redeemed: false
+        created_at: 1753116627000
+        expires_at: -1
+        is_revoked: false
+        tags: ["free-tier", "new-user"]
+        external_id: "ext-spawn-org-123"
+        external_payload: '{"tier":"free"}'
+
+    RedeemOrgGiftcardSpawnRequest:
+      type: object
+      title: Redeem New Org (Gift Card Redeem) Request
+      description: Request body for redeeming a gift card to spawn an on-chain organization.
+      properties:
+        giftcard_id:
+          $ref: "#/components/schemas/GiftCardID"
+          description: Unique identifier for the gift card.
+        owner_icp_principal:
+          type: string
+          description: ICP Principal string of the owner.
+        organization_name:
+          type: string
+          description: Name of the organization to be created.
+          maxLength: 256
+        owner_name:
+          type: string
+          description: Name of the owner.
+          maxLength: 256
+          nullable: true
+        disk_auth_json:
+          type: string
+          description: Disk authentication JSON for the new organization.
+          maxLength: 8192
+          nullable: true
+      required:
+        - giftcard_id
+        - owner_icp_principal
+        - organization_name
+      example:
+        giftcard_id: "GiftcardSpawnOrgID_9030a62e-fa93-458b-bfe1-36c2a0d1d4b1"
+        owner_icp_principal: "fgfzs-e354r-beyhr-75myl-hzbgn-ihvep-f6vxy-rop7f-dku26-2sfv2-mae"
+        organization_name: "Weeeb Two"
+        owner_name: "Anon"
+        disk_auth_json: '{"key":"initial-auth"}'
+
+    RedeemOrgGiftcardSpawnResponse:
+      type: object
+      title: Redeem New Org (Gift Card Redeem) Response
+      description: Response data after successfully redeeming a gift card and spawning an organization.
+      properties:
+        owner_id:
+          $ref: "#/components/schemas/UserID"
+          description: User ID of the new owner.
+        drive_id:
+          $ref: "#/components/schemas/DriveID"
+          description: Drive ID of the newly created organization.
+        endpoint:
+          type: string
+          format: url
+          description: Endpoint URL for the new organization.
+        redeem_code:
+          type: string
+          description: Redemption code for admin credentials.
+        disk_auth_json:
+          type: string
+          description: Disk authentication JSON, or null if not applicable.
+          nullable: true
+      required:
+        - owner_id
+        - drive_id
+        - endpoint
+        - redeem_code
+      example:
+        owner_id: "UserID_fgfzs-e354r-beyhr-75myl-hzbgn-ihvep-f6vxy-rop7f-dku26-2sfv2-mae"
+        drive_id: "DriveID_chucq-txtgk-5m5ur-mwuku-z2435-fh5hz-b5hr3-2d5mn-a6t65-l3gmx-xae"
+        endpoint: "http://localhost:8888"
+        redeem_code: "REDEEM_1753116627346"
+        disk_auth_json: null
+
+    AboutDriveResponseData:
+      type: object
+      title: About Drive Response Data
+      description: Detailed information about a specific organization or drive.
+      properties:
+        gas_cycles:
+          type: string
+          description: Current gas cycles available for the organization. (String to handle large numbers)
+        organization_name:
+          type: string
+          description: Name of the organization.
+        organization_id:
+          $ref: "#/components/schemas/DriveID"
+          description: Unique identifier for the organization (drive).
+        owner:
+          $ref: "#/components/schemas/UserID"
+          description: User ID of the organization's owner.
+        endpoint:
+          type: string
+          format: url
+          description: URL endpoint for the organization's services.
+        canister_id:
+          $ref: "#/components/schemas/ICPPrincipalString"
+          description: Canister ID associated with the organization.
+        daily_idle_cycle_burn_rate:
+          type: string
+          description: Daily idle cycle burn rate. (String to handle large numbers)
+        controllers:
+          type: array
+          items:
+            type: string
+            description: ICP Principal string of a controller.
+          description: List of ICP principals that are controllers for this canister.
+        version:
+          type: string
+          description: Version of the OfficeX application running on this organization's canister.
+      required:
+        - gas_cycles
+        - organization_name
+        - organization_id
+        - owner
+        - endpoint
+        - canister_id
+        - daily_idle_cycle_burn_rate
+        - controllers
+        - version
+      example:
+        gas_cycles: "1000000000000"
+        organization_name: "Webeb2"
+        organization_id: "DriveID_lo37u-t76vs-w34l4-5zmto-wjf7n-eni6l-6aohk-wrcds-euxqx-cm5ld-lae"
+        owner: "UserID_fgfzs-e354r-beyhr-75myl-hzbgn-ihvep-f6vxy-rop7f-dku26-2sfv2-mae"
+        endpoint: "http://localhost:8888"
+        canister_id: "lo37u-t76vs-w34l4-5zmto-wjf7n-eni6l-6aohk-wrcds-euxqx-cm5ld-lae"
+        daily_idle_cycle_burn_rate: "10000000"
+        controllers:
+          - "Principal_mock_controller_1"
+          - "Principal_mock_controller_2"
+        version: "OfficeX.Web2_Beta.1.0"
 
     # Common error response
     ErrorResponse:
