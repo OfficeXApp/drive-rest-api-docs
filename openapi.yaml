@@ -7096,7 +7096,7 @@ components:
         private_note: "Contains sensitive project data"
         auth_json: "{ ... }"
         external_id: "ext-disk-001"
-        external_payload: '{"department": "engineering", "cost_center": "cc-12345", "project_id": "p-987654"}'
+        external_payload: "{ ... }"
 
     UpdateDiskRequest:
       type: object
@@ -7146,7 +7146,7 @@ components:
         private_note: "Contains confidential project data"
         auth_json: "{ ... }"
         external_id: "ext-disk-001-updated"
-        external_payload: '{"department": "engineering", "cost_center": "cc-67890", "project_id": "p-123456", "updated": true}'
+        external_payload: "{ ... }"
 
     CreateContactRequest:
       type: object
