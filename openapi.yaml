@@ -6,7 +6,9 @@ info:
 
     REST API for OfficeX filesharing app - https://officex.app
 
-    Also try it in iframe mode: https://fir-iframe-officex.web.app
+    - Interact with the [API on POSTMAN](https://officexapp-3755884.postman.co/workspace/OfficeX's-Workspace~91f4af01-13c8-4e17-8c97-470ecc0e41da/collection/46989309-7fa538d8-4476-4d74-aab2-8582b137b465?action=share&creator=46989309)
+    - Also try it in iframe mode: https://fir-iframe-officex.web.app
+    - [Deep dive documentation spec](https://drive.officex.app/org/DriveID_dzmre-qqaaa-aaaak-apdsa-cai__aHR0cHM6Ly9kem1yZS1xcWFhYS1hYWFhay1hcGRzYS1jYWkuaWNwMC5pbw/drive/AWS_BUCKET/DiskID_6df56be6-8600-4467-8265-6e1cfa1db6ed/FolderID_59b4d638-4687-470b-a1f1-4828e041adb4/FileID_cc287de6-52dd-4ec7-bc84-81b8213b916b/apps/docs)
 
     All the code on Github: 
     - NodeJS Server (Web2 Backend): https://github.com/OfficeXApp/typescript-server
@@ -1566,7 +1568,7 @@ paths:
               type: object
               properties:
                 id:
-                  $ref: "#/components/schemas/UserID"
+                  $ref: "#/components/schemas/DiskID"
                   description: ID of the disk to delete
               required:
                 - id
@@ -2868,9 +2870,16 @@ paths:
                 user_id:
                   $ref: "#/components/schemas/UserID"
                   description: ID of the user to redeem the permission for
+                redeem_code:
+                  type: string
+                  description: Optional redeem code for the permission
+                note:
+                  type: string
+                  description: Optional note for the redemption
               required:
                 - permission_id
                 - user_id
+                - redeem_code
       responses:
         "200":
           description: Permission successfully redeemed
@@ -3203,9 +3212,16 @@ paths:
                 user_id:
                   $ref: "#/components/schemas/UserID"
                   description: ID of the user to redeem the permission for
+                redeem_code:
+                  type: string
+                  description: Optional redeem code for the permission
+                note:
+                  type: string
+                  description: Optional note for the redemption
               required:
                 - permission_id
                 - user_id
+                - redeem_code
       responses:
         "200":
           description: Permission successfully redeemed
@@ -4214,7 +4230,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateGroupInviteRequest"
+              $ref: "#/components/schemas/UpdateGroupInviteRequest"
       responses:
         "200":
           description: Group invite successfully created or updated
@@ -4332,9 +4348,17 @@ paths:
                 user_id:
                   $ref: "#/components/schemas/UserID"
                   description: ID of the user to redeem the invite for
+                redeem_code:
+                  type: string
+                  description: Optional redeem code for the Invite
+                note:
+                  type: string
+                  description: Optional note for the redemption
+                  maxLength: 512
               required:
                 - invite_id
                 - user_id
+                - redeem_code
       responses:
         "200":
           description: Group invite successfully redeemed
